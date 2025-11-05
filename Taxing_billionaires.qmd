@@ -1,0 +1,61 @@
+---
+title: "Taxing the Titans : An Econometric Study of Billionaire Wealth Drivers"
+author: "Tony De Amorim"
+format: html
+---
+
+```{r}
+#| label: Library imports
+#| message: false
+#| warning: false
+
+library(readxl) # To open the billionaires dataset
+library(tidyverse) # To clean, modify and analyze our data 
+library(ggplot2) # For graphical representation
+library(stringr) # To clean the data
+
+```
+
+
+```{r}
+#| label: Data import
+#| message: false
+#| warning: false
+
+#Importing the dataset using the readxl package
+
+Billionaires <- read_excel("Database_project/Billionaires1996,2001and2014updated.xlsx") 
+
+
+```
+
+
+```{r}
+#| label: Data cleaning
+#| message: false
+#| warning: false
+
+
+Billionaires <-
+  Billionaires |> 
+  select(!(25:30)) |>  # Removing un-needed variables : notes and sources
+  mutate(name = str_remove_all(name, "[.,;()]")) 
+  # Removing typo in the names that might prevent good identification of every billionaires
+  
+# Pivoting in order to have one row by billionaire   
+Pivoted <-
+  Billionaires |> 
+  pivot_wider(names_from = year,
+              values_from = c(rank,networthusbillion, gdpcurrentus),
+              id_cols = name)
+
+# Joining the pivoted and the original datasets
+Billionaires <-
+  Billionaires |>
+  select(!c(year,rank,networthusbillion,gdpcurrentus)) |>
+  distinct(name, .keep_all = TRUE) |> 
+  full_join(Pivoted, by = "name")
+
+
+```
+
