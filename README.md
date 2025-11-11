@@ -1,10 +1,8 @@
-# Taxing-the-Titans-An-Econometric-Study-of-Billionaire-Wealth-Drivers
+# Taxing the Titans An Econometric Study of Billionaire Wealth Drivers
 
 
 
 ## Project presentation
-
-# Presentation of the database
 
 
 ## Data sets presentation
@@ -15,8 +13,8 @@ As we want to focus our research on the impact of taxation on billionaires' beha
 We still wanted to have a more precise idea of real taxation so we also decided to work on the "Taxes on income, profits and capital gains (% of revenue)" dataset of the world bank, even if a lot of countries are missing (especialy for old values). The data set is available here : https://data.worldbank.org/indicator/GC.TAX.YPKG.RV.ZS
 
 To complete our study and have a better understanding of the different trends in the billionaires' world, we use a custom dataset from the IMF data explorer to select several macroeconomics variables such as :
-- GDP growth
-- FDI
+- GDP growth 
+- FDI 
 - Formation brut de capital net
 - Director rate
 
