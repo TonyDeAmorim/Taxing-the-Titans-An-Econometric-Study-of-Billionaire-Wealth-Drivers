@@ -13,9 +13,11 @@ As we want to focus our research on the impact of taxation on billionaires' beha
 We still wanted to have a more precise idea of real taxation so we also decided to work on the "Taxes on income, profits and capital gains (% of revenue)" dataset of the world bank, even if a lot of countries are missing (especialy for old values). The data set is available here : https://data.worldbank.org/indicator/GC.TAX.YPKG.RV.ZS
 
 To complete our study and have a better understanding of the different trends in the billionaires' world, we use a custom dataset from the IMF data explorer to select several macroeconomics variables such as :
-- GDP growth 
-- FDI 
-- Formation brut de capital net
-- Director rate
+
+- GDP in PPP (https://data.imf.org/en/Data-Explorer?datasetUrn=IMF.RES:WEO(9.0.0)&INDICATOR=PPPGDP) : We included GDP in Purchasing Power Parity to capture the overall economic performance and living standards of each country, as wealth creation and billionaire emergence are closely linked to the size and strength of national economies.
+- Inward Direct investment, Net (liabilities less assets) (https://data.imf.org/en/Data-Explorer?datasetUrn=IMF.STA:DIP(12.0.0)&INDICATOR=INWD_D_NETLA_FALL_ALL) : This variable reflects a country’s ability to attract foreign capital, serving as a proxy for its economic openness and fiscal attractiveness, key factors influencing where billionaires choose to invest or reside.
+- Investment and Capital Stock Dataset (ICSD) (https://data.imf.org/en/datasets/IMF.FAD:ICSD) : data for investment and capital stock for the general government, private sector and public-private partnerships, across the Fund member countries.We use the ICSD to measure the scale and composition of national investment, as higher levels of capital accumulation and infrastructure development create environments conducive to wealth expansion.
+- Interest rate : (https://data.imf.org/en/datasets/IMF.STA:MFS_IR) : The interest rate captures the stance of monetary policy and the cost of capital, both of which directly affect asset valuation, investment incentives, and consequently the growth of billionaire wealth.
+
 
 The IMF data explorer is usable following this link : https://data.imf.org/en/Data-Explorer
