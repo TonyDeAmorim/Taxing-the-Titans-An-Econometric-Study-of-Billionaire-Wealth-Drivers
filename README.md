@@ -16,8 +16,8 @@ We still wanted to have a more precise idea of real taxation so we also decided 
 
 To complete our study and have a better understanding of the different trends in the billionaires' world, we use a custom dataset from the IMF data explorer to select several macroeconomics variables such as :
 - GDP growth
-- 
-- 
-- 
+- FDI
+- Formation brut de capital net
+- Director rate
 
 The IMF data explorer is usable following this link : https://data.imf.org/en/Data-Explorer
