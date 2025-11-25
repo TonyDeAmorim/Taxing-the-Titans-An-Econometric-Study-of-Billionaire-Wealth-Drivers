@@ -107,5 +107,33 @@ B <-
 I <-
   IMF |> 
   distinct(COUNTRY)
+
+map <- c(
+  "Bahrain, Kingdom of" = "Bahrain",
+  "China, People's Republic of" = "China",
+  "Egypt, Arab Republic of" = "Egypt",
+  "Hong Kong Special Administrative Region, People's Republic of China" = "Hong Kong",
+  "Kazakhstan, Republic of" = "Kazakhstan",
+  "Liechtenstein, Principality of" = "Liechtenstein",
+  "Lithuania, Republic of" = "Lithuania",
+  "Macao Special Administrative Region, People's Republic of China" = "Macau",
+  "Netherlands, The" = "Netherlands",
+  "Poland, Republic of" = "Poland",
+  "Russian Federation" = "Russia",
+  "Korea, Republic of" = "South Korea",
+  "Eswatini, Kingdom of" = "Swaziland",
+  "Taiwan Province of China" = "Taiwan",
+  "Tanzania, United Republic of" = "Tanzania",
+  "Türkiye, Republic of" = "Turkey",
+  "Venezuela, República Bolivariana de" = "Venezuela"
+)
+
+IMF$COUNTRY <- ifelse(
+  IMF$COUNTRY %in% names(map),
+  map[IMF$COUNTRY],
+  IMF$COUNTRY
+)
+
+
 ```
 
