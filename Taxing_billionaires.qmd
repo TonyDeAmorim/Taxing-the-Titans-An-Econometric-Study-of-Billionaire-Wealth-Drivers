@@ -47,7 +47,7 @@ IMF <- read_csv("Database_project/dataset_2025-11-08T13_13_40.824575072Z_DEFAULT
 
 
 Billionaires <-
-  Billionaires |> 
+  Billionaires_dataset |> 
   select(!(25:30)) |>  # Removing un-needed variables : notes and sources
   mutate(name = str_remove_all(name, "[.,;()]")) 
   # Removing typo in the names that might prevent good identification of every billionaires
@@ -107,5 +107,9 @@ B <-
 I <-
   IMF |> 
   distinct(COUNTRY)
+```
+
+```{r}
+#Drop monaco et guernesay de la liste des millionaires car pas présents dans la liste GDP de IMF
 ```
 
