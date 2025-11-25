@@ -183,11 +183,5 @@ F <-
 ```
 
 
-```{r}
-Interet_Rate <- read_csv("Database_project/Real_Interet_Rate.csv", 
-    skip = 3)
 
-R <- Interet_Rate |> 
-  distinct(`Country Name`)
-```
 
