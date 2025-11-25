@@ -112,6 +112,7 @@ I <-
   distinct(COUNTRY)
 
 #Converting the names of the countries from the IMF GDP/PPP dataset that are spelled differently the same way as the countries from the billionaires datset 
+
 map <- c(
   "Bahrain, Kingdom of" = "Bahrain",
   "China, People's Republic of" = "China",
@@ -152,15 +153,29 @@ liste_pays <- c(
   "Uganda","Ukraine","United Arab Emirates","United Kingdom","United States",
   "Venezuela","Vietnam"
 )
-library(dplyr)
+
 
 IMF_reduit <- IMF |> 
-  filter(COUNTRY %in% liste_pays)
+  filter(COUNTRY %in% liste_pays) |> 
+  select(COUNTRY,`1996`,`2000`,`2014`)
+
+  
 
 
 ```
 
 ```{r}
 #Drop monaco et guernesay de la liste des millionaires car pas présents dans la liste GDP de IMF
+```
+
+
+
+```{r}
+FDI <- read_csv("Database_project/FDI_WB.csv",    skip = 3)
+
+F <- 
+  FDI |> 
+  distinct(`Country Name`)
+
 ```
 
