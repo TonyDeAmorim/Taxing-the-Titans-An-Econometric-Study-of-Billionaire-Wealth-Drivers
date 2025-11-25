@@ -194,4 +194,20 @@ Capital_formation_reduit <-
   select(`Country Name`,`1996 [YR1996]`,`2000 [YR2000]`,`2014 [YR2014]`)
 
 ```
+```{r}
+Population <- read_csv("Database_project/Population.csv", 
+    skip = 3)
+
+Population$`Country Name` <- ifelse(
+  Population$`Country Name` %in% names(map_WB),
+  map_WB[Population$`Country Name`],
+  Population$`Country Name`
+)
+
+Population_reduit <-
+  Population |>
+  filter(`Country Name` %in% liste_pays) |> 
+  select(`Country Name`, `1996`, `2000`, `2014`)
+
+```
 
