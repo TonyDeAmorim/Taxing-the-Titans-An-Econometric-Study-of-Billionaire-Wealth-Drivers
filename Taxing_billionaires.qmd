@@ -150,7 +150,7 @@ liste_pays <- c(
 )
 library(dplyr)
 
-IMF_reduit <- IMF %>% 
+IMF_reduit <- IMF |> 
   filter(COUNTRY %in% liste_pays)
 
 
