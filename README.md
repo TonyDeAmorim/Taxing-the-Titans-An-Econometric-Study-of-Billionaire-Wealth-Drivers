@@ -19,5 +19,4 @@ To complete our study and have a better understanding of the different trends in
 - Investment and Capital Stock Dataset (ICSD) (https://data.imf.org/en/datasets/IMF.FAD:ICSD) : data for investment and capital stock for the general government, private sector and public-private partnerships, across the Fund member countries.We use the ICSD to measure the scale and composition of national investment, as higher levels of capital accumulation and infrastructure development create environments conducive to wealth expansion.
 - Interest rate : (https://data.imf.org/en/datasets/IMF.STA:MFS_IR) : The interest rate captures the stance of monetary policy and the cost of capital, both of which directly affect asset valuation, investment incentives, and consequently the growth of billionaire wealth.
 
-
 The IMF data explorer is usable following this link : https://data.imf.org/en/Data-Explorer
