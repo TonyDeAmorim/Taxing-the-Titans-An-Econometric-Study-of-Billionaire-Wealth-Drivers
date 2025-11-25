@@ -98,7 +98,7 @@ library(readr)
 library(tidyverse)
 Billionaires_dataset  <- read_delim("Database_project/Billionaires_dataset.csv", 
     delim = ";", escape_double = FALSE, trim_ws = TRUE)
-IMF<- read_csv("Database_project/dataset_2025-11-25T11_17_57.152664220Z_DEFAULT_INTEGRATION_IMF.RES_WEO_9.0.0.csv")
+IMF<- read_csv("Database_project/IMF_GDP_PPP.csv")
 
 
 #Creating a list of the countries present in the billionaires dataset
@@ -158,7 +158,8 @@ liste_pays <- c(
 )
 
 
-IMF_reduit <- IMF |> 
+IMF_reduit <- 
+  IMF |> 
   filter(COUNTRY %in% liste_pays) |> 
   select(COUNTRY,`1996`,`2000`,`2014`)
 
@@ -172,10 +173,6 @@ IMF_reduit <- IMF |>
 ```
 
 
-<<<<<<< HEAD
-```{r}
-FDI <- read_csv("Database_project/FDI_WB.csv")
-=======
 
 ```{r}
 FDI <- read_csv("Database_project/FDI_WB.csv",    skip = 3)
@@ -184,6 +181,28 @@ F <-
   FDI |> 
   distinct(`Country Name`)
 
->>>>>>> 8908fa8323b3ab2acd78412b1bdafd8f5597a438
+map <- c(
+  "Czechia" = "Czech Republic",
+  "Egypt, Arab Rep." = "Egypt",
+  "Hong Kong SAR, China" = "Hong Kong",
+  "Macao SAR, China" = "Macau",
+  "Russian Federation" = "Russia",
+  "Korea, Dem. People's Rep." = "South Korea",
+  "Venezuela, RB" = "Venezuela",
+  "Viet Nam" = "Vietnam"
+)
+
+FDI$`Country Name` <- ifelse(
+  FDI$`Country Name` %in% names(map),
+  map[FDI$`Country Name`],
+  FDI$`Country Name`
+)
+
+
+
+FDI_reduit <-
+  FDI |> 
+  filter(`Country Name` %in% liste_pays) |> 
+  select(`Country Name`,`1996`,`2000`,`2014`)
 ```
 
