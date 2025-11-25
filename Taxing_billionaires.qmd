@@ -93,3 +93,19 @@ c <-
 
 ```
 
+```{r}
+library(readr)
+library(tidyverse)
+Billionaires_dataset  <- read_delim("Database_project/Billionaires_dataset.csv", 
+    delim = ";", escape_double = FALSE, trim_ws = TRUE)
+IMF<- read_csv("Database_project/dataset_2025-11-25T11_17_57.152664220Z_DEFAULT_INTEGRATION_IMF.RES_WEO_9.0.0.csv")
+
+B <-
+  Billionaires_dataset |> 
+  distinct(citizenship)
+
+I <-
+  IMF |> 
+  distinct(COUNTRY)
+```
+
