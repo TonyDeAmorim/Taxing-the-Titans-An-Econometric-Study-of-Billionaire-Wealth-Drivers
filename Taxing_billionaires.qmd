@@ -172,10 +172,7 @@ IMF_reduit <- IMF |>
 ```
 
 
-<<<<<<< HEAD
-```{r}
-FDI <- read_csv("Database_project/FDI_WB.csv")
-=======
+
 
 ```{r}
 FDI <- read_csv("Database_project/FDI_WB.csv",    skip = 3)
@@ -183,7 +180,14 @@ FDI <- read_csv("Database_project/FDI_WB.csv",    skip = 3)
 F <- 
   FDI |> 
   distinct(`Country Name`)
+```
 
->>>>>>> 8908fa8323b3ab2acd78412b1bdafd8f5597a438
+
+```{r}
+Interet_Rate <- read_csv("Database_project/Real_Interet_Rate.csv", 
+    skip = 3)
+
+R <- Interet_Rate |> 
+  distinct(`Country Name`)
 ```
 
