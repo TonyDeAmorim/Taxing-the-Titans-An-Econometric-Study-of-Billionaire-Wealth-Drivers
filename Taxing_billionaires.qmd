@@ -176,3 +176,22 @@ Tax_revenue_reduit <-
 
 ```
 
+
+```{r}
+#| label: Capital formation
+
+Capital_formation <- read_csv("Database_project/Capital_formation.csv")
+
+Capital_formation$`Country Name` <- ifelse(
+  Capital_formation$`Country Name` %in% names(map_WB),
+  map_WB[Capital_formation$`Country Name`],
+  Capital_formation$`Country Name`
+)
+
+Capital_formation_reduit <-
+  Capital_formation |>
+  filter(`Country Name` %in% liste_pays) |> 
+  select(`Country Name`,`1996 [YR1996]`,`2000 [YR2000]`,`2014 [YR2014]`)
+
+```
+
