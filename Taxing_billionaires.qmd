@@ -4,7 +4,12 @@ author: "Tony De Amorim"
 format: html
 ---
 
- 
+# Accesing the sources
+
+The project's repository is available [here](https://github.com/TonyDeAmorim/Taxing-the-Titans-An-Econometric-Study-of-Billionaire-Wealth-Drivers). 
+
+Our core dataset is available for download directly through [this link](https://www.piie.com/publications/working-papers/origins-superrich-billionaire-characteristics-database). 
+
 
 ```{r}
 #| label: Library imports
