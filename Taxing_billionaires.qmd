@@ -100,14 +100,18 @@ Billionaires_dataset  <- read_delim("Database_project/Billionaires_dataset.csv",
     delim = ";", escape_double = FALSE, trim_ws = TRUE)
 IMF<- read_csv("Database_project/dataset_2025-11-25T11_17_57.152664220Z_DEFAULT_INTEGRATION_IMF.RES_WEO_9.0.0.csv")
 
+
+#Creating a list of the countries present in the billionaires dataset
 B <-
   Billionaires_dataset |> 
   distinct(citizenship)
 
+#Creating a list of the countries present in the IMF GDP/PPP dataset
 I <-
   IMF |> 
   distinct(COUNTRY)
 
+#Converting the names of the countries from the IMF GDP/PPP dataset that are spelled differently the same way as the countries from the billionaires datset 
 map <- c(
   "Bahrain, Kingdom of" = "Bahrain",
   "China, People's Republic of" = "China",
