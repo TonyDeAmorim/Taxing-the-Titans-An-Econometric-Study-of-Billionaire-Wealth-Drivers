@@ -132,11 +132,14 @@ map <- c(
   "Venezuela, República Bolivariana de" = "Venezuela"
 )
 
+
+#
 IMF$COUNTRY <- ifelse(
   IMF$COUNTRY %in% names(map),
   map[IMF$COUNTRY],
   IMF$COUNTRY
 )
+
 
 liste_pays <- c(
   "Algeria","Angola","Argentina","Australia","Austria","Bahrain","Belgium",
@@ -162,5 +165,10 @@ IMF_reduit <- IMF %>%
 
 ```{r}
 #Drop monaco et guernesay de la liste des millionaires car pas présents dans la liste GDP de IMF
+```
+
+
+```{r}
+FDI <- read_csv("Database_project/FDI_WB.csv")
 ```
 
