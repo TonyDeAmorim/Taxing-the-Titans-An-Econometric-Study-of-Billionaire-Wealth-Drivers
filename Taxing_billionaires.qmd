@@ -134,6 +134,25 @@ IMF$COUNTRY <- ifelse(
   IMF$COUNTRY
 )
 
+liste_pays <- c(
+  "Algeria","Angola","Argentina","Australia","Austria","Bahrain","Belgium",
+  "Bermuda","Brazil","Canada","Chile","China","Colombia","Cyprus",
+  "Czech Republic","Denmark","Ecuador","Egypt","Finland","France","Georgia",
+  "Germany","Greece","Guernsey","Hong Kong","India","Indonesia","Ireland",
+  "Israel","Italy","Japan","Kazakhstan","Kuwait","Lebanon","Liechtenstein",
+  "Lithuania","Macau","Malaysia","Mexico","Monaco","Morocco","Nepal",
+  "Netherlands","New Zealand","Nigeria","Norway","Oman","Peru","Philippines",
+  "Poland","Portugal","Romania","Russia","Saudi Arabia","Singapore",
+  "South Africa","South Korea","Spain","St. Kitts and Nevis",
+  "Swaziland","Sweden","Switzerland","Taiwan","Tanzania","Thailand","Turkey",
+  "Uganda","Ukraine","United Arab Emirates","United Kingdom","United States",
+  "Venezuela","Vietnam"
+)
+library(dplyr)
+
+IMF_reduit <- IMF %>% 
+  filter(COUNTRY %in% liste_pays)
+
 
 ```
 
