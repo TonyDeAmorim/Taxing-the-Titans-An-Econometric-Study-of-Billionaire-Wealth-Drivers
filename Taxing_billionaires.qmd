@@ -17,26 +17,9 @@ Our core dataset is available for download directly through [this link](https://
 #| warning: false
 
 library(readxl) # To open the billionaires dataset
-library(tidyverse) # To clean, modify and analyze our data 
+library(tidyverse) # To clean, modify and analyze our data
 library(ggplot2) # For graphical representation
 library(stringr) # To clean the data
-
-```
-
-
-```{r}
-#| label: Data import
-#| message: false
-#| warning: false
-
-#Importing the dataset using the readxl package
-
-Billionaires <- read_excel("Database_project/Billionaires1996,2001and2014updated.xlsx") 
-
-# Importing an IMF custom dataset
-
-IMF <- read_csv("Database_project/dataset_2025-11-08T13_13_40.824575072Z_DEFAULT_INTEGRATION_IMF.RES_WEO_9.0.0.csv")
-
 ```
 
 
@@ -45,73 +28,44 @@ IMF <- read_csv("Database_project/dataset_2025-11-08T13_13_40.824575072Z_DEFAULT
 #| message: false
 #| warning: false
 
+Billionaires_dataset <- read_delim("Database_project/Billionaires_dataset.csv",
+  delim = ";", escape_double = FALSE, trim_ws = TRUE
+)
 
+IMF <- read_csv("Database_project/IMF_GDP_PPP.csv")
 Billionaires <-
-  Billionaires_dataset |> 
-  select(!(25:30)) |>  # Removing un-needed variables : notes and sources
-  mutate(name = str_remove_all(name, "[.,;()]")) 
-  # Removing typo in the names that might prevent good identification of every billionaires
-  
-# Pivoting in order to have one row by billionaire   
+  Billionaires_dataset |>
+  select(!(25:30)) |> # Removing un-needed variables : notes and sources
+  mutate(name = str_remove_all(name, "[.,;()]"))
+# Removing typo in the names that might prevent good identification of every billionaires
+
+# Pivoting in order to have one row by billionaire
 Pivoted <-
-  Billionaires |> 
-  pivot_wider(names_from = year,
-              values_from = c(rank,networthusbillion, gdpcurrentus),
-              id_cols = name)
+  Billionaires |>
+  pivot_wider(
+    names_from = year,
+    values_from = c(rank, networthusbillion, gdpcurrentus),
+    id_cols = name
+  )
 
 # Joining the pivoted and the original datasets
 Billionaires <-
   Billionaires |>
-  select(!c(year,rank,networthusbillion,gdpcurrentus)) |>
-  distinct(name, .keep_all = TRUE) |> 
+  select(!c(year, rank, networthusbillion, gdpcurrentus)) |>
+  distinct(name, .keep_all = TRUE) |>
   full_join(Pivoted, by = "name")
 
 # Creating a list of every country represented in the dataset
-Country <- 
-  Billionaires |> 
-  distinct(citizenship) 
-
-# Cleaning the IMF dataset
-
-IMF <-
-  IMF |>  
-  select(COUNTRY,INDICATOR,SCALE,UNIT,TOPIC,SERIES_NAME, 76:100)
-
-# Creating a dataset with only our years
-
-IMF_reduced <-
-  IMF |> 
-  select(1,2,13,18,31) |> 
-  pivot_wider(names_from = INDICATOR, 
-              values_from = c("1996","2001","2014"),
-              id_cols = COUNTRY)
-
-c <-
-  IMF |> 
-  distinct(COUNTRY)
-
-
+Country <-
+  Billionaires |>
+  distinct(citizenship)
 ```
 
+
+
 ```{r}
-library(readr)
-library(tidyverse)
-Billionaires_dataset  <- read_delim("Database_project/Billionaires_dataset.csv", 
-    delim = ";", escape_double = FALSE, trim_ws = TRUE)
-IMF<- read_csv("Database_project/IMF_GDP_PPP.csv")
-
-
-#Creating a list of the countries present in the billionaires dataset
-B <-
-  Billionaires_dataset |> 
-  distinct(citizenship)
-
-#Creating a list of the countries present in the IMF GDP/PPP dataset
-I <-
-  IMF |> 
-  distinct(COUNTRY)
-
-#Converting the names of the countries from the IMF GDP/PPP dataset that are spelled differently the same way as the countries from the billionaires datset 
+#| label: IMF GDP dataset
+# Converting the names of the countries from the IMF GDP/PPP dataset that are spelled differently the same way as the countries from the billionaires datset
 
 map <- c(
   "Bahrain, Kingdom of" = "Bahrain",
@@ -143,42 +97,39 @@ IMF$COUNTRY <- ifelse(
 
 
 liste_pays <- c(
-  "Algeria","Angola","Argentina","Australia","Austria","Bahrain","Belgium",
-  "Bermuda","Brazil","Canada","Chile","China","Colombia","Cyprus",
-  "Czech Republic","Denmark","Ecuador","Egypt","Finland","France","Georgia",
-  "Germany","Greece","Guernsey","Hong Kong","India","Indonesia","Ireland",
-  "Israel","Italy","Japan","Kazakhstan","Kuwait","Lebanon","Liechtenstein",
-  "Lithuania","Macau","Malaysia","Mexico","Monaco","Morocco","Nepal",
-  "Netherlands","New Zealand","Nigeria","Norway","Oman","Peru","Philippines",
-  "Poland","Portugal","Romania","Russia","Saudi Arabia","Singapore",
-  "South Africa","South Korea","Spain","St. Kitts and Nevis",
-  "Swaziland","Sweden","Switzerland","Taiwan","Tanzania","Thailand","Turkey",
-  "Uganda","Ukraine","United Arab Emirates","United Kingdom","United States",
-  "Venezuela","Vietnam"
+  "Algeria", "Angola", "Argentina", "Australia", "Austria", "Bahrain", "Belgium",
+  "Bermuda", "Brazil", "Canada", "Chile", "China", "Colombia", "Cyprus",
+  "Czech Republic", "Denmark", "Ecuador", "Egypt", "Finland", "France", "Georgia",
+  "Germany", "Greece", "Guernsey", "Hong Kong", "India", "Indonesia", "Ireland",
+  "Israel", "Italy", "Japan", "Kazakhstan", "Kuwait", "Lebanon", "Liechtenstein",
+  "Lithuania", "Macau", "Malaysia", "Mexico", "Monaco", "Morocco", "Nepal",
+  "Netherlands", "New Zealand", "Nigeria", "Norway", "Oman", "Peru", "Philippines",
+  "Poland", "Portugal", "Romania", "Russia", "Saudi Arabia", "Singapore",
+  "South Africa", "South Korea", "Spain", "St. Kitts and Nevis",
+  "Swaziland", "Sweden", "Switzerland", "Taiwan", "Tanzania", "Thailand", "Turkey",
+  "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States",
+  "Venezuela", "Vietnam"
 )
 
 
-IMF_reduit <- 
-  IMF |> 
-  filter(COUNTRY %in% liste_pays) |> 
-  select(COUNTRY,`1996`,`2000`,`2014`)
-
-  
-
-
+IMF_reduit <-
+  IMF |>
+  filter(COUNTRY %in% liste_pays) |>
+  select(COUNTRY, `1996`, `2000`, `2014`)
 ```
 
 ```{r}
-#Drop monaco et guernesay de la liste des millionaires car pas présents dans la liste GDP de IMF
+# Drop monaco et guernesay de la liste des millionaires car pas présents dans la liste GDP de IMF
 ```
 
 
 
 ```{r}
-FDI <- read_csv("Database_project/FDI_WB.csv",    skip = 3)
+#| label: FDI dataset
+FDI <- read_csv("Database_project/FDI_WB.csv", skip = 3)
 
-F <- 
-  FDI |> 
+F <-
+  FDI |>
   distinct(`Country Name`)
 
 map <- c(
@@ -187,7 +138,7 @@ map <- c(
   "Hong Kong SAR, China" = "Hong Kong",
   "Macao SAR, China" = "Macau",
   "Russian Federation" = "Russia",
-  "Korea, Dem. People's Rep." = "South Korea",
+  "Korea, Rep." = "South Korea",
   "Venezuela, RB" = "Venezuela",
   "Viet Nam" = "Vietnam"
 )
@@ -201,11 +152,7 @@ FDI$`Country Name` <- ifelse(
 
 
 FDI_reduit <-
-  FDI |> 
-  filter(`Country Name` %in% liste_pays) |> 
-  select(`Country Name`,`1996`,`2000`,`2014`)
-
+  FDI |>
+  filter(`Country Name` %in% liste_pays) |>
+  select(`Country Name`, `1996`, `2000`, `2014`)
 ```
-
-
-
