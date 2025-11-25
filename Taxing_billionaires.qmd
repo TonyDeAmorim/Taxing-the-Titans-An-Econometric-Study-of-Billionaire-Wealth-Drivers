@@ -67,7 +67,7 @@ Country <-
 #| label: IMF GDP dataset
 # Converting the names of the countries from the IMF GDP/PPP dataset that are spelled differently the same way as the countries from the billionaires datset
 
-map <- c(
+map_IMF <- c(
   "Bahrain, Kingdom of" = "Bahrain",
   "China, People's Republic of" = "China",
   "Egypt, Arab Republic of" = "Egypt",
@@ -90,7 +90,7 @@ map <- c(
 
 #
 IMF$COUNTRY <- ifelse(
-  IMF$COUNTRY %in% names(map),
+  IMF$COUNTRY %in% names(map_IMF),
   map[IMF$COUNTRY],
   IMF$COUNTRY
 )
@@ -132,7 +132,7 @@ F <-
   FDI |>
   distinct(`Country Name`)
 
-map <- c(
+map_WB <- c(
   "Czechia" = "Czech Republic",
   "Egypt, Arab Rep." = "Egypt",
   "Hong Kong SAR, China" = "Hong Kong",
@@ -144,8 +144,8 @@ map <- c(
 )
 
 FDI$`Country Name` <- ifelse(
-  FDI$`Country Name` %in% names(map),
-  map[FDI$`Country Name`],
+  FDI$`Country Name` %in% names(map_WB),
+  map_WB[FDI$`Country Name`],
   FDI$`Country Name`
 )
 
@@ -155,4 +155,24 @@ FDI_reduit <-
   FDI |>
   filter(`Country Name` %in% liste_pays) |>
   select(`Country Name`, `1996`, `2000`, `2014`)
+
 ```
+
+
+```{r}
+
+Tax_revenue <- read_csv("Database_project/Tax_revenue_dataset.csv")
+
+Tax_revenue$`Country Name` <- ifelse(
+  Tax_revenue$`Country Name` %in% names(map_WB),
+  map_WB[Tax_revenue$`Country Name`],
+  Tax_revenue$`Country Name`
+)
+
+Tax_revenue_reduit <-
+  Tax_revenue |>
+  filter(`Country Name` %in% liste_pays) |> 
+  select(`Country Name`,`1996 [YR1996]`,`2000 [YR2000]`,`2014 [YR2014]`)
+
+```
+
