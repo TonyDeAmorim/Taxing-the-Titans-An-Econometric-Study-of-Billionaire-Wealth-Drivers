@@ -54,6 +54,7 @@ The datasets linked to macroeconomic series are always structured in the same wa
 #| label: Library imports
 #| message: false
 #| warning: false
+#| echo: false
 
 library(readxl) # To open the billionaires dataset
 library(tidyverse) # To clean, modify and analyze our data
@@ -65,6 +66,7 @@ library(stringr) # To clean the data
 #| label: Data imports
 #| message: false
 #| warning: false
+#| echo: false
 
 Billionaires <- read_delim("Database_project/Billionaires_dataset.csv",
   delim = ";", escape_double = FALSE, trim_ws = TRUE
