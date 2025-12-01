@@ -2,13 +2,31 @@
 title: "Taxing the Titans : An Econometric Study of Billionaire Wealth Drivers"
 author: "Tony De Amorim"
 format: html
+toc: true
 ---
 
 # Accesing the sources
 
-The project's repository is available [here](https://github.com/TonyDeAmorim/Taxing-the-Titans-An-Econometric-Study-of-Billionaire-Wealth-Drivers). 
+- The project's repository is available [here](https://github.com/TonyDeAmorim/Taxing-the-Titans-An-Econometric-Study-of-Billionaire-Wealth-Drivers). 
 
-Our core dataset is available for download directly through [this link](https://www.piie.com/publications/working-papers/origins-superrich-billionaire-characteristics-database). 
+- Our core dataset is available for download directly on the page of the article [The Origins of the Superrich: The Billionaire Characteristics Database](https://www.piie.com/publications/working-papers/origins-superrich-billionaire-characteristics-database). 
+
+All the World Bank's datasets used are listed here : 
+
+- The [Total population](https://data.worldbank.org/indicator/SP.POP.TOTL) dataset
+- The [Gross capital formation (% of GDP)](https://data.worldbank.org/indicator/NE.GDI.TOTL.ZS) dataset
+- The [Foreign direct investment, net inflows (% of GDP)](https://data.worldbank.org/indicator/BX.KLT.DINV.WD.GD.ZS) dataset
+- The [Tax revenue (% of GDP)](https://data.worldbank.org/indicator/GC.TAX.TOTL.GD.ZS) dataset
+
+To use it, simply follow the link and download it on a csv format. 
+
+We also use a dataset from the IMF accessible with the following instructions :
+
+- Go to the [IMF data explorer](https://data.imf.org/en/Data-Explorer)
+- Select the "World Economic Outlook (WEO)" dataset
+- Select the "Gross domestic product (GDP), Current prices, Purchasing power parity (PPP) international dollar, ICP benchmarks 2017-2021" indicator
+- Select "All" as a Time Period
+- Download "Data on this page" in a csv format  
 
 
 ```{r}
@@ -33,26 +51,34 @@ Billionaires <- read_delim("Database_project/Billionaires_dataset.csv",
 
 IMF <- read_csv("Database_project/IMF_GDP_PPP.csv")
 
-FDI <- read_csv("Database_project/FDI_WB.csv", skip = 3)
+FDI <- read_csv("Database_project/FDI_WB.csv",
+  skip = 3
+)
 
-Tax_revenue <- read_csv("Database_project/Tax_revenue_dataset.csv")
+Tax_revenue <- read_csv("Database_project/Tax_revenue.csv",
+  skip = 3
+)
 
-Capital_formation <- read_csv("Database_project/Capital_formation.csv")
+Capital_formation <- read_csv("Database_project/Capital_formation.csv",
+  skip = 3
+)
 
 Population <- read_csv("Database_project/Population.csv",
   skip = 3
 )
 ```
 
-# Description of the billionaires' dataset
+# Cleaning of the billionaires' dataset
 
 ```{r}
-#| label: Standardization of country names : billionaires' dataset
+#| label: Standardization of country names of the billionaires' dataset
 #| message: false
 #| warning: false
 
-# We here used AI to help us creating list of country names in order to have the same identification tool across all our data sets
-# We start by creating a list of the names of the countries in our core dataset : the billionaires' one
+# We here used AI to help us creating list of country names in order  
+# to have the same identification tool across all our data sets
+# We start by creating a list of the names of the countries  
+# in our core dataset : the billionaires' one
 
 # Creating a list of every country represented in the dataset
 Country <-
@@ -62,17 +88,18 @@ Country <-
 # Creating by hand, with the help of AI, a text list of those countries
 
 liste_pays <- c(
-  "Algeria", "Angola", "Argentina", "Australia", "Austria", "Bahrain", "Belgium",
-  "Bermuda", "Brazil", "Canada", "Chile", "China", "Colombia", "Cyprus",
-  "Czech Republic", "Denmark", "Ecuador", "Egypt", "Finland", "France", "Georgia",
-  "Germany", "Greece", "Guernsey", "Hong Kong", "India", "Indonesia", "Ireland",
-  "Israel", "Italy", "Japan", "Kazakhstan", "Kuwait", "Lebanon", "Liechtenstein",
-  "Lithuania", "Macau", "Malaysia", "Mexico", "Monaco", "Morocco", "Nepal",
-  "Netherlands", "New Zealand", "Nigeria", "Norway", "Oman", "Peru", "Philippines",
-  "Poland", "Portugal", "Romania", "Russia", "Saudi Arabia", "Singapore",
-  "South Africa", "South Korea", "Spain", "St. Kitts and Nevis",
-  "Swaziland", "Sweden", "Switzerland", "Taiwan", "Tanzania", "Thailand", "Turkey",
-  "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States",
+  "Algeria", "Angola", "Argentina", "Australia", "Austria", "Bahrain", 
+  "Belgium", "Bermuda", "Brazil", "Canada", "Chile", "China", "Colombia", 
+  "Cyprus", "Czech Republic", "Denmark", "Ecuador", "Egypt", "Finland", 
+  "France", "Georgia", "Germany", "Greece", "Guernsey", "Hong Kong", "India",
+  "Indonesia", "Ireland", "Israel", "Italy", "Japan", "Kazakhstan", "Kuwait",
+  "Lebanon", "Liechtenstein", "Lithuania", "Macau", "Malaysia", "Mexico", 
+  "Monaco", "Morocco", "Nepal", "Netherlands", "New Zealand", "Nigeria", 
+  "Norway", "Oman", "Peru", "Philippines", "Poland", "Portugal", "Romania", 
+  "Russia", "Saudi Arabia", "Singapore", "South Africa", "South Korea", 
+  "Spain", "St. Kitts and Nevis", "Swaziland", "Sweden", "Switzerland", 
+  "Taiwan", "Tanzania", "Thailand", "Turkey", "Uganda", "Ukraine", 
+  "United Arab Emirates", "United Kingdom", "United States",
   "Venezuela", "Vietnam"
 )
 ```
@@ -80,11 +107,13 @@ liste_pays <- c(
 # Standardization of the IMF dataset
 
 ```{r}
-#| label: Standardization of country names : FMI's dataset
+#| label: Standardization of country names of the FMI's dataset
 #| message: false
 #| warning: false
 
-# Converting the names of the countries from the IMF GDP/PPP dataset that are spelled differently the same way as the countries from the billionaires dataset by hand, with the help of AI
+# Converting the names of the countries from the IMF GDP/PPP dataset that 
+# are spelled differently the same way as the countries from 
+# the billionaires dataset by hand, with the help of AI
 
 map_IMF <- c(
   "Bahrain, Kingdom of" = "Bahrain",
@@ -114,9 +143,10 @@ IMF <-
 
 IMF <-
   IMF |>
-  filter(COUNTRY %in% liste_pays)
+  filter(COUNTRY %in% liste_pays) 
 
-# Creating a sub dataset for futur studies with only the years also present in the core dataset
+# Creating a sub dataset for futur studies with only the years 
+# also present in the core dataset
 
 IMF_reduced <-
   IMF |>
@@ -128,17 +158,19 @@ After this standardization we realised we had to remove Monaco and Guernsey from
 # Standardization of every World Bank datasets
 
 ```{r}
-#| label: Standardization of country names : World Bank's datasets
+#| label: Standardization of country names of the World Bank's datasets
 #| message: false
 #| warning: false
 
-# Using the FDI dataset as a blueprint of standard names of countries in all World Bank's datasets
+# Using the FDI dataset as a blueprint of standard names of countries 
+# in all World Bank's datasets
 
 WB_names <-
   FDI |>
   distinct(`Country Name`)
 
-# Creating a map object used later to convert the names from World Bank's datasets into the format of our core dataset by hand, with the help of AI
+# Creating a map object used later to convert the names from World Bank's 
+# datasets into the format of our core dataset by hand, with the help of AI
 
 map_WB <- c(
   "Czechia" = "Czech Republic",
@@ -169,13 +201,16 @@ FDI <-
 
 FDI <-
   FDI |>
-  filter(`Country Name` %in% liste_pays)
+  filter(`Country Name` %in% liste_pays) |> 
+  rename(COUNTRY = `Country Name`)
 
-# Creating a sub dataset for futur studies with only the years also present in the core dataset
+# Creating a sub dataset for future studies with only the years 
+# also present in the core dataset
 
 FDI_reduced <-
   FDI |>
-  select(`Country Name`, `1996`, `2000`, `2014`)
+  select(COUNTRY, `1996`, `2000`, `2014`)
+
 ```
 
 
@@ -196,13 +231,16 @@ Tax_revenue <-
 
 Tax_revenue <-
   Tax_revenue |>
-  filter(`Country Name` %in% liste_pays)
+  filter(`Country Name` %in% liste_pays)|> 
+  rename(COUNTRY = `Country Name`)
 
-# Creating a sub dataset for futur studies with only the years also present in the core dataset
+# Creating a sub dataset for future studies with only the years 
+# also present in the core dataset
 
 Tax_revenue_reduced <-
   Tax_revenue |>
-  select(`Country Name`, `1996 [YR1996]`, `2000 [YR2000]`, `2014 [YR2014]`)
+  select(COUNTRY, `1996`, `2000`, `2014`)
+
 ```
 
 ## Capital formation dataset
@@ -222,13 +260,16 @@ Capital_formation <-
 
 Capital_formation <-
   Capital_formation |>
-  filter(`Country Name` %in% liste_pays)
+  filter(`Country Name` %in% liste_pays)|> 
+  rename(COUNTRY = `Country Name`)
 
-# Creating a sub dataset for futur studies with only the years also present in the core dataset
+# Creating a sub dataset for future studies with only the years 
+# also present in the core dataset
 
 Capital_formation_reduced <-
   Capital_formation |>
-  select(`Country Name`, `1996 [YR1996]`, `2000 [YR2000]`, `2014 [YR2014]`)
+  select(COUNTRY, `1996`, `2000`, `2014`)
+
 ```
 
 ## Population dataset
@@ -248,11 +289,14 @@ Population <-
 
 Population <-
   Population |>
-  filter(`Country Name` %in% liste_pays)
+  filter(`Country Name` %in% liste_pays)|> 
+  rename(COUNTRY = `Country Name`)
 
-# Creating a sub dataset for futur studies with only the years also present in the core dataset
+# Creating a sub dataset for future studies with only the years 
+# also present in the core dataset
 
 Population_reduced <-
   Population |>
-  select(`Country Name`, `1996`, `2000`, `2014`)
+  select(COUNTRY, `1996`, `2000`, `2014`)
+
 ```
