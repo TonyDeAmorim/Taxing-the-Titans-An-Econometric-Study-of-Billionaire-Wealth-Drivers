@@ -7,27 +7,26 @@ toc: true
 
 # Accesing the sources
 
-- The project's repository is available [here](https://github.com/TonyDeAmorim/Taxing-the-Titans-An-Econometric-Study-of-Billionaire-Wealth-Drivers). 
+-   The project's repository is available [here](https://github.com/TonyDeAmorim/Taxing-the-Titans-An-Econometric-Study-of-Billionaire-Wealth-Drivers).
 
-- Our core dataset is available for download directly on the page of the article [The Origins of the Superrich: The Billionaire Characteristics Database](https://www.piie.com/publications/working-papers/origins-superrich-billionaire-characteristics-database). 
+-   Our core dataset is available for download directly on the page of the article [The Origins of the Superrich: The Billionaire Characteristics Database](https://www.piie.com/publications/working-papers/origins-superrich-billionaire-characteristics-database).
 
-All the World Bank's datasets used are listed here : 
+All the World Bank's datasets used are listed here :
 
-- The [Total population](https://data.worldbank.org/indicator/SP.POP.TOTL) dataset
-- The [Gross capital formation (% of GDP)](https://data.worldbank.org/indicator/NE.GDI.TOTL.ZS) dataset
-- The [Foreign direct investment, net inflows (% of GDP)](https://data.worldbank.org/indicator/BX.KLT.DINV.WD.GD.ZS) dataset
-- The [Tax revenue (% of GDP)](https://data.worldbank.org/indicator/GC.TAX.TOTL.GD.ZS) dataset
+-   The [Total population](https://data.worldbank.org/indicator/SP.POP.TOTL) dataset
+-   The [Gross capital formation (% of GDP)](https://data.worldbank.org/indicator/NE.GDI.TOTL.ZS) dataset
+-   The [Foreign direct investment, net inflows (% of GDP)](https://data.worldbank.org/indicator/BX.KLT.DINV.WD.GD.ZS) dataset
+-   The [Tax revenue (% of GDP)](https://data.worldbank.org/indicator/GC.TAX.TOTL.GD.ZS) dataset
 
-To use it, simply follow the link and download it on a csv format. 
+To use it, simply follow the link and download it on a csv format.
 
 We also use a dataset from the IMF accessible with the following instructions :
 
-- Go to the [IMF data explorer](https://data.imf.org/en/Data-Explorer)
-- Select the "World Economic Outlook (WEO)" dataset
-- Select the "Gross domestic product (GDP), Current prices, Purchasing power parity (PPP) international dollar, ICP benchmarks 2017-2021" indicator
-- Select "All" as a Time Period
-- Download "Data on this page" in a csv format  
-
+-   Go to the [IMF data explorer](https://data.imf.org/en/Data-Explorer)
+-   Select the "World Economic Outlook (WEO)" dataset
+-   Select the "Gross domestic product (GDP), Current prices, Purchasing power parity (PPP) international dollar, ICP benchmarks 2017-2021" indicator
+-   Select "All" as a Time Period
+-   Download "Data on this page" in a csv format
 
 ```{r}
 #| label: Library imports
@@ -68,6 +67,102 @@ Population <- read_csv("Database_project/Population.csv",
 )
 ```
 
+## Data description
+
+::: panel-tabset
+### Billionaires dataset
+
+|  |  |
+|------------------------------------|------------------------------------|
+| Number of observations | `r nrow(Billionaires)` |
+| Number of variables | `r ncol(Billionaires)` |
+| Number of numerical variables | `r sum(sapply(Billionaires, is.numeric))` |
+| Number of character variables | `r sum(sapply(Billionaires, is.character))` |
+| Number of missing values | `r sum(is.na(Billionaires))` |
+| Source | Peterson Institute for International Economics |
+| Dataset name | The Origins of the Superrich : The Billionaire Characteristics Database |
+
+### IMF dataset
+
+|  |  |
+|------------------------------------|------------------------------------|
+| Number of observations | `r nrow(IMF)` |
+| Number of variables | `r ncol(IMF)` |
+| Number of numerical variables | `r sum(sapply(IMF, is.numeric))` |
+| Number of character variables | `r sum(sapply(IMF, is.character))` |
+| Number of factor variables | `r sum(sapply(IMF, is.factor))` |
+| Number of logical variables | `r sum(sapply(IMF, is.logical))` |
+| Number of date variables | `r sum(sapply(IMF, inherits, what = "Date"))` |
+| Number of missing values | `r sum(is.na(IMF))` |
+| Source | IMF data explorer |
+| Dataset name | GDP, Current prices, PPP international dollar |
+| Series code | PPPGDP.A |
+
+### FDI dataset
+
+|  |  |
+|------------------------------------|------------------------------------|
+| Number of observations | `r nrow(FDI)` |
+| Number of variables | `r ncol(FDI)` |
+| Number of numerical variables | `r sum(sapply(FDI, is.numeric))` |
+| Number of character variables | `r sum(sapply(FDI, is.character))` |
+| Number of factor variables | `r sum(sapply(FDI, is.factor))` |
+| Number of logical variables | `r sum(sapply(FDI, is.logical))` |
+| Number of date variables | `r sum(sapply(FDI, inherits, what = "Date"))` |
+| Number of missing values | `r sum(is.na(FDI))` |
+| Source | World Bank data explorer |
+| Dataset name | Foreign direct investment, net inflows (% of GDP) |
+| Series code | BX.KLT.DINV.WD.GD.ZS |
+
+### Population dataset
+
+|  |  |
+|------------------------------------|------------------------------------|
+| Number of observations | `r nrow(Population)` |
+| Number of variables | `r ncol(Population)` |
+| Number of numerical variables | `r sum(sapply(Population, is.numeric))` |
+| Number of character variables | `r sum(sapply(Population, is.character))` |
+| Number of factor variables | `r sum(sapply(Population, is.factor))` |
+| Number of logical variables | `r sum(sapply(Population, is.logical))` |
+| Number of date variables | `r sum(sapply(Population, inherits, what = "Date"))` |
+| Number of missing values | `r sum(is.na(Population))` |
+| Source | World Bank data explorer |
+| Dataset name | Population, total |
+| Series code | SP.POP.TOTL |
+
+### Tax revenue dataset
+
+|  |  |
+|------------------------------------|------------------------------------|
+| Number of observations | `r nrow(Tax_revenue)` |
+| Number of variables | `r ncol(Tax_revenue)` |
+| Number of numerical variables | `r sum(sapply(Tax_revenue, is.numeric))` |
+| Number of character variables | `r sum(sapply(Tax_revenue, is.character))` |
+| Number of factor variables | `r sum(sapply(Tax_revenue, is.factor))` |
+| Number of logical variables | `r sum(sapply(Tax_revenue, is.logical))` |
+| Number of date variables | `r sum(sapply(Tax_revenue, inherits, what = "Date"))` |
+| Number of missing values | `r sum(is.na(Tax_revenue))` |
+| Source | World Bank data explorer |
+| Dataset name | Tax revenue (% of GDP) |
+| Series code | GC.TAX.TOTL.GD.ZS |
+
+### Capital formation dataset
+
+|  |  |
+|------------------------------------|------------------------------------|
+| Number of observations | `r nrow(Capital_formation)` |
+| Number of variables | `r ncol(Capital_formation)` |
+| Number of numerical variables | `r sum(sapply(Capital_formation, is.numeric))` |
+| Number of character variables | `r sum(sapply(Capital_formation, is.character))` |
+| Number of factor variables | `r sum(sapply(Capital_formation, is.factor))` |
+| Number of logical variables | `r sum(sapply(Capital_formation, is.logical))` |
+| Number of date variables | `r sum(sapply(Capital_formation, inherits, what = "Date"))` |
+| Number of missing values | `r sum(is.na(Capital_formation))` |
+| Source | World Bank data explorer |
+| Dataset name | Gross capital formation (% of GDP) |
+| Series code | NE.GDI.TOTL.ZS |
+:::
+
 # Cleaning of the billionaires' dataset
 
 ```{r}
@@ -107,7 +202,7 @@ liste_pays <- c(
 # Standardization of the IMF dataset
 
 ```{r}
-#| label: Standardization of country names of the FMI's dataset
+#| label: Standardization of country names of the IMF's dataset
 #| message: false
 #| warning: false
 
@@ -212,7 +307,6 @@ FDI_reduced <-
   select(COUNTRY, `1996`, `2000`, `2014`)
 
 ```
-
 
 ## Tax revenue dataset
 
