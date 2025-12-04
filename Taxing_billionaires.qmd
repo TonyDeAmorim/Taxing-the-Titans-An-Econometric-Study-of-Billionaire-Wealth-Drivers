@@ -1,6 +1,6 @@
 ---
 title: "Taxing the Titans : An Econometric Study of Billionaire Wealth Drivers"
-author: "Tony De Amorim"
+author: "Tony De Amorim, Philipine Poirier"
 format: html
 toc: true
 toc-depth: 4
@@ -21,7 +21,10 @@ All the World Bank's datasets used are listed here :
 
 To use it, simply follow the link and download it on a csv format.
 
-We also use a dataset from the IMF accessible with the following instructions :
+We also use a dataset from the IMF : 
+- The [GDP in current prices (PPP), expressed in international dollars](https://data.imf.org/en/Data-Explorer?datasetUrn=IMF.RES:WEO(9.0.0)&INDICATOR=PPPGDP) : 
+
+It is accessible with the following instructions :
 
 -   Go to the [IMF data explorer](https://data.imf.org/en/Data-Explorer)
 -   Select the "World Economic Outlook (WEO)" dataset
