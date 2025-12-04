@@ -105,6 +105,7 @@ The following tables are made prior to any data transformation to give a proper 
 | Number of variables | `r ncol(Billionaires)` |
 | Number of numerical variables | `r sum(sapply(Billionaires, is.numeric))` |
 | Number of character variables | `r sum(sapply(Billionaires, is.character))` |
+| Number of missing values | `r paste0(sum(is.na(Billionaires)), " (", round(mean(is.na(Billionaires)) * 100, 1), "%)")` |
 | Source | Peterson Institute for International Economics |
 | Dataset name | The Origins of the Superrich : The Billionaire Characteristics Database |
 
@@ -117,6 +118,7 @@ The following tables are made prior to any data transformation to give a proper 
 | Number of numerical variables | `r sum(sapply(IMF, is.numeric))` |
 | Number of character variables | `r sum(sapply(IMF, is.character))` |
 | Number of logical variables | `r sum(sapply(IMF, is.logical))` |
+| Number of missing values | `r paste0(sum(is.na(IMF)), " (", round(mean(is.na(IMF)) * 100, 1), "%)")` |
 | Source | IMF data explorer |
 | Dataset name | GDP, Current prices, PPP international dollar |
 | Series code | PPPGDP.A |
@@ -130,6 +132,7 @@ The following tables are made prior to any data transformation to give a proper 
 | Number of numerical variables | `r sum(sapply(FDI, is.numeric))` |
 | Number of character variables | `r sum(sapply(FDI, is.character))` |
 | Number of logical variables | `r sum(sapply(FDI, is.logical))` |
+| Number of missing values | `r paste0(sum(is.na(FDI)), " (", round(mean(is.na(FDI)) * 100, 1), "%)")` |
 | Source | World Bank data explorer |
 | Dataset name | Foreign direct investment, net inflows (% of GDP) |
 | Series code | BX.KLT.DINV.WD.GD.ZS |
@@ -143,6 +146,7 @@ The following tables are made prior to any data transformation to give a proper 
 | Number of numerical variables | `r sum(sapply(Population, is.numeric))` |
 | Number of character variables | `r sum(sapply(Population, is.character))` |
 | Number of logical variables | `r sum(sapply(Population, is.logical))` |
+| Number of missing values | `r paste0(sum(is.na(Population)), " (", round(mean(is.na(Population)) * 100, 1), "%)")` |
 | Source | World Bank data explorer |
 | Dataset name | Population, total |
 | Series code | SP.POP.TOTL |
@@ -156,6 +160,7 @@ The following tables are made prior to any data transformation to give a proper 
 | Number of numerical variables | `r sum(sapply(Tax_revenue, is.numeric))` |
 | Number of character variables | `r sum(sapply(Tax_revenue, is.character))` |
 | Number of logical variables | `r sum(sapply(Tax_revenue, is.logical))` |
+| Number of missing values | `r paste0(sum(is.na(Tax_revenue)), " (", round(mean(is.na(Tax_revenue)) * 100, 1), "%)")` |
 | Source | World Bank data explorer |
 | Dataset name | Tax revenue (% of GDP) |
 | Series code | GC.TAX.TOTL.GD.ZS |
@@ -169,6 +174,7 @@ The following tables are made prior to any data transformation to give a proper 
 | Number of numerical variables | `r sum(sapply(Capital_formation, is.numeric))` |
 | Number of character variables | `r sum(sapply(Capital_formation, is.character))` |
 | Number of logical variables | `r sum(sapply(Capital_formation, is.logical))` |
+| Number of missing values | `r paste0(sum(is.na(Capital_formation)), " (", round(mean(is.na(Capital_formation)) * 100, 1), "%)")` |
 | Source | World Bank data explorer |
 | Dataset name | Gross capital formation (% of GDP) |
 | Series code | NE.GDI.TOTL.ZS |
