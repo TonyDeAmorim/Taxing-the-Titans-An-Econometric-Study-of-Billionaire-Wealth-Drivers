@@ -16,7 +16,7 @@ To complete our study and have a better understanding of the different trends in
 - [Gross capital formation (% of GDP)](https://data.worldbank.org/indicator/NE.GDI.TOTL.ZS) : This indicator measures the share of resources devoted to investment in physical capital (infrastructure, machinery, buildings, etc.). A high level of capital formation signals dynamic investment and growth potential, creating more opportunities for large firms to expand and for individuals to accumulate very large fortunes, including billionaire-level wealth.
 - [Total population](https://data.worldbank.org/indicator/SP.POP.TOTL) Population size captures the potential size of the internal market and the scale of demand for goods and services. Larger populations can support larger firms and more diversified economic activities, increasing the probability that extremely large fortunes emerge. In addition, we use population to normalise our results (for example, by looking at the number or total wealth of billionaires per inhabitant), which allows for more meaningful comparisons across countries of very different sizes.
 
-Due to a data accesibility constraint we also used a dataset from the IMF accessible with the following instructions :
+Due to a data accessibility constraint we also used a dataset from the IMF accessible with the following instructions :
 
 - Go to the [IMF data explorer](https://data.imf.org/en/Data-Explorer)
 - Select the "World Economic Outlook (WEO)" dataset
