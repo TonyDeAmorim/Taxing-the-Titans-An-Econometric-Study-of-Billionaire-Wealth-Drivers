@@ -226,7 +226,7 @@ Billionaires_wide <-
   mutate(year = as.character(year)) |>
   pivot_wider(
     id_cols = c(
-      name, citizenship, countrycode,
+      name, COUNTRY, countrycode,
       selfmade, typeofwealth, gender,
       industry, IndustryAggregates, region, north,
       politicalconnection, founder, generationofinheritance,
