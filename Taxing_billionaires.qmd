@@ -6,6 +6,21 @@ toc: true
 toc-depth: 4
 ---
 
+## How does taxing billionaire wealth affect economic performance, inequality, and national competitiveness in an open economy?
+
+### A Burning Policy Debate
+
+Billionaire taxation has emerged as one of the most polarizing economic questions of our time. In October 2024, French economist Gabriel Zucman presented to the G20 in Rio a proposal for a minimum 2% tax on fortunes exceeding one billion dollars. Supported by Brazil, France, Spain, and South Africa, this measure could generate $200-250 billion annually worldwide. As wealth inequality reaches unprecedented levels and billionaires' fortunes have grown exponentially since 2008, the Zucman tax appears as a potentially transformative solution to finance climate transition and public services.
+Yet the debate divides deeply. Opponents, including several G7 finance ministers, fear massive capital flight toward more lenient jurisdictions and weakened economic attractiveness. France's experience with its wealth tax (ISF), abolished in 2017 after estimated departures of wealthy taxpayers, fuels these concerns. Policymakers navigate uncertain terrain between fiscal justice imperatives and tax base erosion risks.
+
+### The French Case: Public Debt and Fiscal Equity
+France perfectly illustrates this tension. With public debt exceeding 110% of GDP in 2024, the government desperately seeks new revenue sources. France counts approximately 40 billionaires whose combined wealth exceeds €500 billion. A 2% tax could theoretically yield €10 billion annually, equivalent to 0.4% of French GDP.
+However, this arithmetic overlooks complex realities. France has already experienced fiscal exodus of figures toward London, Switzerland, or the Emirates. The public debt debate becomes inseparable from fiscal equity: is it acceptable that ultra-wealthy contribute proportionally less than middle classes while public services deteriorate and labor income faces high taxation?
+
+### A Global Social Justice Question
+Beyond national budgetary considerations, billionaire taxation raises fundamental questions about democratic legitimacy and social cohesion. Wealth inequality has reached levels unseen since the early twentieth century. The top 1% now holds nearly 45% of global wealth, while the poorest half owns barely 1%.
+This extreme concentration raises issues of economic power, political influence, and our collective capacity to finance essential public goods—education, health, infrastructure, research—that constitute the foundations of shared prosperity. The Zucman tax thus presents not merely a fiscal tool but a test of our ability to regulate twenty-first century capitalism.
+
 ## Accesing the sources
 
 -   The project's repository is available [here](https://github.com/TonyDeAmorim/Taxing-the-Titans-An-Econometric-Study-of-Billionaire-Wealth-Drivers).
@@ -200,7 +215,7 @@ Billionaires <-
   Billionaires |>
   select(c(1:22)) |> # removing useless variables
   mutate(name = str_remove_all(name, useless)) |>  # standardization of names
-  rename(COUNTRY = "citizenship")
+  rename(citizenship = COUNTRY)
 
 
 # Creating three sub-datasets for specific use
@@ -226,7 +241,7 @@ Billionaires_wide <-
   mutate(year = as.character(year)) |>
   pivot_wider(
     id_cols = c(
-      name, COUNTRY, countrycode,
+      name, citizenship, countrycode,
       selfmade, typeofwealth, gender,
       industry, IndustryAggregates, region, north,
       politicalconnection, founder, generationofinheritance,
@@ -237,7 +252,6 @@ Billionaires_wide <-
     values_from = c(rank, networthusbillion, age),
     names_sep = "_"
   )
-
 
 ```
 
