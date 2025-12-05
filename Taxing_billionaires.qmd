@@ -38,7 +38,7 @@ For this project we decided to center our work on a dataset made by The Peterson
 
 - FDI : This variable reflects a country’s ability to attract foreign capital and international firms. It serves as a proxy for economic openness, institutional quality and fiscal attractiveness, all of which can influence where billionaires choose to locate their activities, structure their assets, or establish residence.
 - Gross capital formation (% of GDP) : This indicator measures the share of resources devoted to investment in physical capital (infrastructure, machinery, buildings, etc.). A high level of capital formation signals dynamic investment and growth potential, creating more opportunities for large firms to expand and for individuals to accumulate very large fortunes, including billionaire-level wealth.
-- Total population : Population size captures the potential size of the internal market and the scale of demand for goods and services. Larger populations can support larger firms and more diversified economic activities, increasing the probability that extremely large fortunes emerge. In addition, we use population to normalise our results (for example, by looking at the number or total wealth of billionaires per inhabitant), which allows for more meaningful comparisons across countries of very different sizes.
+- Total population : Population size captures the potential size of the internal market and the scale of demand for goods and services. Larger populations can support larger firms and more diversified economic activities, increasing the probability that extremely large fortunes emerge. In addition, we use population to normalize our results (for example, by looking at the number or total wealth of billionaires per inhabitant), which allows for more meaningful comparisons across countries of very different sizes.
 -  GDP in PPP : This variable captures the overall economic performance and living standards of each country, adjusted for price level differences. Since wealth creation and the emergence of billionaires are closely linked to the size, productivity and income level of national economies, PPP-adjusted GDP is a natural control variable to account for cross-country differences in economic capacity.
 
 ## Most important variables
@@ -57,17 +57,20 @@ The datasets linked to macroeconomic series are always structured in the same wa
 #| label: Library imports
 #| message: false
 #| warning: false
+#| echo: false
 
 library(readxl) # To open the billionaires dataset
 library(tidyverse) # To clean, modify and analyze our data
 library(ggplot2) # For graphical representation
 library(stringr) # To clean the data
+library(dplyr)
 ```
 
 ```{r}
 #| label: Data imports
 #| message: false
 #| warning: false
+#| echo: false
 
 Billionaires <- read_delim("Database_project/Billionaires_dataset.csv",
   delim = ";", escape_double = FALSE, trim_ws = TRUE
@@ -105,7 +108,7 @@ The following tables are made prior to any data transformation to give a proper 
 | Number of variables | `r ncol(Billionaires)` |
 | Number of numerical variables | `r sum(sapply(Billionaires, is.numeric))` |
 | Number of character variables | `r sum(sapply(Billionaires, is.character))` |
-| Number of missing values | `r sum(is.na(Billionaires))` |
+| Number of missing values | `r paste0(sum(is.na(Billionaires)), " (", round(mean(is.na(Billionaires)) * 100, 1), "%)")` |
 | Source | Peterson Institute for International Economics |
 | Dataset name | The Origins of the Superrich : The Billionaire Characteristics Database |
 
@@ -118,7 +121,7 @@ The following tables are made prior to any data transformation to give a proper 
 | Number of numerical variables | `r sum(sapply(IMF, is.numeric))` |
 | Number of character variables | `r sum(sapply(IMF, is.character))` |
 | Number of logical variables | `r sum(sapply(IMF, is.logical))` |
-| Number of missing values | `r sum(is.na(IMF))` |
+| Number of missing values | `r paste0(sum(is.na(IMF)), " (", round(mean(is.na(IMF)) * 100, 1), "%)")` |
 | Source | IMF data explorer |
 | Dataset name | GDP, Current prices, PPP international dollar |
 | Series code | PPPGDP.A |
@@ -132,7 +135,7 @@ The following tables are made prior to any data transformation to give a proper 
 | Number of numerical variables | `r sum(sapply(FDI, is.numeric))` |
 | Number of character variables | `r sum(sapply(FDI, is.character))` |
 | Number of logical variables | `r sum(sapply(FDI, is.logical))` |
-| Number of missing values | `r sum(is.na(FDI))` |
+| Number of missing values | `r paste0(sum(is.na(FDI)), " (", round(mean(is.na(FDI)) * 100, 1), "%)")` |
 | Source | World Bank data explorer |
 | Dataset name | Foreign direct investment, net inflows (% of GDP) |
 | Series code | BX.KLT.DINV.WD.GD.ZS |
@@ -146,7 +149,7 @@ The following tables are made prior to any data transformation to give a proper 
 | Number of numerical variables | `r sum(sapply(Population, is.numeric))` |
 | Number of character variables | `r sum(sapply(Population, is.character))` |
 | Number of logical variables | `r sum(sapply(Population, is.logical))` |
-| Number of missing values | `r sum(is.na(Population))` |
+| Number of missing values | `r paste0(sum(is.na(Population)), " (", round(mean(is.na(Population)) * 100, 1), "%)")` |
 | Source | World Bank data explorer |
 | Dataset name | Population, total |
 | Series code | SP.POP.TOTL |
@@ -160,7 +163,7 @@ The following tables are made prior to any data transformation to give a proper 
 | Number of numerical variables | `r sum(sapply(Tax_revenue, is.numeric))` |
 | Number of character variables | `r sum(sapply(Tax_revenue, is.character))` |
 | Number of logical variables | `r sum(sapply(Tax_revenue, is.logical))` |
-| Number of missing values | `r sum(is.na(Tax_revenue))` |
+| Number of missing values | `r paste0(sum(is.na(Tax_revenue)), " (", round(mean(is.na(Tax_revenue)) * 100, 1), "%)")` |
 | Source | World Bank data explorer |
 | Dataset name | Tax revenue (% of GDP) |
 | Series code | GC.TAX.TOTL.GD.ZS |
@@ -174,13 +177,70 @@ The following tables are made prior to any data transformation to give a proper 
 | Number of numerical variables | `r sum(sapply(Capital_formation, is.numeric))` |
 | Number of character variables | `r sum(sapply(Capital_formation, is.character))` |
 | Number of logical variables | `r sum(sapply(Capital_formation, is.logical))` |
-| Number of missing values | `r sum(is.na(Capital_formation))` |
+| Number of missing values | `r paste0(sum(is.na(Capital_formation)), " (", round(mean(is.na(Capital_formation)) * 100, 1), "%)")` |
 | Source | World Bank data explorer |
 | Dataset name | Gross capital formation (% of GDP) |
 | Series code | NE.GDI.TOTL.ZS |
 :::
 
 ## Cleaning of the billionaires' dataset
+
+```{r}
+#| label: Billionaires cleaning
+#| message: false
+#| warning: false
+
+# Creation of a list of characters potentially present in the names
+# of billionaires, which would prevent matching years for the same person
+# (difference in names for a single individual identified at different times)
+
+useless <- ",;.-()"
+
+Billionaires <-
+  Billionaires |>
+  select(c(1:22)) |> # removing useless variables
+  mutate(name = str_remove_all(name, useless)) |>  # standardization of names
+  rename(COUNTRY = "citizenship")
+
+
+# Creating three sub-datasets for specific use
+
+Billionaires_1996 <- 
+  Billionaires |> 
+  filter(year == "1996")
+
+Billionaires_2001 <- 
+  Billionaires |> 
+  filter(year == "2001")
+
+Billionaires_2014 <- 
+  Billionaires |> 
+  filter(year == "2014")
+
+
+# Pivoting our dataset to have only one line by billionaires, using a 
+# selection of variables evolving over years to be pivoted
+
+Billionaires_wide <- 
+  Billionaires |>
+  mutate(year = as.character(year)) |>
+  pivot_wider(
+    id_cols = c(
+      name, citizenship, countrycode,
+      selfmade, typeofwealth, gender,
+      industry, IndustryAggregates, region, north,
+      politicalconnection, founder, generationofinheritance,
+      sector, company, relationshiptocompany,
+      foundingdate, companytype
+    ),
+    names_from = year,
+    values_from = c(rank, networthusbillion, age),
+    names_sep = "_"
+  )
+
+
+```
+
 
 ## Standardzation of the macro variables datasets
 
@@ -189,9 +249,9 @@ The following tables are made prior to any data transformation to give a proper 
 #| message: false
 #| warning: false
 
-# We here used AI to help us creating list of country names in order  
+# We here used AI to help us creating list of country names in order
 # to have the same identification tool across all our data sets
-# We start by creating a list of the names of the countries  
+# We start by creating a list of the names of the countries
 # in our core dataset : the billionaires' one
 
 # Creating a list of every country represented in the dataset
@@ -202,17 +262,17 @@ Country <-
 # Creating by hand, with the help of AI, a text list of those countries
 
 liste_pays <- c(
-  "Algeria", "Angola", "Argentina", "Australia", "Austria", "Bahrain", 
-  "Belgium", "Bermuda", "Brazil", "Canada", "Chile", "China", "Colombia", 
-  "Cyprus", "Czech Republic", "Denmark", "Ecuador", "Egypt", "Finland", 
+  "Algeria", "Angola", "Argentina", "Australia", "Austria", "Bahrain",
+  "Belgium", "Bermuda", "Brazil", "Canada", "Chile", "China", "Colombia",
+  "Cyprus", "Czech Republic", "Denmark", "Ecuador", "Egypt", "Finland",
   "France", "Georgia", "Germany", "Greece", "Guernsey", "Hong Kong", "India",
   "Indonesia", "Ireland", "Israel", "Italy", "Japan", "Kazakhstan", "Kuwait",
-  "Lebanon", "Liechtenstein", "Lithuania", "Macau", "Malaysia", "Mexico", 
-  "Monaco", "Morocco", "Nepal", "Netherlands", "New Zealand", "Nigeria", 
-  "Norway", "Oman", "Peru", "Philippines", "Poland", "Portugal", "Romania", 
-  "Russia", "Saudi Arabia", "Singapore", "South Africa", "South Korea", 
-  "Spain", "St. Kitts and Nevis", "Swaziland", "Sweden", "Switzerland", 
-  "Taiwan", "Tanzania", "Thailand", "Turkey", "Uganda", "Ukraine", 
+  "Lebanon", "Liechtenstein", "Lithuania", "Macau", "Malaysia", "Mexico",
+  "Monaco", "Morocco", "Nepal", "Netherlands", "New Zealand", "Nigeria",
+  "Norway", "Oman", "Peru", "Philippines", "Poland", "Portugal", "Romania",
+  "Russia", "Saudi Arabia", "Singapore", "South Africa", "South Korea",
+  "Spain", "St. Kitts and Nevis", "Swaziland", "Sweden", "Switzerland",
+  "Taiwan", "Tanzania", "Thailand", "Turkey", "Uganda", "Ukraine",
   "United Arab Emirates", "United Kingdom", "United States",
   "Venezuela", "Vietnam"
 )
@@ -225,8 +285,8 @@ liste_pays <- c(
 #| message: false
 #| warning: false
 
-# Converting the names of the countries from the IMF GDP/PPP dataset that 
-# are spelled differently the same way as the countries from 
+# Converting the names of the countries from the IMF GDP/PPP dataset that
+# are spelled differently the same way as the countries from
 # the billionaires dataset by hand, with the help of AI
 
 map_IMF <- c(
@@ -257,9 +317,9 @@ IMF <-
 
 IMF <-
   IMF |>
-  filter(COUNTRY %in% liste_pays) 
+  filter(COUNTRY %in% liste_pays)
 
-# Creating a sub dataset for futur studies with only the years 
+# Creating a sub dataset for futur studies with only the years
 # also present in the core dataset
 
 IMF_reduced <-
@@ -276,14 +336,14 @@ After this standardization we realised we had to remove Monaco and Guernsey from
 #| message: false
 #| warning: false
 
-# Using the FDI dataset as a blueprint of standard names of countries 
+# Using the FDI dataset as a blueprint of standard names of countries
 # in all World Bank's datasets
 
 WB_names <-
   FDI |>
   distinct(`Country Name`)
 
-# Creating a map object used later to convert the names from World Bank's 
+# Creating a map object used later to convert the names from World Bank's
 # datasets into the format of our core dataset by hand, with the help of AI
 
 map_WB <- c(
@@ -315,16 +375,15 @@ FDI <-
 
 FDI <-
   FDI |>
-  filter(`Country Name` %in% liste_pays) |> 
+  filter(`Country Name` %in% liste_pays) |>
   rename(COUNTRY = `Country Name`)
 
-# Creating a sub dataset for future studies with only the years 
+# Creating a sub dataset for future studies with only the years
 # also present in the core dataset
 
 FDI_reduced <-
   FDI |>
   select(COUNTRY, `1996`, `2000`, `2014`)
-
 ```
 
 #### Tax revenue dataset
@@ -334,7 +393,7 @@ FDI_reduced <-
 #| message: false
 #| warning: false
 
-# Using the map object creatd previously to standardize country names
+# Using the map object created previously to standardize country names
 
 Tax_revenue <-
   Tax_revenue |>
@@ -344,16 +403,15 @@ Tax_revenue <-
 
 Tax_revenue <-
   Tax_revenue |>
-  filter(`Country Name` %in% liste_pays)|> 
+  filter(`Country Name` %in% liste_pays) |>
   rename(COUNTRY = `Country Name`)
 
-# Creating a sub dataset for future studies with only the years 
+# Creating a sub dataset for future studies with only the years
 # also present in the core dataset
 
 Tax_revenue_reduced <-
   Tax_revenue |>
   select(COUNTRY, `1996`, `2000`, `2014`)
-
 ```
 
 #### Capital formation dataset
@@ -373,16 +431,15 @@ Capital_formation <-
 
 Capital_formation <-
   Capital_formation |>
-  filter(`Country Name` %in% liste_pays)|> 
+  filter(`Country Name` %in% liste_pays) |>
   rename(COUNTRY = `Country Name`)
 
-# Creating a sub dataset for future studies with only the years 
+# Creating a sub dataset for future studies with only the years
 # also present in the core dataset
 
 Capital_formation_reduced <-
   Capital_formation |>
   select(COUNTRY, `1996`, `2000`, `2014`)
-
 ```
 
 #### Population dataset
@@ -402,14 +459,13 @@ Population <-
 
 Population <-
   Population |>
-  filter(`Country Name` %in% liste_pays)|> 
+  filter(`Country Name` %in% liste_pays) |>
   rename(COUNTRY = `Country Name`)
 
-# Creating a sub dataset for future studies with only the years 
+# Creating a sub dataset for future studies with only the years
 # also present in the core dataset
 
 Population_reduced <-
   Population |>
   select(COUNTRY, `1996`, `2000`, `2014`)
-
 ```
