@@ -215,7 +215,7 @@ Billionaires <-
   Billionaires |>
   select(c(1:22)) |> # removing useless variables
   mutate(name = str_remove_all(name, useless)) |>  # standardization of names
-  rename(citizenship = COUNTRY)
+  rename( COUNTRY = citizenship)
 
 
 # Creating three sub-datasets for specific use
@@ -241,7 +241,7 @@ Billionaires_wide <-
   mutate(year = as.character(year)) |>
   pivot_wider(
     id_cols = c(
-      name, citizenship, countrycode,
+      name, COUNTRY, countrycode,
       selfmade, typeofwealth, gender,
       industry, IndustryAggregates, region, north,
       politicalconnection, founder, generationofinheritance,
@@ -271,7 +271,7 @@ Billionaires_wide <-
 # Creating a list of every country represented in the dataset
 Country <-
   Billionaires |>
-  distinct(citizenship)
+  distinct(COUNTRY)
 
 # Creating by hand, with the help of AI, a text list of those countries
 
