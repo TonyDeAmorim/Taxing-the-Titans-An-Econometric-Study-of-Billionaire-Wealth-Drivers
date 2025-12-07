@@ -1,9 +1,20 @@
 ---
 title: "Taxing the Titans : An Econometric Study of Billionaire Wealth Drivers"
 author: "Tony De Amorim, Philipine Poirier"
-format: html
-toc: true
-toc-depth: 4
+format:
+  html:
+    theme:
+      light: Litera
+      dark: Litera
+    toc: true
+    toc-location: left
+    toc-depth: 3
+    page-layout: full
+    number-sections: true
+    code-fold: true
+    code-line-numbers: true
+    smooth-scroll: true
+    embed-resources: true
 ---
 
 ## How does taxing billionaire wealth affect economic performance, inequality, and national competitiveness in an open economy?
@@ -200,14 +211,18 @@ The following tables are made prior to any data transformation to give a proper 
 
 ## Cleaning of the billionaires' dataset
 
+The cleaning of our core dataset consisted on :
+
+- Creation of a list of characters potentially present in the names of billionaires, which would prevent matching years for the same person (difference in names for a single individual identified at different times)
+- Creating three sub-datasets for specific use
+- Pivoting our dataset to have only one line by billionaires, using a selection of variables evolving over years to be pivoted
+
 ```{r}
 #| label: Billionaires cleaning
 #| message: false
 #| warning: false
 
-# Creation of a list of characters potentially present in the names
-# of billionaires, which would prevent matching years for the same person
-# (difference in names for a single individual identified at different times)
+
 
 useless <- ",;.-()"
 
@@ -218,7 +233,7 @@ Billionaires <-
   rename( COUNTRY = citizenship)
 
 
-# Creating three sub-datasets for specific use
+
 
 Billionaires_1996 <- 
   Billionaires |> 
@@ -233,8 +248,7 @@ Billionaires_2014 <-
   filter(year == "2014")
 
 
-# Pivoting our dataset to have only one line by billionaires, using a 
-# selection of variables evolving over years to be pivoted
+
 
 Billionaires_wide <- 
   Billionaires |>
@@ -258,15 +272,12 @@ Billionaires_wide <-
 
 ## Standardzation of the macro variables datasets
 
+We here used AI[^1] to help us creating list of country names in order to have the same identification tool across all our data sets. We start by creating a list of the names of the countries in our core dataset : the billionaires' one.
+
 ```{r}
 #| label: Standardization of country names of the billionaires' dataset
 #| message: false
 #| warning: false
-
-# We here used AI to help us creating list of country names in order
-# to have the same identification tool across all our data sets
-# We start by creating a list of the names of the countries
-# in our core dataset : the billionaires' one
 
 # Creating a list of every country represented in the dataset
 Country <-
@@ -294,14 +305,13 @@ liste_pays <- c(
 
 ### Standardization of the IMF dataset
 
+
+Converting the names of the countries from the IMF GDP/PPP dataset that are spelled differently the same way as the countries from the billionaires dataset by hand, with the help of AI
+
 ```{r}
 #| label: Standardization of country names of the IMF's dataset
 #| message: false
 #| warning: false
-
-# Converting the names of the countries from the IMF GDP/PPP dataset that
-# are spelled differently the same way as the countries from
-# the billionaires dataset by hand, with the help of AI
 
 map_IMF <- c(
   "Bahrain, Kingdom of" = "Bahrain",
@@ -333,7 +343,7 @@ IMF <-
   IMF |>
   filter(COUNTRY %in% liste_pays)
 
-# Creating a sub dataset for futur studies with only the years
+# Creating a sub dataset for future studies with only the years
 # also present in the core dataset
 
 IMF_reduced <-
@@ -341,24 +351,23 @@ IMF_reduced <-
   select(COUNTRY, `1996`, `2000`, `2014`)
 ```
 
-After this standardization we realised we had to remove Monaco and Guernsey from the list of billionaires as they are not included in the IMF GDP list.
+After this standardization we realized we had to remove Monaco and Guernsey from the list of billionaires as they are not included in the IMF GDP list.
 
 ### Standardization of every World Bank datasets
+
+Using the FDI dataset as a blueprint of standard names of countries in all World Bank's datasets, we create a map object used later to convert the names from World Bank's datasets into the format of our core dataset by hand, with the help of AI.
 
 ```{r}
 #| label: Standardization of country names of the World Bank's datasets
 #| message: false
 #| warning: false
 
-# Using the FDI dataset as a blueprint of standard names of countries
-# in all World Bank's datasets
 
 WB_names <-
   FDI |>
   distinct(`Country Name`)
 
-# Creating a map object used later to convert the names from World Bank's
-# datasets into the format of our core dataset by hand, with the help of AI
+
 
 map_WB <- c(
   "Czechia" = "Czech Republic",
@@ -483,3 +492,6 @@ Population_reduced <-
   Population |>
   select(COUNTRY, `1996`, `2000`, `2014`)
 ```
+
+
+[^1]: The only use of AI in our entire project was to help us extract the list of countries from our dataset into a list in the format “country_1,” “country_2,” etc., saving us time by avoiding having to do it manually.
