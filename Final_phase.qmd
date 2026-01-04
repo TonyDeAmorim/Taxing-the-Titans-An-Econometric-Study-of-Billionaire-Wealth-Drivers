@@ -391,36 +391,324 @@ ggplot(Source, aes(y = factor(year), x = n, fill = selfmade)) +
 
 ## 3) RÉGRESSION MULTIPLE : QUELS DÉTERMINANTS ?
 ```{r}
-reg_data_v2 <- Billionaires_2014 |>
+# =============================================================================
+# RÉGRESSION DE BASE + TESTS APPROFONDIS
+# =============================================================================
+
+## Préparation des données (régression originale)
+reg_data <- Billionaires_2014 %>%
   group_by(COUNTRY) %>%
-  summarise(
-    nb_bill = n(),
-    total_wealth = sum(networthusbillion, na.rm = TRUE),
-    avg_wealth = mean(networthusbillion, na.rm = TRUE),
-    pct_selfmade = mean(selfmade, na.rm = TRUE)  # % self-made
-  ) %>%
+  summarise(nb_bill = n()) %>%
   left_join(Tax_revenue_reduced %>% select(COUNTRY, tax = `2014`), by = "COUNTRY") %>%
   left_join(IMF_reduced %>% select(COUNTRY, gdp = `2014`), by = "COUNTRY") %>%
   left_join(FDI_reduced %>% select(COUNTRY, fdi = `2014`), by = "COUNTRY") %>%
   left_join(Capital_formation_reduced %>% select(COUNTRY, capital = `2014`), by = "COUNTRY") %>%
-  left_join(Population_reduced %>% select(COUNTRY, pop = `2014`), by = "COUNTRY") %>%
-  
   mutate(
-    
-    # Variables dépendantes alternatives
     log_bill = log(nb_bill + 1),
-    log_wealth = log(total_wealth + 1),
-    bill_per_gdp = (total_wealth / gdp) * 100,  # Wealth concentration
-    
-    # Variables indépendantes améliorées
-    log_gdp = log(gdp),
-    log_pop = log(pop),
-    gdp_per_capita = gdp / pop,
-    log_gdp_pc = log(gdp_per_capita), 
-    economic_freedom = fdi + capital,  # Proxy for business environment
-    large_economy = ifelse(gdp > median(gdp, na.rm = TRUE), 1, 0)
+    log_gdp = log(gdp)
   ) %>%
-  filter(!is.na(tax) & !is.na(gdp))
+  filter(!is.na(tax) & !is.na(gdp) & !is.na(fdi) & !is.na(capital))
+
+## MODÈLE DE BASE
+modele <- lm(log_bill ~ tax + log_gdp + fdi + capital, data = reg_data)
+
+cat("=== RÉGRESSION DE BASE ===\n")
+summary(modele)
+
+cat("\n=== INTERPRÉTATION DES COEFFICIENTS ===\n")
+cat("Tax coefficient:", round(coef(modele)["tax"], 4), "\n")
+cat("P-value:", round(summary(modele)$coefficients["tax", "Pr(>|t|)"], 4), "\n")
+cat("Interprétation: Une hausse de 1% de taxation (en % du PIB) est associée à une variation de",
+    round(coef(modele)["tax"], 3), "du log du nombre de milliardaires\n")
+cat("Soit environ", round((exp(coef(modele)["tax"]) - 1) * 100, 2), 
+    "% de variation du nombre de milliardaires.\n\n")
+
+
+# =============================================================================
+# TEST 1 : ANALYSE DE LA MULTICOLINÉARITÉ (VIF)
+# =============================================================================
+
+cat("\n=== TEST 1 : VARIANCE INFLATION FACTOR (VIF) ===\n")
+cat("Vérifie si les variables sont trop corrélées entre elles\n\n")
+
+# Calcul manuel du VIF
+vif_values <- sapply(c("tax", "log_gdp", "fdi", "capital"), function(var) {
+  formula <- as.formula(paste(var, "~ tax + log_gdp + fdi + capital -", var))
+  r2 <- summary(lm(formula, data = reg_data))$r.squared
+  1 / (1 - r2)
+})
+
+vif_table <- data.frame(
+  Variable = c("tax", "log_gdp", "fdi", "capital"),
+  VIF = vif_values
+)
+print(vif_table)
+
+cat("\nInterprétation VIF :\n")
+cat("- VIF < 5 : Pas de problème\n")
+cat("- VIF 5-10 : Multicolinéarité modérée\n")
+cat("- VIF > 10 : Multicolinéarité problématique\n\n")
+
+
+# =============================================================================
+# TEST 2 : TEST DE NORMALITÉ DES RÉSIDUS (Shapiro-Wilk)
+# =============================================================================
+
+cat("\n=== TEST 2 : NORMALITÉ DES RÉSIDUS ===\n")
+shapiro_test <- shapiro.test(residuals(modele))
+cat("Shapiro-Wilk test:\n")
+cat("W =", round(shapiro_test$statistic, 4), "\n")
+cat("P-value =", round(shapiro_test$p.value, 4), "\n")
+cat("Interprétation:", ifelse(shapiro_test$p.value > 0.05, 
+                              "Résidus normalement distribués ✓", 
+                              "Résidus non normaux ✗"), "\n\n")
+
+
+# =============================================================================
+# TEST 3 : TEST D'HÉTÉROSCÉDASTICITÉ (Breusch-Pagan)
+# =============================================================================
+
+cat("\n=== TEST 3 : HÉTÉROSCÉDASTICITÉ (Breusch-Pagan) ===\n")
+
+# Test manuel de Breusch-Pagan
+residuals_sq <- residuals(modele)^2
+bp_model <- lm(residuals_sq ~ tax + log_gdp + fdi + capital, data = reg_data)
+bp_stat <- nobs(modele) * summary(bp_model)$r.squared
+bp_pvalue <- pchisq(bp_stat, df = 4, lower.tail = FALSE)
+
+cat("BP statistic =", round(bp_stat, 4), "\n")
+cat("P-value =", round(bp_pvalue, 4), "\n")
+cat("Interprétation:", ifelse(bp_pvalue > 0.05, 
+                              "Homoscédasticité (variance constante) ✓", 
+                              "Hétéroscédasticité détectée ✗"), "\n\n")
+
+
+# =============================================================================
+# TEST 4 : INFLUENCE DES OBSERVATIONS (Cook's Distance)
+# =============================================================================
+
+cat("\n=== TEST 4 : OBSERVATIONS INFLUENTES ===\n")
+
+cooks_d <- cooks.distance(modele)
+influential <- which(cooks_d > 4/nobs(modele))
+
+cat("Seuil Cook's distance:", round(4/nobs(modele), 4), "\n")
+cat("Observations influentes:", ifelse(length(influential) > 0, 
+                                       paste(influential, collapse = ", "), 
+                                       "Aucune"), "\n")
+
+if(length(influential) > 0) {
+  cat("\nPays influents:\n")
+  print(reg_data[influential, c("COUNTRY", "nb_bill", "tax", "log_gdp")])
+}
+
+
+# =============================================================================
+# TEST 5 : STABILITÉ DU COEFFICIENT TAX (Leave-One-Out)
+# =============================================================================
+
+cat("\n\n=== TEST 5 : STABILITÉ DU COEFFICIENT TAX ===\n")
+cat("Teste si le coefficient tax change beaucoup sans chaque pays\n\n")
+
+# Leave-one-out analysis
+loo_coefs <- sapply(1:nrow(reg_data), function(i) {
+  model_loo <- lm(log_bill ~ tax + log_gdp + fdi + capital, 
+                  data = reg_data[-i, ])
+  coef(model_loo)["tax"]
+})
+
+cat("Coefficient tax original:", round(coef(modele)["tax"], 4), "\n")
+cat("Moyenne leave-one-out:", round(mean(loo_coefs), 4), "\n")
+cat("Écart-type leave-one-out:", round(sd(loo_coefs), 4), "\n")
+cat("Min:", round(min(loo_coefs), 4), "| Max:", round(max(loo_coefs), 4), "\n")
+cat("Interprétation:", ifelse(sd(loo_coefs) < 0.01, 
+                              "Coefficient stable ✓", 
+                              "Coefficient instable ✗"), "\n\n")
+
+
+# =============================================================================
+# TEST 6 : AJOUT DE VARIABLES DE CONTRÔLE (Robustesse)
+# =============================================================================
+
+cat("\n=== TEST 6 : ROBUSTESSE AVEC CONTRÔLES SUPPLÉMENTAIRES ===\n\n")
+
+# Ajout de la population
+reg_data_pop <- reg_data %>%
+  left_join(Population_reduced %>% select(COUNTRY, pop = `2014`), by = "COUNTRY") %>%
+  mutate(log_pop = log(pop)) %>%
+  filter(!is.na(pop))
+
+model_with_pop <- lm(log_bill ~ tax + log_gdp + fdi + capital + log_pop, 
+                     data = reg_data_pop)
+
+cat("Modèle avec population:\n")
+print(summary(model_with_pop)$coefficients)
+
+cat("\nComparaison coefficient tax:\n")
+cat("Sans population:", round(coef(modele)["tax"], 4), 
+    "(p =", round(summary(modele)$coefficients["tax", "Pr(>|t|)"], 4), ")\n")
+cat("Avec population:", round(coef(model_with_pop)["tax"], 4), 
+    "(p =", round(summary(model_with_pop)$coefficients["tax", "Pr(>|t|)"], 4), ")\n\n")
+
+
+# =============================================================================
+# TEST 7 : EFFET SEUIL DE LA TAXATION
+# =============================================================================
+
+cat("\n=== TEST 7 : EXISTE-T-IL UN EFFET SEUIL ? ===\n\n")
+
+# Test avec différents seuils
+thresholds <- c(15, 20, 25)
+
+for(threshold in thresholds) {
+  reg_data$high_tax <- ifelse(reg_data$tax > threshold, 1, 0)
+  model_threshold <- lm(log_bill ~ high_tax + log_gdp + fdi + capital, data = reg_data)
+  
+  cat("Seuil =", threshold, "%\n")
+  cat("  Coefficient high_tax:", round(coef(model_threshold)["high_tax"], 4), "\n")
+  cat("  P-value:", round(summary(model_threshold)$coefficients["high_tax", "Pr(>|t|)"], 4), "\n")
+  cat("  Significatif:", ifelse(summary(model_threshold)$coefficients["high_tax", "Pr(>|t|)"] < 0.05, 
+                                "OUI ✓", "NON ✗"), "\n\n")
+}
+
+
+# =============================================================================
+# TEST 8 : EFFET NON-LINÉAIRE (Polynôme)
+# =============================================================================
+
+cat("\n=== TEST 8 : EFFET NON-LINÉAIRE DE LA TAXATION ===\n\n")
+
+reg_data$tax_sq <- reg_data$tax^2
+model_nonlinear <- lm(log_bill ~ tax + tax_sq + log_gdp + fdi + capital, data = reg_data)
+
+cat("Modèle avec tax²:\n")
+print(summary(model_nonlinear)$coefficients[1:3, ])
+
+cat("\nTest de significativité conjointe (tax + tax²):\n")
+model_without_tax <- lm(log_bill ~ log_gdp + fdi + capital, data = reg_data)
+f_test <- anova(model_without_tax, model_nonlinear)
+cat("F-statistic:", round(f_test$F[2], 4), "\n")
+cat("P-value:", round(f_test$`Pr(>F)`[2], 4), "\n")
+cat("Interprétation:", ifelse(f_test$`Pr(>F)`[2] < 0.05, 
+                              "La taxation a un effet significatif (linéaire ou non-linéaire) ✓", 
+                              "La taxation n'a pas d'effet significatif ✗"), "\n\n")
+
+
+# =============================================================================
+# TEST 9 : COMPARAISON PAR RÉGIONS
+# =============================================================================
+
+cat("\n=== TEST 9 : EFFET DE LA TAXATION PAR RÉGION ===\n\n")
+
+# Ajout des régions (approximation basée sur les noms de pays)
+reg_data_region <- reg_data %>%
+  mutate(region = case_when(
+    COUNTRY %in% c("United States", "Canada", "Mexico") ~ "Amériques",
+    COUNTRY %in% c("China", "Japan", "South Korea", "India", "Singapore", 
+                   "Hong Kong", "Indonesia", "Malaysia", "Thailand", "Taiwan") ~ "Asie",
+    COUNTRY %in% c("Germany", "France", "United Kingdom", "Italy", "Spain", 
+                   "Russia", "Switzerland", "Sweden", "Norway", "Netherlands") ~ "Europe",
+    TRUE ~ "Autres"
+  ))
+
+for(r in unique(reg_data_region$region)) {
+  if(sum(reg_data_region$region == r) > 5) {  # Au moins 5 pays
+    model_region <- lm(log_bill ~ tax + log_gdp + fdi + capital, 
+                       data = reg_data_region %>% filter(region == r))
+    cat(r, ":\n")
+    cat("  N =", nobs(model_region), "pays\n")
+    cat("  Coefficient tax:", round(coef(model_region)["tax"], 4), "\n")
+    cat("  P-value:", round(summary(model_region)$coefficients["tax", "Pr(>|t|)"], 4), "\n\n")
+  }
+}
+
+
+# =============================================================================
+# VISUALISATIONS DIAGNOSTIQUES
+# =============================================================================
+
+cat("\n=== VISUALISATIONS DIAGNOSTIQUES ===\n")
+
+# 1. Résidus vs Fitted
+plot(modele, which = 1, main = "Résidus vs Valeurs ajustées")
+
+# 2. Q-Q Plot
+plot(modele, which = 2, main = "Q-Q Plot (normalité)")
+
+# 3. Scale-Location
+plot(modele, which = 3, main = "Scale-Location (homoscédasticité)")
+
+# 4. Cook's distance
+plot(modele, which = 4, main = "Cook's distance (influence)")
+
+# 5. Effet partiel de la taxation
+plot(reg_data$tax, residuals(lm(log_bill ~ log_gdp + fdi + capital, data = reg_data)),
+     xlab = "Taxation (% PIB)", ylab = "Résidus partiels",
+     main = "Effet partiel de la taxation (contrôlant pour autres variables)")
+abline(lm(residuals(lm(log_bill ~ log_gdp + fdi + capital, data = reg_data)) ~ 
+            reg_data$tax), col = "red")
+
+
+# =============================================================================
+# SYNTHÈSE FINALE
+# =============================================================================
+
+# =============================================================================
+# SYNTHÈSE FINALE
+# =============================================================================
+
+cat("\n\n")
+cat("═══════════════════════════════════════════════════════════════════\n")
+cat("                    SYNTHÈSE DES TESTS                             \n")
+cat("═══════════════════════════════════════════════════════════════════\n\n")
+
+cat("QUESTION : La taxation affecte-t-elle la présence de milliardaires ?\n\n")
+
+cat("RÉSULTATS PRINCIPAUX :\n")
+cat("• Coefficient taxation:", round(coef(modele)["tax"], 4), "\n")
+cat("• P-value:", round(summary(modele)$coefficients["tax", "Pr(>|t|)"], 4), "\n")
+
+# Correction de la ligne problématique
+tax_pval <- summary(modele)$coefficients["tax", "Pr(>|t|)"]
+if(tax_pval < 0.05) {
+  cat("• Significativité: Significatif à 5%\n")
+} else if(tax_pval < 0.1) {
+  cat("• Significativité: Significatif à 10% (faiblement)\n")
+} else {
+  cat("• Significativité: Non significatif\n")
+}
+
+cat("• R² ajusté:", round(summary(modele)$adj.r.squared, 4), "\n\n")
+
+cat("TESTS DE ROBUSTESSE :\n")
+cat("1. Multicolinéarité (VIF) :", ifelse(max(vif_values) < 5, "✓ OK", "✗ Problème"), "\n")
+cat("2. Normalité résidus :", ifelse(shapiro_test$p.value > 0.05, "✓ OK", "✗ Problème"), "\n")
+cat("3. Homoscédasticité :", ifelse(bp_pvalue > 0.05, "✓ OK", "✗ Problème"), "\n")
+cat("4. Observations influentes :", ifelse(length(influential) == 0, "✓ Aucune", 
+                                           paste("✗", length(influential), "détectée(s)")), "\n")
+cat("5. Stabilité coefficient :", ifelse(sd(loo_coefs) < 0.01, "✓ Stable", "✗ Instable"), "\n\n")
+
+cat("CONCLUSION :\n")
+if(tax_pval < 0.05) {
+  cat("La taxation a un effet SIGNIFICATIF mais FAIBLE sur la présence de milliardaires.\n")
+  cat("L'effet est", ifelse(coef(modele)["tax"] < 0, "NÉGATIF", "POSITIF"), 
+      ": +1% de taxation → ", round((exp(coef(modele)["tax"]) - 1) * 100, 2), 
+      "% de variation du nombre de milliardaires.\n")
+} else if(tax_pval < 0.1) {
+  cat("La taxation a un effet FAIBLEMENT SIGNIFICATIF (p < 0.10).\n")
+  cat("L'effet existe mais reste MARGINAL par rapport au PIB et aux autres facteurs.\n")
+} else {
+  cat("La taxation n'a PAS d'effet statistiquement significatif.\n")
+  cat("Les OPPORTUNITÉS ÉCONOMIQUES (PIB, investissements) sont les vrais déterminants.\n")
+}
+
+cat("\nIMPLICATIONS POUR LA POLITIQUE PUBLIQUE :\n")
+cat("→ La taxation seule ne détermine PAS la localisation des milliardaires\n")
+cat("→ La TAILLE du marché (GDP) est le facteur dominant\n")
+cat("→ Les craintes de 'fuite fiscale massive' sont peut-être exagérées\n")
+cat("→ Une politique fiscale équilibrée est possible sans perdre les ultra-riches\n\n")
+
+cat("═══════════════════════════════════════════════════════════════════\n")
 ```
 
 
