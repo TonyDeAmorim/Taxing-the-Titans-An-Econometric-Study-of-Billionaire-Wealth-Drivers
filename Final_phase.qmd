@@ -1,6 +1,6 @@
 ---
 title: "Final_phase"
-format: html
+format: pdf
 ---
 
 
@@ -328,11 +328,12 @@ map_count <- ggplot() +
 print(map_count)
 ```
 
+
 ### 1.2 Caracteristics and origin of billionaires' wealth 
 
 ```{r}
-
-
+#| message: false
+#| warning: false
 
 Sectors <-
   Billionaires_2014 |> 
@@ -366,10 +367,30 @@ ggplot(Sectors, aes(x = reorder(sector, nombre_milliardaires), y = count, fill =
 
 ```
 
+```{r}
+#| message: false
+#| warning: false
+
+Source <- 
+  Billionaires |> 
+  drop_na(selfmade) |> 
+  summarise(n = n(), .by = c(selfmade, year)) 
+
+ggplot(Source, aes(y = factor(year), x = n, fill = selfmade)) +
+  geom_col() +
+  labs(title = "Répartition de la richesse par année",
+       y = "Année",
+       x = "Nombre",
+       fill = "Origine") +
+  theme_clean()
+```
+
 ## 2) ARBITRAGE FISCAL ET GÉOGRAPHIQUE
 
 ## 3) RÉGRESSION MULTIPLE : QUELS DÉTERMINANTS ?
 ```{r}
+#| message: false
+#| warning: false
 reg_data <- Billionaires_2014 |>
   group_by(COUNTRY) |>
   summarise(nb_bill = n()) |>
