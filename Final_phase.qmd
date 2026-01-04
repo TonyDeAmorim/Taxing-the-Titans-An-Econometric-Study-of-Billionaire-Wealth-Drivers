@@ -493,6 +493,7 @@ Taken together, these checks imply that our coefficient estimates and standard i
 
 ## 3) MODÉLISATION DE LA FUITE FISCALE DES MILLIARDAIRES
 ```{r}
+
 # 1) CONSTRUCTION DU SCORE DE RISQUE DE FUITE FISCALE
 # OBJECTIF : Créer un score de 0 à 1 qui mesure la probabilité qu'un 
 # milliardaire quitte son pays si une taxe est instaurée
