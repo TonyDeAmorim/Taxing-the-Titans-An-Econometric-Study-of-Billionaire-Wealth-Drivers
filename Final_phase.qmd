@@ -127,10 +127,9 @@ map_IMF <- c(
 
 
 
-IMF <- IMF |> 
-  mutate(COUNTRY = ifelse(COUNTRY %in% names(map_vector), 
-                          map_vector[COUNTRY], 
-                          COUNTRY))
+IMF <-
+  IMF |>
+  mutate(COUNTRY = recode(COUNTRY, !!!map_IMF))
 
 IMF <-
   IMF |>
