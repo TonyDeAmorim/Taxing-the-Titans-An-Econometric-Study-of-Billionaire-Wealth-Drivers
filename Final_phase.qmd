@@ -126,9 +126,12 @@ map_IMF <- c(
   "Venezuela, República Bolivariana de" = "Venezuela"
 )
 
-IMF <-
-  IMF |>
-  mutate(COUNTRY = recode(COUNTRY, !!!map_IMF))
+
+
+IMF <- IMF |> 
+  mutate(COUNTRY = ifelse(COUNTRY %in% names(map_vector), 
+                          map_vector[COUNTRY], 
+                          COUNTRY))
 
 IMF <-
   IMF |>
@@ -474,5 +477,18 @@ The Shapiro–Wilk test (p = 0.7615) suggests the residuals are approximately no
 The Breusch–Pagan test (p = 0.7439) shows no evidence of heteroskedasticity, meaning the error variance can be treated as constant.
 Taken together, these checks imply that our coefficient estimates and standard inference from this model are generally reliable.
 
-### 2.4 
+## 3) Expanding the model
+### 3.1 
+
+```{r}
+#| label: Chow test 
+#| message: false
+#| warning: false
+#| echo: false
+
+library(strucchange)
+
+
+
+```
 
