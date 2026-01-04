@@ -485,9 +485,16 @@ Taken together, these checks imply that our coefficient estimates and standard i
 #| warning: false
 #| echo: false
 
-library(strucchange)
+library(quantreg)
 
+quantiles <- c(0.1, 0.25, 0.5, 0.75, 0.9)
 
+fit_quant <- rq(nb_bill ~ tax + log_gdp + log(fdi), 
+                data = reg_data, 
+                tau = quantiles)
+
+summary(fit_quant)
+plot(summary(fit_quant))
 
 ```
 
