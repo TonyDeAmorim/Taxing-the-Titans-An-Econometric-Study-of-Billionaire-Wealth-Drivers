@@ -489,18 +489,136 @@ The Shapiro–Wilk test (p = 0.7615) suggests the residuals are approximately no
 The Breusch–Pagan test (p = 0.7439) shows no evidence of heteroskedasticity, meaning the error variance can be treated as constant.
 Taken together, these checks imply that our coefficient estimates and standard inference from this model are generally reliable.
 
-## 3) Expanding the model
-### 3.1 
-
+## 3) MODÉLISATION DE LA FUITE FISCALE DES MILLIARDAIRES
 ```{r}
-#| label: Chow test 
-#| message: false
-#| warning: false
-#| echo: false
+# 1) CONSTRUCTION DU SCORE DE RISQUE DE FUITE FISCALE
+# OBJECTIF : Créer un score de 0 à 1 qui mesure la probabilité qu'un 
+# milliardaire quitte son pays si une taxe est instaurée
+# Basé sur 4 critères : taxation, secteur mobile, self-made, proximité refuge
 
-library(strucchange)
+## CHUNK 1.1 : Définition des paramètres de base
+# -----------------------------------------------------------------------------
+# On identifie quels secteurs sont mobiles (tech, finance) et quels pays 
+# sont des refuges fiscaux reconnus
 
+# Secteurs considérés comme "mobiles" (faciles à déplacer)
+mobile_sectors <- c("Finance", "Technology", "Hedge funds", "Private equity",
+                    "Money Management", "Investments")
 
+# Liste des paradis/refuges fiscaux
+tax_havens <- c("Switzerland", "Singapore", "Hong Kong", "Liechtenstein",
+                "Monaco", "Luxembourg", "United Arab Emirates", "Bermuda")
 
 ```
+
+```{r}
+## CHUNK 1.2 : Calcul des 4 composantes du score
+# -----------------------------------------------------------------------------
+# Pour chaque milliardaire, on calcule 4 indicateurs qui seront ensuite
+# combinés pour obtenir le score final de risque de fuite
+
+flight_data <- Billionaires_2014 %>%
+  left_join(Tax_revenue_reduced %>% select(COUNTRY, tax = `2014`), by = "COUNTRY") %>%
+  filter(!is.na(tax)) %>%
+  mutate(
+    # COMPOSANTE 1 : Pression fiscale (0 à 1)
+    # Plus la taxation est élevée, plus le risque de fuite est grand
+    # On normalise entre 0 (taxation minimale) et 1 (taxation maximale)
+    tax_normalized = (tax - min(tax, na.rm = TRUE)) / 
+                     (max(tax, na.rm = TRUE) - min(tax, na.rm = TRUE)),
+    
+    # COMPOSANTE 2 : Secteur mobile (0 ou 1)
+    # = 1 si le milliardaire est dans tech/finance (facile à déplacer)
+    # = 0 sinon (ex: industrie, immobilier = moins mobile)
+    mobile_sector = ifelse(industry %in% mobile_sectors, 1, 0),
+    
+    # COMPOSANTE 3 : Self-made (0 ou 1)
+    # = 1 si self-made (plus mobile, entrepreneurial)
+    # = 0 si héritier (attachement familial au pays)
+    is_selfmade = ifelse(selfmade == 1, 1, 0),
+    
+    # COMPOSANTE 4 : Proximité d'un refuge fiscal (0 ou 1)
+    # = 1 si le pays est dans la même région qu'un refuge
+    # = 0 sinon
+    # On considère que les Européens ont accès à la Suisse,
+    # les Asiatiques à Singapour/HK, etc.
+    near_haven = case_when(
+      # Europe : proche de Suisse, Monaco, Luxembourg
+      COUNTRY %in% c("France", "Germany", "Italy", "Spain", "United Kingdom", 
+                     "Belgium", "Netherlands", "Austria", "Sweden", "Norway") ~ 1,
+      # Asie : proche de Singapour, Hong Kong
+      COUNTRY %in% c("China", "Japan", "South Korea", "India", "Malaysia",
+                     "Thailand", "Indonesia", "Taiwan", "Philippines") ~ 1,
+      # Moyen-Orient : proche des Émirats
+      COUNTRY %in% c("Saudi Arabia", "Kuwait", "Israel", "Turkey", "Egypt") ~ 1,
+      # Amérique du Nord : proche des Bermudes, Caïmans (via accès facile)
+      COUNTRY %in% c("United States", "Canada") ~ 1,
+      TRUE ~ 0
+    ),
+    
+    # Si le milliardaire est DÉJÀ dans un refuge fiscal, son risque = 0
+    # (il n'a pas besoin de fuir, il est déjà là où c'est avantageux)
+    in_tax_haven = ifelse(COUNTRY %in% tax_havens, 1, 0)
+  )
+
+```
+
+```{r}
+## CHUNK 1.3 : Calcul du score final pondéré
+# -----------------------------------------------------------------------------
+# On combine les 4 composantes avec des poids pour obtenir un score final
+# Poids choisis selon l'importance supposée de chaque facteur
+
+flight_data <- flight_data %>%
+  mutate(
+    # Score = somme pondérée des 4 composantes
+    # Taxation = 40% (facteur principal)
+    # Secteur mobile = 25%
+    # Self-made = 20%
+    # Proximité refuge = 15%
+    flight_risk_score = (tax_normalized * 0.40 + 
+                        mobile_sector * 0.25 + 
+                        is_selfmade * 0.20 + 
+                        near_haven * 0.15),
+    
+    # Ajustement : si déjà dans un refuge, score = 0
+    flight_risk_score = ifelse(in_tax_haven == 1, 0, flight_risk_score),
+    
+    # Catégorisation pour faciliter l'analyse
+    risk_category = case_when(
+      flight_risk_score < 0.3 ~ "Faible",
+      flight_risk_score >= 0.3 & flight_risk_score < 0.6 ~ "Moyen",
+      flight_risk_score >= 0.6 ~ "Élevé"
+    )
+  )
+
+```
+
+```{r}
+## CHUNK 1.4 : Agrégation par pays
+# -----------------------------------------------------------------------------
+# On calcule pour chaque pays le risque moyen de fuite et le nombre
+# de milliardaires à haut risque
+
+country_risk <- flight_data %>%
+  group_by(COUNTRY) %>%
+  summarise(
+    nb_billionaires = n(),
+    total_wealth = sum(networthusbillion, na.rm = TRUE),
+    avg_flight_risk = mean(flight_risk_score, na.rm = TRUE),
+    nb_high_risk = sum(risk_category == "Élevé", na.rm = TRUE),
+    pct_high_risk = (nb_high_risk / n()) * 100,
+    tax = mean(tax, na.rm = TRUE)
+  ) %>%
+  arrange(desc(avg_flight_risk))
+
+# Affichage des pays les plus vulnérables
+cat("=== TOP 10 PAYS LES PLUS VULNÉRABLES À LA FUITE FISCALE ===\n")
+print(head(country_risk, 10))
+```
+
+
+
+
+
 
