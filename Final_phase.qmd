@@ -265,6 +265,7 @@ Billionaire taxation has emerged as one of the most polarizing economic question
 ```{r}
 #| message: false
 #| warning: false
+#| echo: false
 
 library(maps)
 library(viridis)
@@ -334,6 +335,7 @@ print(map_count)
 ```{r}
 #| message: false
 #| warning: false
+#| echo: false
 
 Sectors <-
   Billionaires_2014 |> 
@@ -370,6 +372,8 @@ ggplot(Sectors, aes(x = reorder(sector, nombre_milliardaires), y = count, fill =
 ```{r}
 #| message: false
 #| warning: false
+#| echo: false
+
 
 Source <- 
   Billionaires |> 
@@ -391,6 +395,9 @@ ggplot(Source, aes(y = factor(year), x = n, fill = selfmade)) +
 ```{r}
 #| message: false
 #| warning: false
+#| echo: false
+
+
 reg_data <- Billionaires_2014 |>
   group_by(COUNTRY) |>
   summarise(nb_bill = n()) |>
