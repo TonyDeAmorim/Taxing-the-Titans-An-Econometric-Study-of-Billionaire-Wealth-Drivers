@@ -502,12 +502,21 @@ Taken together, these checks imply that our coefficient estimates and standard i
 # sont des refuges fiscaux reconnus
 
 # Secteurs considérés comme "mobiles" (faciles à déplacer)
+<<<<<<< HEAD
 mobile_sectors <- c("Diversified financial", "Technology-Computer", "Hedge funds", "Private equity/leverage buyout",
                     "Venture capital", "Media", "Money Management")
 
 # Liste des paradis/refuges fiscaux
 tax_havens <- c("Switzerland", "Singapore", "Hong Kong", "Liechtenstein",
                 "Monaco", "Luxembourg", "United Arab Emirates", "Bermuda", "Ireland", "Guernsey")
+=======
+mobile_sectors <- c("Finance", "Technology", "Hedge funds", "Private equity",
+                    "Money Management", "Investments")
+
+# Liste des paradis/refuges fiscaux
+tax_havens <- c("Switzerland", "Singapore", "Hong Kong", "Liechtenstein",
+                "Monaco", "Luxembourg", "United Arab Emirates", "Bermuda")
+>>>>>>> 019498fb0ba5142bf538ecc7a70a4f96b4b3edbf
 
 ```
 
@@ -542,6 +551,7 @@ flight_data <- Billionaires_2014 %>%
     # = 0 sinon
     # On considère que les Européens ont accès à la Suisse,
     # les Asiatiques à Singapour/HK, etc.
+<<<<<<< HEAD
     
     
     near_haven = case_when(
@@ -557,6 +567,19 @@ flight_data <- Billionaires_2014 %>%
       COUNTRY %in% c("Saudi Arabia", "Kuwait", "Israel", "Turkey", "Egypt", "Lebanon", "Oman") ~ 1,
       # Amérique du Nord : proche des Bermudes, Caïmans (via accès facile)
       COUNTRY %in% c("United States", "Canada", "Brazil", "Mexico", "Colombia", "Venezuela", "St. Kitts and Nevis") ~ 1,
+=======
+    near_haven = case_when(
+      # Europe : proche de Suisse, Monaco, Luxembourg
+      COUNTRY %in% c("France", "Germany", "Italy", "Spain", "United Kingdom", 
+                     "Belgium", "Netherlands", "Austria", "Sweden", "Norway") ~ 1,
+      # Asie : proche de Singapour, Hong Kong
+      COUNTRY %in% c("China", "Japan", "South Korea", "India", "Malaysia",
+                     "Thailand", "Indonesia", "Taiwan", "Philippines") ~ 1,
+      # Moyen-Orient : proche des Émirats
+      COUNTRY %in% c("Saudi Arabia", "Kuwait", "Israel", "Turkey", "Egypt") ~ 1,
+      # Amérique du Nord : proche des Bermudes, Caïmans (via accès facile)
+      COUNTRY %in% c("United States", "Canada") ~ 1,
+>>>>>>> 019498fb0ba5142bf538ecc7a70a4f96b4b3edbf
       TRUE ~ 0
     ),
     
@@ -580,10 +603,17 @@ flight_data <- flight_data %>%
     # Secteur mobile = 25%
     # Self-made = 20%
     # Proximité refuge = 15%
+<<<<<<< HEAD
     flight_risk_score = (tax_normalized * 0.45 + 
                         mobile_sector * 0.30 + 
                         is_selfmade * 0.15 + 
                         near_haven * 0.10),
+=======
+    flight_risk_score = (tax_normalized * 0.40 + 
+                        mobile_sector * 0.25 + 
+                        is_selfmade * 0.20 + 
+                        near_haven * 0.15),
+>>>>>>> 019498fb0ba5142bf538ecc7a70a4f96b4b3edbf
     
     # Ajustement : si déjà dans un refuge, score = 0
     flight_risk_score = ifelse(in_tax_haven == 1, 0, flight_risk_score),
@@ -616,8 +646,11 @@ country_risk <- flight_data %>%
   ) %>%
   arrange(desc(avg_flight_risk))
 
+<<<<<<< HEAD
 #ponderer par nb de milliardaires par pays à voir 
 
+=======
+>>>>>>> 019498fb0ba5142bf538ecc7a70a4f96b4b3edbf
 # Affichage des pays les plus vulnérables
 cat("=== TOP 10 PAYS LES PLUS VULNÉRABLES À LA FUITE FISCALE ===\n")
 print(head(country_risk, 10))
