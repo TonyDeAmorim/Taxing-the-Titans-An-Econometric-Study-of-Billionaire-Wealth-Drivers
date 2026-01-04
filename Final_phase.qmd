@@ -24,7 +24,8 @@ library(broom)
 library(scales)
 library(patchwork)
 library(ggthemes)
-library(car)
+library(car) #vif
+library(lmtest) #heteroscedasticity 
 
 # Data import
 
@@ -370,11 +371,6 @@ ggplot(Source, aes(y = factor(year), x = n, fill = selfmade)) +
 This graph tracks the evolution of billionaire wealth origins from 1996 to 2014, revealing a dramatic surge in the total number of billionaires globally, which increased from approximately 400 to over 1,600. While the billionaire population was much smaller and more evenly divided between inherited and self-made origins in 1996, the landscape shifted significantly by 2014. The expansion of this demographic over the eighteen-year period has been overwhelmingly driven by self-made entrepreneurs, who now constitute the vast majority of the total, indicating a global shift toward new wealth creation rather than the simple maintenance of inherited estates.
 
 ## 2) First model
-
-<<<<<<< HEAD
-## 3) RÉGRESSION MULTIPLE : QUELS DÉTERMINANTS ?
-=======
->>>>>>> 31bf60ef66863c621bb64479255995a1c86150b3
 ```{r}
 #| label: First model
 #| message: false
@@ -410,46 +406,22 @@ summary(modele)
 
 ### 2.1 Multicolinearity analysis
 
-
+We here test
 ```{r}
-<<<<<<< HEAD
-vif_df <- data.frame(
-  Variable = names(vif(modele)),
-  VIF = as.numeric(vif(modele))
-=======
 #| label: Multicolinearity analysis
 #| message: false
 #| warning: false
 #| echo: false
-# =============================================================================
-# TEST 1 : ANALYSE DE LA MULTICOLINÉARITÉ (VIF)
-# =============================================================================
-
-cat("\n=== TEST 1 : VARIANCE INFLATION FACTOR (VIF) ===\n")
-cat("Vérifie si les variables sont trop corrélées entre elles\n\n")
-
-# Calcul manuel du VIF
-vif_values <- sapply(c("tax", "log_gdp", "fdi", "capital"), function(var) {
-  formula <- as.formula(paste(var, "~ tax + log_gdp + fdi + capital -", var))
-  r2 <- summary(lm(formula, data = reg_data))$r.squared
-  1 / (1 - r2)
-})
-
-vif_table <- data.frame(
-  Variable = c("tax", "log_gdp", "fdi", "capital"),
-  VIF = vif_values
->>>>>>> 31bf60ef66863c621bb64479255995a1c86150b3
-)
- vif_df
+vif_df <- data.frame(
+  Variable = names(vif(modele)),
+  VIF = as.numeric(vif(modele))
+)  
+vif_df
 ```
 
-<<<<<<< HEAD
+The VIF values (≈1.19–1.34) are close to 1, indicating no meaningful multicollinearity among the regressors, so coefficient significance is unlikely to be driven by correlated explanatory variables.
 
-```{r}
-# =============================================================================
-# TEST 2 : TEST DE NORMALITÉ DES RÉSIDUS (Shapiro-Wilk)
-# =============================================================================
-=======
+
 ### 2.2 Normality test for residuals
 
 We here test 
@@ -459,7 +431,6 @@ We here test
 #| message: false
 #| warning: false
 #| echo: false
->>>>>>> 31bf60ef66863c621bb64479255995a1c86150b3
 
 shapiro_test <- shapiro.test(residuals(modele))
 
@@ -468,7 +439,7 @@ shapiro_test
 ```
 
 
-
+### 2.3 
 ```{r}
 # =============================================================================
 # TEST 3 : TEST D'HÉTÉROSCÉDASTICITÉ (Breusch-Pagan)
@@ -488,6 +459,29 @@ cat("Interprétation:", ifelse(bp_pvalue > 0.05,
                               "Homoscédasticité (variance constante) ✓", 
                               "Hétéroscédasticité détectée ✗"), "\n\n")
 ```
+
+### 2.3 Heteroscedasticity 
+
+We here test 
+```{r}
+#| label: Heteroscedasticy 
+#| message: false
+#| warning: false
+#| echo: false
+
+bp<-bptest(modele)
+
+
+bp_df <- data.frame(
+  Test = "Studentized Breusch–Pagan",
+  Test_statistic = as.numeric(bp$statistic),
+  p_value = as.numeric(bp$p.value)
+)
+
+bp_df
+```
+
+With a p-value of 0.7439, we fail to reject the null hypothesis of constant error variance, meaning there is no evidence of heteroskedasticity in the model.
 
 
 ```{r}
