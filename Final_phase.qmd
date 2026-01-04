@@ -367,9 +367,12 @@ ggplot(Sectors, aes(x = reorder(sector, nombre_milliardaires), y = count, fill =
     y = "Total number of billionaires",
     fill = "Type of welath"
   ) +
-  theme_clean()
+  theme_clean(base_size = 10)
 
 ```
+
+This first graph illustrates the distribution of billionaires across various industries, highlighting that real estate is the most prominent sector for amassing such wealth, followed by retail and construction. A significant trend across almost all sectors is the clear dominance of self-made individuals over those who inherited their fortunes. This disparity is particularly pronounced in modern industries like technology, software, and hedge funds, where inherited wealth is virtually non-existent, whereas more traditional sectors like oil and banking show a relatively higher presence of generational wealth.
+
 
 ```{r}
 #| message: false
@@ -384,16 +387,19 @@ Source <-
 
 ggplot(Source, aes(y = factor(year), x = n, fill = selfmade)) +
   geom_col() +
-  labs(title = "Répartition de la richesse par année",
-       y = "Année",
-       x = "Nombre",
-       fill = "Origine") +
-  theme_clean()
+  labs(title = "Source of wealth by year",
+       y = "Year",
+       x = "Number",
+       fill = "Origin") +
+  theme_clean(base_size = 10)
 ```
+
+This graph tracks the evolution of billionaire wealth origins from 1996 to 2014, revealing a dramatic surge in the total number of billionaires globally, which increased from approximately 400 to over 1,600. While the billionaire population was much smaller and more evenly divided between inherited and self-made origins in 1996, the landscape shifted significantly by 2014. The expansion of this demographic over the eighteen-year period has been overwhelmingly driven by self-made entrepreneurs, who now constitute the vast majority of the total, indicating a global shift toward new wealth creation rather than the simple maintenance of inherited estates.
 
 ## 2) ARBITRAGE FISCAL ET GÉOGRAPHIQUE
 
 ## 3) RÉGRESSION MULTIPLE : QUELS DÉTERMINANTS ?
+
 ```{r}
 
 #| message: false
@@ -416,18 +422,18 @@ modele <- lm(log_bill ~ tax + log_gdp + fdi + capital, data = reg_data)
 summary(modele)
 
 reg_data_v2 <- Billionaires_2014 |>
-  group_by(COUNTRY) %>%
+  group_by(COUNTRY) |>
   summarise(
     nb_bill = n(),
     total_wealth = sum(networthusbillion, na.rm = TRUE),
     avg_wealth = mean(networthusbillion, na.rm = TRUE),
     pct_selfmade = mean(selfmade, na.rm = TRUE)  # % self-made
-  ) %>%
-  left_join(Tax_revenue_reduced %>% select(COUNTRY, tax = `2014`), by = "COUNTRY") %>%
-  left_join(IMF_reduced %>% select(COUNTRY, gdp = `2014`), by = "COUNTRY") %>%
-  left_join(FDI_reduced %>% select(COUNTRY, fdi = `2014`), by = "COUNTRY") %>%
-  left_join(Capital_formation_reduced %>% select(COUNTRY, capital = `2014`), by = "COUNTRY") %>%
-  left_join(Population_reduced %>% select(COUNTRY, pop = `2014`), by = "COUNTRY") %>%
+  ) |>
+  left_join(Tax_revenue_reduced |> select(COUNTRY, tax = `2014`), by = "COUNTRY") |>
+  left_join(IMF_reduced |> select(COUNTRY, gdp = `2014`), by = "COUNTRY") |>
+  left_join(FDI_reduced |> select(COUNTRY, fdi = `2014`), by = "COUNTRY") |>
+  left_join(Capital_formation_reduced |> select(COUNTRY, capital = `2014`), by = "COUNTRY") |>
+  left_join(Population_reduced |> select(COUNTRY, pop = `2014`), by = "COUNTRY") |>
   
   mutate(
     
@@ -443,7 +449,7 @@ reg_data_v2 <- Billionaires_2014 |>
     log_gdp_pc = log(gdp_per_capita), 
     economic_freedom = fdi + capital,  # Proxy for business environment
     large_economy = ifelse(gdp > median(gdp, na.rm = TRUE), 1, 0)
-  ) %>%
+  ) |>
   filter(!is.na(tax) & !is.na(gdp))
 
 ```
