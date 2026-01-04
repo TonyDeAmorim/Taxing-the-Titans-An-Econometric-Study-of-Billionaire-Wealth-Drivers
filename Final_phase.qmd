@@ -391,7 +391,6 @@ ggplot(Source, aes(y = factor(year), x = n, fill = selfmade)) +
 
 ## 3) RÉGRESSION MULTIPLE : QUELS DÉTERMINANTS ?
 ```{r}
-<<<<<<< HEAD
 reg_data_v2 <- Billionaires_2014 |>
   group_by(COUNTRY) %>%
   summarise(
@@ -422,23 +421,6 @@ reg_data_v2 <- Billionaires_2014 |>
     large_economy = ifelse(gdp > median(gdp, na.rm = TRUE), 1, 0)
   ) %>%
   filter(!is.na(tax) & !is.na(gdp))
-=======
-#| message: false
-#| warning: false
-reg_data <- Billionaires_2014 |>
-  group_by(COUNTRY) |>
-  summarise(nb_bill = n()) |>
-  left_join(Tax_revenue_reduced |> 
-              select(COUNTRY, tax = `2014`), by = "COUNTRY") |>
-  left_join(IMF_reduced |> select(COUNTRY, gdp = `2014`), by = "COUNTRY") |>
-  left_join(FDI_reduced |> select(COUNTRY, fdi = `2014`), by = "COUNTRY") |>
-  left_join(Capital_formation_reduced |> select(COUNTRY, capital = `2014`), by = "COUNTRY") |>
-  mutate(log_bill = log(nb_bill + 1),log_gdp = log(gdp)) |>
-  filter(!is.na(tax) & !is.na(gdp) & !is.na(fdi) & !is.na(capital))
-
-modele <- lm(log_bill ~ tax + log_gdp + fdi + capital, data = reg_data)
-summary(modele)
->>>>>>> c186d47e5ef6ea9545441fb5b1b338ef6b045934
 ```
 
 
