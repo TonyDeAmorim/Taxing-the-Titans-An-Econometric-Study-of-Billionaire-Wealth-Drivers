@@ -371,6 +371,7 @@ ggplot(Source, aes(y = factor(year), x = n, fill = selfmade)) +
 This graph tracks the evolution of billionaire wealth origins from 1996 to 2014, revealing a dramatic surge in the total number of billionaires globally, which increased from approximately 400 to over 1,600. While the billionaire population was much smaller and more evenly divided between inherited and self-made origins in 1996, the landscape shifted significantly by 2014. The expansion of this demographic over the eighteen-year period has been overwhelmingly driven by self-made entrepreneurs, who now constitute the vast majority of the total, indicating a global shift toward new wealth creation rather than the simple maintenance of inherited estates.
 
 ## 2) First model
+
 ```{r}
 #| label: First model
 #| message: false
@@ -445,6 +446,7 @@ shapiro_test
 ### 2.3 Heteroscedasticity 
 
 We here test for heteroscedasticity using the Breusch–Pagan test to check whether the error variance is constant. 
+
 ```{r}
 #| label: Heteroscedasticy 
 #| message: false
@@ -465,169 +467,5 @@ bp_df
 
 With a p-value of 0.7439, we fail to reject the null hypothesis of constant error variance, meaning there is no evidence of heteroskedasticity in the model.
 
-
-```{r}
-# =============================================================================
-# TEST 6 : AJOUT DE VARIABLES DE CONTRÔLE (Robustesse)
-# =============================================================================
-
-cat("\n=== TEST 6 : ROBUSTESSE AVEC CONTRÔLES SUPPLÉMENTAIRES ===\n\n")
-
-# Ajout de la population
-reg_data_pop <- reg_data %>%
-  left_join(Population_reduced %>% select(COUNTRY, pop = `2014`), by = "COUNTRY") %>%
-  mutate(log_pop = log(pop)) %>%
-  filter(!is.na(pop))
-
-model_with_pop <- lm(log_bill ~ tax + log_gdp + fdi + capital + log_pop, 
-                     data = reg_data_pop)
-
-cat("Modèle avec population:\n")
-print(summary(model_with_pop)$coefficients)
-
-cat("\nComparaison coefficient tax:\n")
-cat("Sans population:", round(coef(modele)["tax"], 4), 
-    "(p =", round(summary(modele)$coefficients["tax", "Pr(>|t|)"], 4), ")\n")
-cat("Avec population:", round(coef(model_with_pop)["tax"], 4), 
-    "(p =", round(summary(model_with_pop)$coefficients["tax", "Pr(>|t|)"], 4), ")\n\n")
-
-```
-
-```{r}
-
-# =============================================================================
-# TEST 7 : EFFET SEUIL DE LA TAXATION
-# =============================================================================
-
-cat("\n=== TEST 7 : EXISTE-T-IL UN EFFET SEUIL ? ===\n\n")
-
-# Test avec différents seuils
-thresholds <- c(15, 20, 25)
-
-for(threshold in thresholds) {
-  reg_data$high_tax <- ifelse(reg_data$tax > threshold, 1, 0)
-  model_threshold <- lm(log_bill ~ high_tax + log_gdp + fdi + capital, data = reg_data)
-  
-  cat("Seuil =", threshold, "%\n")
-  cat("  Coefficient high_tax:", round(coef(model_threshold)["high_tax"], 4), "\n")
-  cat("  P-value:", round(summary(model_threshold)$coefficients["high_tax", "Pr(>|t|)"], 4), "\n")
-  cat("  Significatif:", ifelse(summary(model_threshold)$coefficients["high_tax", "Pr(>|t|)"] < 0.05, 
-                                "OUI ✓", "NON ✗"), "\n\n")
-}
-
-```
-
-```{r}
-# =============================================================================
-# TEST 8 : EFFET NON-LINÉAIRE (Polynôme)
-# =============================================================================
-
-cat("\n=== TEST 8 : EFFET NON-LINÉAIRE DE LA TAXATION ===\n\n")
-
-reg_data$tax_sq <- reg_data$tax^2
-model_nonlinear <- lm(log_bill ~ tax + tax_sq + log_gdp + fdi + capital, data = reg_data)
-
-cat("Modèle avec tax²:\n")
-print(summary(model_nonlinear)$coefficients[1:3, ])
-
-cat("\nTest de significativité conjointe (tax + tax²):\n")
-model_without_tax <- lm(log_bill ~ log_gdp + fdi + capital, data = reg_data)
-f_test <- anova(model_without_tax, model_nonlinear)
-cat("F-statistic:", round(f_test$F[2], 4), "\n")
-cat("P-value:", round(f_test$`Pr(>F)`[2], 4), "\n")
-cat("Interprétation:", ifelse(f_test$`Pr(>F)`[2] < 0.05, 
-                              "La taxation a un effet significatif (linéaire ou non-linéaire) ✓", 
-                              "La taxation n'a pas d'effet significatif ✗"), "\n\n")
-```
-
-
-
-```{r}
-# =============================================================================
-# VISUALISATIONS DIAGNOSTIQUES
-# =============================================================================
-
-cat("\n=== VISUALISATIONS DIAGNOSTIQUES ===\n")
-
-# 1. Résidus vs Fitted
-plot(modele, which = 1, main = "Résidus vs Valeurs ajustées")
-
-# 2. Q-Q Plot
-plot(modele, which = 2, main = "Q-Q Plot (normalité)")
-
-# 3. Scale-Location
-plot(modele, which = 3, main = "Scale-Location (homoscédasticité)")
-
-# 4. Cook's distance
-plot(modele, which = 4, main = "Cook's distance (influence)")
-
-# 5. Effet partiel de la taxation
-plot(reg_data$tax, residuals(lm(log_bill ~ log_gdp + fdi + capital, data = reg_data)),
-     xlab = "Taxation (% PIB)", ylab = "Résidus partiels",
-     main = "Effet partiel de la taxation (contrôlant pour autres variables)")
-abline(lm(residuals(lm(log_bill ~ log_gdp + fdi + capital, data = reg_data)) ~ 
-            reg_data$tax), col = "red")
-
-```
-
-
-```{r}
-
-# =============================================================================
-# SYNTHÈSE FINALE
-# =============================================================================
-
-cat("\n\n")
-cat("═══════════════════════════════════════════════════════════════════\n")
-cat("                    SYNTHÈSE DES TESTS                             \n")
-cat("═══════════════════════════════════════════════════════════════════\n\n")
-
-cat("QUESTION : La taxation affecte-t-elle la présence de milliardaires ?\n\n")
-
-cat("RÉSULTATS PRINCIPAUX :\n")
-cat("• Coefficient taxation:", round(coef(modele)["tax"], 4), "\n")
-cat("• P-value:", round(summary(modele)$coefficients["tax", "Pr(>|t|)"], 4), "\n")
-
-# Correction de la ligne problématique
-tax_pval <- summary(modele)$coefficients["tax", "Pr(>|t|)"]
-if(tax_pval < 0.05) {
-  cat("• Significativité: Significatif à 5%\n")
-} else if(tax_pval < 0.1) {
-  cat("• Significativité: Significatif à 10% (faiblement)\n")
-} else {
-  cat("• Significativité: Non significatif\n")
-}
-
-cat("• R² ajusté:", round(summary(modele)$adj.r.squared, 4), "\n\n")
-
-cat("TESTS DE ROBUSTESSE :\n")
-cat("1. Multicolinéarité (VIF) :", ifelse(max(vif_values) < 5, "✓ OK", "✗ Problème"), "\n")
-cat("2. Normalité résidus :", ifelse(shapiro_test$p.value > 0.05, "✓ OK", "✗ Problème"), "\n")
-cat("3. Homoscédasticité :", ifelse(bp_pvalue > 0.05, "✓ OK", "✗ Problème"), "\n")
-cat("4. Observations influentes :", ifelse(length(influential) == 0, "✓ Aucune", 
-                                           paste("✗", length(influential), "détectée(s)")), "\n")
-cat("5. Stabilité coefficient :", ifelse(sd(loo_coefs) < 0.01, "✓ Stable", "✗ Instable"), "\n\n")
-
-cat("CONCLUSION :\n")
-if(tax_pval < 0.05) {
-  cat("La taxation a un effet SIGNIFICATIF mais FAIBLE sur la présence de milliardaires.\n")
-  cat("L'effet est", ifelse(coef(modele)["tax"] < 0, "NÉGATIF", "POSITIF"), 
-      ": +1% de taxation → ", round((exp(coef(modele)["tax"]) - 1) * 100, 2), 
-      "% de variation du nombre de milliardaires.\n")
-} else if(tax_pval < 0.1) {
-  cat("La taxation a un effet FAIBLEMENT SIGNIFICATIF (p < 0.10).\n")
-  cat("L'effet existe mais reste MARGINAL par rapport au PIB et aux autres facteurs.\n")
-} else {
-  cat("La taxation n'a PAS d'effet statistiquement significatif.\n")
-  cat("Les OPPORTUNITÉS ÉCONOMIQUES (PIB, investissements) sont les vrais déterminants.\n")
-}
-
-cat("\nIMPLICATIONS POUR LA POLITIQUE PUBLIQUE :\n")
-cat("→ La taxation seule ne détermine PAS la localisation des milliardaires\n")
-cat("→ La TAILLE du marché (GDP) est le facteur dominant\n")
-cat("→ Les craintes de 'fuite fiscale massive' sont peut-être exagérées\n")
-cat("→ Une politique fiscale équilibrée est possible sans perdre les ultra-riches\n\n")
-
-cat("═══════════════════════════════════════════════════════════════════\n")
-```
+### 2.4 
 
