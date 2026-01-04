@@ -369,15 +369,20 @@ ggplot(Source, aes(y = factor(year), x = n, fill = selfmade)) +
 
 This graph tracks the evolution of billionaire wealth origins from 1996 to 2014, revealing a dramatic surge in the total number of billionaires globally, which increased from approximately 400 to over 1,600. While the billionaire population was much smaller and more evenly divided between inherited and self-made origins in 1996, the landscape shifted significantly by 2014. The expansion of this demographic over the eighteen-year period has been overwhelmingly driven by self-made entrepreneurs, who now constitute the vast majority of the total, indicating a global shift toward new wealth creation rather than the simple maintenance of inherited estates.
 
-## 2) ARBITRAGE FISCAL ET GÉOGRAPHIQUE
+## 2) First model
 
+<<<<<<< HEAD
 ## 3) RÉGRESSION MULTIPLE : QUELS DÉTERMINANTS ?
+=======
+>>>>>>> 31bf60ef66863c621bb64479255995a1c86150b3
 ```{r}
-# =============================================================================
-# RÉGRESSION DE BASE + TESTS APPROFONDIS
-# =============================================================================
+#| label: First model
+#| message: false
+#| warning: false
+#| echo: false
 
-## Préparation des données (régression originale)
+# Data preparation
+
 reg_data <- Billionaires_2014 |>
   group_by(COUNTRY) |>
   summarise(nb_bill = n()) |>
@@ -395,51 +400,74 @@ reg_data <- Billionaires_2014 |>
   ) |>
   filter(!is.na(tax) & !is.na(gdp) & !is.na(fdi) & !is.na(capital))
 
-## MODÈLE DE BASE
+# First model
+
 modele <- lm(log_bill ~ tax + log_gdp + fdi + capital, data = reg_data)
-
-```
-
-```{r}
-cat("=== RÉGRESSION DE BASE ===\n")
 summary(modele)
 
-cat("\n=== INTERPRÉTATION DES COEFFICIENTS ===\n")
-cat("Tax coefficient:", round(coef(modele)["tax"], 4), "\n")
-cat("P-value:", round(summary(modele)$coefficients["tax", "Pr(>|t|)"], 4), "\n")
-cat("Interprétation: Une hausse de 1% de taxation (en % du PIB) est associée à une variation de",
-    round(coef(modele)["tax"], 3), "du log du nombre de milliardaires\n")
-cat("Soit environ", round((exp(coef(modele)["tax"]) - 1) * 100, 2), 
-    "% de variation du nombre de milliardaires.\n\n")
+
 ```
 
-
+### 2.1 Multicolinearity analysis
 
 
 ```{r}
+<<<<<<< HEAD
 vif_df <- data.frame(
   Variable = names(vif(modele)),
   VIF = as.numeric(vif(modele))
+=======
+#| label: Multicolinearity analysis
+#| message: false
+#| warning: false
+#| echo: false
+# =============================================================================
+# TEST 1 : ANALYSE DE LA MULTICOLINÉARITÉ (VIF)
+# =============================================================================
+
+cat("\n=== TEST 1 : VARIANCE INFLATION FACTOR (VIF) ===\n")
+cat("Vérifie si les variables sont trop corrélées entre elles\n\n")
+
+# Calcul manuel du VIF
+vif_values <- sapply(c("tax", "log_gdp", "fdi", "capital"), function(var) {
+  formula <- as.formula(paste(var, "~ tax + log_gdp + fdi + capital -", var))
+  r2 <- summary(lm(formula, data = reg_data))$r.squared
+  1 / (1 - r2)
+})
+
+vif_table <- data.frame(
+  Variable = c("tax", "log_gdp", "fdi", "capital"),
+  VIF = vif_values
+>>>>>>> 31bf60ef66863c621bb64479255995a1c86150b3
 )
  vif_df
 ```
 
+<<<<<<< HEAD
 
 ```{r}
 # =============================================================================
 # TEST 2 : TEST DE NORMALITÉ DES RÉSIDUS (Shapiro-Wilk)
 # =============================================================================
+=======
+### 2.2 Normality test for residuals
 
-cat("\n=== TEST 2 : NORMALITÉ DES RÉSIDUS ===\n")
+We here test 
+
+```{r}
+#| label: Normality test for residuals
+#| message: false
+#| warning: false
+#| echo: false
+>>>>>>> 31bf60ef66863c621bb64479255995a1c86150b3
+
 shapiro_test <- shapiro.test(residuals(modele))
-cat("Shapiro-Wilk test:\n")
-cat("W =", round(shapiro_test$statistic, 4), "\n")
-cat("P-value =", round(shapiro_test$p.value, 4), "\n")
-cat("Interprétation:", ifelse(shapiro_test$p.value > 0.05, 
-                              "Résidus normalement distribués ✓", 
-                              "Résidus non normaux ✗"), "\n\n")
+
+shapiro_test
 
 ```
+
+
 
 ```{r}
 # =============================================================================
@@ -626,4 +654,7 @@ cat("→ Une politique fiscale équilibrée est possible sans perdre les ultra-r
 
 cat("═══════════════════════════════════════════════════════════════════\n")
 ```
+<<<<<<< HEAD
 
+=======
+>>>>>>> 31bf60ef66863c621bb64479255995a1c86150b3
