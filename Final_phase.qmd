@@ -10,6 +10,8 @@ format: pdf
 #| warning: false
 #| echo: false
 
+# Library import
+
 library(readxl) # To open the billionaires dataset
 library(tidyverse) # To clean, modify and analyze our data
 library(ggplot2) # For graphical representation
@@ -23,56 +25,46 @@ library(scales)
 library(patchwork)
 library(ggthemes)
 
+# Data import
+
 Billionaires <- read_delim("Database_project/Billionaires_dataset.csv",
-  delim = ";", escape_double = FALSE, trim_ws = TRUE
-)
+                           delim = ";", escape_double = FALSE, trim_ws = TRUE)
 
 IMF <- read_csv("Database_project/IMF_GDP_PPP.csv")
 
-FDI <- read_csv("Database_project/FDI_WB.csv",
-  skip = 3
+FDI <- read_csv("Database_project/FDI_WB.csv", skip = 3)
+
+Tax_revenue <- read_csv("Database_project/Tax_revenue.csv", skip = 3)
+
+Capital_formation <- read_csv("Database_project/Capital_formation.csv", skip = 3
 )
 
-Tax_revenue <- read_csv("Database_project/Tax_revenue.csv",
-  skip = 3
-)
+Population <- read_csv("Database_project/Population.csv", skip = 3)
 
-Capital_formation <- read_csv("Database_project/Capital_formation.csv",
-  skip = 3
-)
 
-Population <- read_csv("Database_project/Population.csv",
-  skip = 3
-)
-
+# Cleaning billionaires data set
 
 useless <- ",;.-()"
 
 Billionaires <-
   Billionaires |>
   select(c(1:22)) |> # removing useless variables
-  mutate(name = str_remove_all(name, useless)) |>  # standardization of names
-  rename( COUNTRY = citizenship)
+  mutate(name = str_remove_all(name, useless)) |> # standardization of names
+  rename(COUNTRY = citizenship)
 
-
-
-
-Billionaires_1996 <- 
-  Billionaires |> 
+Billionaires_1996 <-
+  Billionaires |>
   filter(year == "1996")
 
-Billionaires_2001 <- 
-  Billionaires |> 
+Billionaires_2001 <-
+  Billionaires |>
   filter(year == "2001")
 
-Billionaires_2014 <- 
-  Billionaires |> 
+Billionaires_2014 <-
+  Billionaires |>
   filter(year == "2014")
 
-
-
-
-Billionaires_wide <- 
+Billionaires_wide <-
   Billionaires |>
   mutate(year = as.character(year)) |>
   pivot_wider(
@@ -90,12 +82,11 @@ Billionaires_wide <-
   )
 
 
-# Creating a list of every country represented in the dataset
+# Cleaning the IMF dataset
+
 Country <-
   Billionaires |>
   distinct(COUNTRY)
-
-# Creating by hand, with the help of AI, a text list of those countries
 
 liste_pays <- c(
   "Algeria", "Angola", "Argentina", "Australia", "Austria", "Bahrain",
@@ -137,25 +128,19 @@ IMF <-
   IMF |>
   mutate(COUNTRY = recode(COUNTRY, !!!map_IMF))
 
-# Selecting only the countries also present in the core dataset
-
 IMF <-
   IMF |>
   filter(COUNTRY %in% liste_pays)
-
-# Creating a sub dataset for future studies with only the years
-# also present in the core dataset
 
 IMF_reduced <-
   IMF |>
   select(COUNTRY, `1996`, `2000`, `2014`)
 
+# Cleaning the WB datasets
 
 WB_names <-
   FDI |>
   distinct(`Country Name`)
-
-
 
 map_WB <- c(
   "Czechia" = "Czech Republic",
@@ -168,86 +153,58 @@ map_WB <- c(
   "Viet Nam" = "Vietnam"
 )
 
-
-# Using the map object creatd previously to standardize country names
-
 FDI <-
   FDI |>
   mutate(`Country Name` = recode(`Country Name`, !!!map_WB))
-
-# Selecting only the countries also present in the core dataset
 
 FDI <-
   FDI |>
   filter(`Country Name` %in% liste_pays) |>
   rename(COUNTRY = `Country Name`)
-
-# Creating a sub dataset for future studies with only the years
-# also present in the core dataset
 
 FDI_reduced <-
   FDI |>
   select(COUNTRY, `1996`, `2000`, `2014`)
 
-# Using the map object created previously to standardize country names
-
 Tax_revenue <-
   Tax_revenue |>
   mutate(`Country Name` = recode(`Country Name`, !!!map_WB))
-
-# Selecting only the countries also present in the core dataset
 
 Tax_revenue <-
   Tax_revenue |>
   filter(`Country Name` %in% liste_pays) |>
   rename(COUNTRY = `Country Name`)
-
-# Creating a sub dataset for future studies with only the years
-# also present in the core dataset
 
 Tax_revenue_reduced <-
   Tax_revenue |>
   select(COUNTRY, `1996`, `2000`, `2014`)
 
-# Using the map object creatd previously to standardize country names
-
 Capital_formation <-
   Capital_formation |>
   mutate(`Country Name` = recode(`Country Name`, !!!map_WB))
-
-# Selecting only the countries also present in the core dataset
 
 Capital_formation <-
   Capital_formation |>
   filter(`Country Name` %in% liste_pays) |>
   rename(COUNTRY = `Country Name`)
-
-# Creating a sub dataset for future studies with only the years
-# also present in the core dataset
 
 Capital_formation_reduced <-
   Capital_formation |>
   select(COUNTRY, `1996`, `2000`, `2014`)
 
-# Using the map object created previously to standardize country names
-
 Population <-
   Population |>
   mutate(`Country Name` = recode(`Country Name`, !!!map_WB))
-
-# Selecting only the countries also present in the core dataset
 
 Population <-
   Population |>
   filter(`Country Name` %in% liste_pays) |>
   rename(COUNTRY = `Country Name`)
 
-# Creating a sub dataset for future studies with only the years
-# also present in the core dataset
-
 Population_reduced <-
   Population |>
   select(COUNTRY, `1996`, `2000`, `2014`)
+
 ```
 
 # Introduction
@@ -266,13 +223,15 @@ Billionaire taxation has emerged as one of the most polarizing economic question
 
 ## 1) State of the world of billionaires in 2014
 
-### 1.1 Cartographie mondiale des milliardaires
+### 1.1 Global mapping of billionaires
 
 ```{r}
 #| message: false
 #| warning: false
+#| echo: false
 
 # Aggregation by country: number and total wealth
+
 billionaires_by_country <- Billionaires_2014 |>
   group_by(COUNTRY) |> # Group data by country
   summarise(
@@ -283,9 +242,11 @@ billionaires_by_country <- Billionaires_2014 |>
   ungroup() # Remove grouping structure
 
 # Preparing cartographic data
+
 world_map <- map_data("world") # Load world map coordinates from maps package
 
 # Mapping country names to match map_data format
+
 country_mapping <- c(
   "United States" = "USA",
   "United Kingdom" = "UK",
@@ -294,30 +255,39 @@ country_mapping <- c(
   "Czech Republic" = "Czech Republic"
 )
 
-billionaires_map <- billionaires_by_country |> 
+billionaires_map <- billionaires_by_country |>
   mutate(region = ifelse(COUNTRY %in% names(country_mapping), # Check if country needs mapping
-                         country_mapping[COUNTRY], # Apply mapping if found
-                         COUNTRY)) # Keep original name otherwise
+    country_mapping[COUNTRY], # Apply mapping if found
+    COUNTRY
+  )) # Keep original name otherwise
 
 # Join billionaire data with map data
+
 world_billionaires <- world_map |>
   left_join(billionaires_map, by = "region") # Merge map and billionaire data by region name
 
 # Map: Number of billionaires by country
+
 map_count <- ggplot() +
-  geom_polygon(data = world_map, # Draw all countries as base layer
-               aes(x = long, y = lat, group = group), # Define coordinates and grouping
-               fill = "grey90", color = "white", linewidth = 0.1) + # Draw only countries with billionaires
-  geom_polygon(data = world_billionaires |> filter(!is.na(nb_billionaires)), # Color by number of billionaires
-               aes(x = long, y = lat, group = group, fill = nb_billionaires), # White borders between countries
-               color = "white", linewidth = 0.1) +
-  scale_fill_viridis(option = "plasma", 
-                     name = "Number of\nbillionaires",
-                     trans = "log10", # Apply logarithmic transformation
-                     breaks = c(1, 5, 10, 50, 100, 500),
-                     direction=-1)+
+  geom_polygon(
+    data = world_map, # Draw all countries as base layer
+    aes(x = long, y = lat, group = group), # Define coordinates and grouping
+    fill = "grey90", color = "white", linewidth = 0.1
+  ) + # Draw only countries with billionaires
+  geom_polygon(
+    data = world_billionaires |> filter(!is.na(nb_billionaires)), # Color by number of billionaires
+    aes(x = long, y = lat, group = group, fill = nb_billionaires), # White borders between countries
+    color = "white", linewidth = 0.1
+  ) +
+  scale_fill_viridis(
+    option = "plasma",
+    name = "Number of\nbillionaires",
+    trans = "log10", # Apply logarithmic transformation
+    breaks = c(1, 5, 10, 50, 100, 500),
+    direction = -1
+  ) +
   theme_void() + # Remove axes and background for clean map
-  labs(title = "Global distribution of billionaires in 2014")+
+  labs(title = "Global distribution of billionaires in 2014") +
   theme(
     plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
     plot.subtitle = element_text(size = 12, hjust = 0.5),
@@ -336,9 +306,10 @@ This map shows a strong concentration of billionaires in a small number of large
 ```{r}
 #| message: false
 #| warning: false
+#| echo: false
 
 Sectors <-
-  Billionaires_2014 |> 
+  Billionaires_2014 |>
   group_by(sector) |>
   summarise(
     nombre_milliardaires = n(),
@@ -348,48 +319,59 @@ Sectors <-
   mutate(
     pct_self_made = (nb_self_made / nombre_milliardaires) * 100,
     pct_inherited = (nb_inherited / nombre_milliardaires) * 100
-  ) |> 
+  ) |>
   slice_max(n = 10, order_by = nombre_milliardaires) |>
-  pivot_longer(cols = c(nb_self_made, nb_inherited), 
-               names_to = "origine", 
-               values_to = "count") |>
+  pivot_longer(
+    cols = c(nb_self_made, nb_inherited),
+    names_to = "origine",
+    values_to = "count"
+  ) |>
   mutate(origine = ifelse(origine == "nb_self_made", "Self-made", "Inherited"))
 
 
 ggplot(Sectors, aes(x = reorder(sector, nombre_milliardaires), y = count, fill = origine)) +
-  geom_col() + 
-  coord_flip() + 
+  geom_col() +
+  coord_flip() +
   labs(
     title = "Distribution of billionaires by sector and origin of wealth in 2014",
     x = "Sector",
     y = "Total number of billionaires",
     fill = "Type of welath"
   ) +
-  theme_clean()
-
+  theme_clean(base_size = 10)
 ```
+
+This first graph illustrates the distribution of billionaires across various industries, highlighting that real estate is the most prominent sector for amassing such wealth, followed by retail and construction. A significant trend across almost all sectors is the clear dominance of self-made individuals over those who inherited their fortunes. This disparity is particularly pronounced in modern industries like technology, software, and hedge funds, where inherited wealth is virtually non-existent, whereas more traditional sectors like oil and banking show a relatively higher presence of generational wealth.
+
 
 ```{r}
 #| message: false
 #| warning: false
+#| echo: false
 
-Source <- 
-  Billionaires |> 
-  drop_na(selfmade) |> 
-  summarise(n = n(), .by = c(selfmade, year)) 
+
+Source <-
+  Billionaires |>
+  drop_na(selfmade) |>
+  summarise(n = n(), .by = c(selfmade, year))
 
 ggplot(Source, aes(y = factor(year), x = n, fill = selfmade)) +
   geom_col() +
-  labs(title = "Répartition de la richesse par année",
-       y = "Année",
-       x = "Nombre",
-       fill = "Origine") +
-  theme_clean()
+  labs(
+    title = "Source of wealth by year",
+    y = "Year",
+    x = "Number",
+    fill = "Origin"
+  ) +
+  theme_clean(base_size = 10)
 ```
+
+This graph tracks the evolution of billionaire wealth origins from 1996 to 2014, revealing a dramatic surge in the total number of billionaires globally, which increased from approximately 400 to over 1,600. While the billionaire population was much smaller and more evenly divided between inherited and self-made origins in 1996, the landscape shifted significantly by 2014. The expansion of this demographic over the eighteen-year period has been overwhelmingly driven by self-made entrepreneurs, who now constitute the vast majority of the total, indicating a global shift toward new wealth creation rather than the simple maintenance of inherited estates.
 
 ## 2) ARBITRAGE FISCAL ET GÉOGRAPHIQUE
 
 ## 3) RÉGRESSION MULTIPLE : QUELS DÉTERMINANTS ?
+<<<<<<< HEAD
 ```{r}
 # =============================================================================
 # RÉGRESSION DE BASE + TESTS APPROFONDIS
@@ -663,3 +645,5 @@ cat("→ Une politique fiscale équilibrée est possible sans perdre les ultra-r
 cat("═══════════════════════════════════════════════════════════════════\n")
 ```
 
+=======
+>>>>>>> 70fc4473f2f80a4c8487a4125ff685c64e80a202
