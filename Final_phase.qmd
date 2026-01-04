@@ -263,6 +263,8 @@ Billionaire taxation has emerged as one of the most polarizing economic question
 ### 1.1 Cartographie mondiale des milliardaires (2014)
 
 ```{r}
+#| message: false
+#| warning: false
 
 library(maps)
 library(viridis)
@@ -272,13 +274,13 @@ library(scales)
 library(patchwork)
 
 # Agrégation par pays : nombre et richesse totale
-billionaires_by_country <- Billionaires_2014 %>%
-  group_by(COUNTRY) %>%
+billionaires_by_country <- Billionaires_2014 |>
+  group_by(COUNTRY) |>
   summarise(
     nb_billionaires = n(),
     total_wealth = sum(networthusbillion, na.rm = TRUE),
     avg_wealth = mean(networthusbillion, na.rm = TRUE)
-  ) %>%
+  ) |>
   ungroup()
 
 # Préparation des données cartographiques
@@ -293,13 +295,13 @@ country_mapping <- c(
   "Czech Republic" = "Czech Republic"
 )
 
-billionaires_map <- billionaires_by_country %>%
+billionaires_map <- billionaires_by_country |>
   mutate(region = ifelse(COUNTRY %in% names(country_mapping), 
                          country_mapping[COUNTRY], 
                          COUNTRY))
 
 # Jointure avec la carte
-world_billionaires <- world_map %>%
+world_billionaires <- world_map |>
   left_join(billionaires_map, by = "region")
 
 # Carte : Nombre de milliardaires par pays
@@ -307,7 +309,7 @@ map_count <- ggplot() +
   geom_polygon(data = world_map, 
                aes(x = long, y = lat, group = group),
                fill = "grey90", color = "white", linewidth = 0.1) +
-  geom_polygon(data = world_billionaires %>% filter(!is.na(nb_billionaires)), 
+  geom_polygon(data = world_billionaires |> filter(!is.na(nb_billionaires)), 
                aes(x = long, y = lat, group = group, fill = nb_billionaires),
                color = "white", linewidth = 0.1) +
   scale_fill_viridis(option = "plasma", 
@@ -334,11 +336,11 @@ print(map_count)
 
 ### 1.4 Répartition par secteur - Top 10
 ```{r}
-secteurs <- Billionaires_2014 %>%
-  filter(!is.na(sector)) %>%
-  group_by(sector) %>%
-  summarise(n = n(), richesse = sum(networthusbillion, na.rm = TRUE)) %>%
-  arrange(desc(richesse)) %>%
+secteurs <- Billionaires_2014 |>
+  filter(!is.na(sector)) |>
+  group_by(sector) |>
+  summarise(n = n(), richesse = sum(networthusbillion, na.rm = TRUE)) |>
+  arrange(desc(richesse)) |>
   head(10)
 
 ggplot(secteurs, aes(x = reorder(sector, richesse), y = richesse)) +
@@ -353,15 +355,15 @@ ggplot(secteurs, aes(x = reorder(sector, richesse), y = richesse)) +
 
 ## 3) RÉGRESSION MULTIPLE : QUELS DÉTERMINANTS ?
 ```{r}
-reg_data <- Billionaires_2014 %>%
-  group_by(COUNTRY) %>%
-  summarise(nb_bill = n()) %>%
-  left_join(Tax_revenue_reduced %>% 
-              select(COUNTRY, tax = `2014`), by = "COUNTRY") %>%
-  left_join(IMF_reduced %>% select(COUNTRY, gdp = `2014`), by = "COUNTRY") %>%
-  left_join(FDI_reduced %>% select(COUNTRY, fdi = `2014`), by = "COUNTRY") %>%
-  left_join(Capital_formation_reduced %>% select(COUNTRY, capital = `2014`), by = "COUNTRY") %>%
-  mutate(log_bill = log(nb_bill + 1),log_gdp = log(gdp)) %>%
+reg_data <- Billionaires_2014 |>
+  group_by(COUNTRY) |>
+  summarise(nb_bill = n()) |>
+  left_join(Tax_revenue_reduced |> 
+              select(COUNTRY, tax = `2014`), by = "COUNTRY") |>
+  left_join(IMF_reduced |> select(COUNTRY, gdp = `2014`), by = "COUNTRY") |>
+  left_join(FDI_reduced |> select(COUNTRY, fdi = `2014`), by = "COUNTRY") |>
+  left_join(Capital_formation_reduced |> select(COUNTRY, capital = `2014`), by = "COUNTRY") |>
+  mutate(log_bill = log(nb_bill + 1),log_gdp = log(gdp)) |>
   filter(!is.na(tax) & !is.na(gdp) & !is.na(fdi) & !is.na(capital))
 
 modele <- lm(log_bill ~ tax + log_gdp + fdi + capital, data = reg_data)
