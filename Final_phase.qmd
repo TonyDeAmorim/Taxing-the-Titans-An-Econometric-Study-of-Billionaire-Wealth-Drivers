@@ -24,7 +24,6 @@ library(broom)
 library(scales)
 library(patchwork)
 library(ggthemes)
-library(car) #vif
 library(lmtest) #heteroscedasticity 
 
 # Data import
@@ -414,6 +413,7 @@ We here test for multicollinearity among the explanatory variables using the Var
 #| message: false
 #| warning: false
 #| echo: false
+library(car) #vif, setting it here to avoid conflict with dplyr 
 vif_df <- data.frame(
   Variable = names(vif(modele)),
   VIF = as.numeric(vif(modele))
