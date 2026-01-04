@@ -439,6 +439,9 @@ shapiro_test
 
 ```
 
+- The p-value is 0.7615 :  It is well above the critical threshold of 0.05 (or 5%), which means that we do not reject the null hypothesis (H0). We conclude that the residuals of our model follow a normal distribution.
+- The points (our data) follow the reference line almost perfectly, there are no major deviations, either at the extremes (no serious outliers) or in the centre. The distribution is symmetrical.
+
 ### 2.3 Heteroscedasticity 
 
 We here test for heteroscedasticity using the Breusch–Pagan test to check whether the error variance is constant. 
