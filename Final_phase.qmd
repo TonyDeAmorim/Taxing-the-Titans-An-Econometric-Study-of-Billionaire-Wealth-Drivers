@@ -371,10 +371,7 @@ ggplot(Source, aes(y = factor(year), x = n, fill = selfmade)) +
 This graph tracks the evolution of billionaire wealth origins from 1996 to 2014, revealing a dramatic surge in the total number of billionaires globally, which increased from approximately 400 to over 1,600. While the billionaire population was much smaller and more evenly divided between inherited and self-made origins in 1996, the landscape shifted significantly by 2014. The expansion of this demographic over the eighteen-year period has been overwhelmingly driven by self-made entrepreneurs, who now constitute the vast majority of the total, indicating a global shift toward new wealth creation rather than the simple maintenance of inherited estates.
 
 ## 2) First model
-<<<<<<< HEAD
-=======
 
->>>>>>> e04daf86e2a0a102a125aafbcbd3914adc6b6004
 ```{r}
 #| label: First model
 #| message: false
@@ -412,15 +409,12 @@ summary(modele)
 
 We here test
 ```{r}
-<<<<<<< HEAD
-=======
 
->>>>>>> e04daf86e2a0a102a125aafbcbd3914adc6b6004
 #| label: Multicolinearity analysis
 #| message: false
 #| warning: false
 #| echo: false
-<<<<<<< HEAD
+
 vif_df <- data.frame(
   Variable = names(vif(modele)),
   VIF = as.numeric(vif(modele))
@@ -430,16 +424,6 @@ vif_df
 
 The VIF values (≈1.19–1.34) are close to 1, indicating no meaningful multicollinearity among the regressors, so coefficient significance is unlikely to be driven by correlated explanatory variables.
 
-
-=======
-
-vif_df <- data.frame(
-  Variable = names(vif(modele)),
-  VIF = as.numeric(vif(modele)))
-
-```
-
->>>>>>> e04daf86e2a0a102a125aafbcbd3914adc6b6004
 ### 2.2 Normality test for residuals
 
 Here, we test whether our data are distributed according to a normal distribution. To do this, we calculate the Shapiro-Wilk normality test statistics. We obtain the following results:
@@ -459,33 +443,8 @@ text(x = -1.5, y = max(res), labels = txt, col = "black", font = 2)
 
 ```
 
-<<<<<<< HEAD
-
-### 2.3 
-=======
 - The p-value is 0.7615 :  It is well above the critical threshold of 0.05 (or 5%), which means that we do not reject the null hypothesis (H0). We conclude that the residuals of our model follow a normal distribution.
 - The points (our data) follow the reference line almost perfectly, there are no major deviations, either at the extremes (no serious outliers) or in the centre. The distribution is symmetrical.
-
->>>>>>> e04daf86e2a0a102a125aafbcbd3914adc6b6004
-```{r}
-# =============================================================================
-# TEST 3 : TEST D'HÉTÉROSCÉDASTICITÉ (Breusch-Pagan)
-# =============================================================================
-
-cat("\n=== TEST 3 : HÉTÉROSCÉDASTICITÉ (Breusch-Pagan) ===\n")
-
-# Test manuel de Breusch-Pagan
-residuals_sq <- residuals(modele)^2
-bp_model <- lm(residuals_sq ~ tax + log_gdp + fdi + capital, data = reg_data)
-bp_stat <- nobs(modele) * summary(bp_model)$r.squared
-bp_pvalue <- pchisq(bp_stat, df = 4, lower.tail = FALSE)
-
-cat("BP statistic =", round(bp_stat, 4), "\n")
-cat("P-value =", round(bp_pvalue, 4), "\n")
-cat("Interprétation:", ifelse(bp_pvalue > 0.05, 
-                              "Homoscédasticité (variance constante) ✓", 
-                              "Hétéroscédasticité détectée ✗"), "\n\n")
-```
 
 ### 2.3 Heteroscedasticity 
 
