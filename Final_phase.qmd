@@ -15,7 +15,12 @@ library(tidyverse) # To clean, modify and analyze our data
 library(ggplot2) # For graphical representation
 library(stringr) # To clean the data
 library(dplyr)
-
+library(maps)
+library(viridis)
+library(ggrepel)
+library(broom)
+library(scales)
+library(patchwork)
 
 Billionaires <- read_delim("Database_project/Billionaires_dataset.csv",
   delim = ";", escape_double = FALSE, trim_ws = TRUE
@@ -266,27 +271,20 @@ Billionaire taxation has emerged as one of the most polarizing economic question
 #| message: false
 #| warning: false
 
-library(maps)
-library(viridis)
-library(ggrepel)
-library(broom)
-library(scales)
-library(patchwork)
-
-# Agrégation par pays : nombre et richesse totale
+# Aggregation by country: number and total wealth
 billionaires_by_country <- Billionaires_2014 |>
-  group_by(COUNTRY) |>
+  group_by(COUNTRY) |> # Group data by country
   summarise(
-    nb_billionaires = n(),
-    total_wealth = sum(networthusbillion, na.rm = TRUE),
-    avg_wealth = mean(networthusbillion, na.rm = TRUE)
+    nb_billionaires = n(), # Count the number of billionaires per country
+    total_wealth = sum(networthusbillion, na.rm = TRUE), # Sum total wealth, removing NA
+    avg_wealth = mean(networthusbillion, na.rm = TRUE) # Calculate average wealth per billionaire
   ) |>
-  ungroup()
+  ungroup() # Remove grouping structure
 
-# Préparation des données cartographiques
-world_map <- map_data("world")
+# Preparing cartographic data
+world_map <- map_data("world") # Load world map coordinates from maps package
 
-# Mapping des noms de pays pour correspondance avec map_data
+# Mapping country names to match map_data format
 country_mapping <- c(
   "United States" = "USA",
   "United Kingdom" = "UK",
@@ -295,30 +293,30 @@ country_mapping <- c(
   "Czech Republic" = "Czech Republic"
 )
 
-billionaires_map <- billionaires_by_country |>
-  mutate(region = ifelse(COUNTRY %in% names(country_mapping), 
-                         country_mapping[COUNTRY], 
-                         COUNTRY))
+billionaires_map <- billionaires_by_country |> 
+  mutate(region = ifelse(COUNTRY %in% names(country_mapping), # Check if country needs mapping
+                         country_mapping[COUNTRY], # Apply mapping if found
+                         COUNTRY)) # Keep original name otherwise
 
-# Jointure avec la carte
+# Join billionaire data with map data
 world_billionaires <- world_map |>
-  left_join(billionaires_map, by = "region")
+  left_join(billionaires_map, by = "region") # Merge map and billionaire data by region name
 
-# Carte : Nombre de milliardaires par pays
+# Map: Number of billionaires by country
 map_count <- ggplot() +
-  geom_polygon(data = world_map, 
-               aes(x = long, y = lat, group = group),
-               fill = "grey90", color = "white", linewidth = 0.1) +
-  geom_polygon(data = world_billionaires |> filter(!is.na(nb_billionaires)), 
-               aes(x = long, y = lat, group = group, fill = nb_billionaires),
+  geom_polygon(data = world_map, # Draw all countries as base layer
+               aes(x = long, y = lat, group = group), # Define coordinates and grouping
+               fill = "grey90", color = "white", linewidth = 0.1) + # Draw only countries with billionaires
+  geom_polygon(data = world_billionaires |> filter(!is.na(nb_billionaires)), # Color by number of billionaires
+               aes(x = long, y = lat, group = group, fill = nb_billionaires), # White borders between countries
                color = "white", linewidth = 0.1) +
   scale_fill_viridis(option = "plasma", 
-                     name = "Nombre de\nmilliardaires",
-                     trans = "log10",
-                     breaks = c(1, 5, 10, 50, 100, 500))+
-  theme_void() +
-  labs(title = "Cartographie mondiale des milliardaires (2014)",
-       subtitle = "Distribution géographique des ultra-riches") +
+                     name = "Number of\nbillionaires",
+                     trans = "log10", # Apply logarithmic transformation
+                     breaks = c(1, 5, 10, 50, 100, 500),
+                     direction=-1)+
+  theme_void() + # Remove axes and background for clean map
+  labs(title = "Global distribution of billionaires in 2014")+
   theme(
     plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
     plot.subtitle = element_text(size = 12, hjust = 0.5),
@@ -327,6 +325,9 @@ map_count <- ggplot() +
 
 print(map_count)
 ```
+For this specific map, we used AI assistance to help refine the R code and generate a clearer, more visual representation. We already had the initial intuition and the base approach, but we chose this mapping option because it is easier to read and more informative than a standard “classic” ggplot output.
+
+This map shows a strong concentration of billionaires in a small number of large, high-income economies. The United States clearly stands out as the main hub, while Western Europe and parts of East Asia form a second cluster. Russia and India also appear as major centers, highlighting the role of large domestic markets and resource wealth. In contrast, most of Sub-Saharan Africa and many smaller or lower-income countries show few or none, underlining how billionaire wealth tends to align with economic scale, financial development, and the presence of major business hubs.
 
 ### 1.3 Self-made vs Héritiers
 ```{r}
