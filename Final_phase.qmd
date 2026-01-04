@@ -24,6 +24,7 @@ library(broom)
 library(scales)
 library(patchwork)
 library(ggthemes)
+library(car)
 
 # Data import
 
@@ -371,7 +372,6 @@ This graph tracks the evolution of billionaire wealth origins from 1996 to 2014,
 ## 2) ARBITRAGE FISCAL ET GÉOGRAPHIQUE
 
 ## 3) RÉGRESSION MULTIPLE : QUELS DÉTERMINANTS ?
-<<<<<<< HEAD
 ```{r}
 # =============================================================================
 # RÉGRESSION DE BASE + TESTS APPROFONDIS
@@ -415,33 +415,15 @@ cat("Soit environ", round((exp(coef(modele)["tax"]) - 1) * 100, 2),
 
 
 
+
 ```{r}
-# =============================================================================
-# TEST 1 : ANALYSE DE LA MULTICOLINÉARITÉ (VIF)
-# =============================================================================
-
-cat("\n=== TEST 1 : VARIANCE INFLATION FACTOR (VIF) ===\n")
-cat("Vérifie si les variables sont trop corrélées entre elles\n\n")
-
-# Calcul manuel du VIF
-vif_values <- sapply(c("tax", "log_gdp", "fdi", "capital"), function(var) {
-  formula <- as.formula(paste(var, "~ tax + log_gdp + fdi + capital -", var))
-  r2 <- summary(lm(formula, data = reg_data))$r.squared
-  1 / (1 - r2)
-})
-
-vif_table <- data.frame(
-  Variable = c("tax", "log_gdp", "fdi", "capital"),
-  VIF = vif_values
+vif_df <- data.frame(
+  Variable = names(vif(modele)),
+  VIF = as.numeric(vif(modele))
 )
-print(vif_table)
-
-cat("\nInterprétation VIF :\n")
-cat("- VIF < 5 : Pas de problème\n")
-cat("- VIF 5-10 : Multicolinéarité modérée\n")
-cat("- VIF > 10 : Multicolinéarité problématique\n\n")
-
+ vif_df
 ```
+
 
 ```{r}
 # =============================================================================
@@ -645,5 +627,3 @@ cat("→ Une politique fiscale équilibrée est possible sans perdre les ultra-r
 cat("═══════════════════════════════════════════════════════════════════\n")
 ```
 
-=======
->>>>>>> 70fc4473f2f80a4c8487a4125ff685c64e80a202
