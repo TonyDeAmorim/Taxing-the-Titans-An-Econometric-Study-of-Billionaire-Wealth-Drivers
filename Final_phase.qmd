@@ -405,6 +405,7 @@ summary(modele)
 
 
 ```
+
 Our baseline regression links the (log) number of billionaires in a country to our taxation proxy (tax revenue), economic size (GDP), openness (FDI), and investment capacity (capital formation). Overall, the model fits the data well (Adjusted R²= 0.771; F-test p-value < 10^(-14)), suggesting these macroeconomic factors explain a large share of cross-country variation in billionaire presence.
 
 The coefficient on tax revenue is positive (β = 0.022) and marginally significant at the 10% level (p = 0.097). Interpreting tax revenue as a proxy for the overall level of taxation/fiscal pressure, this result suggests that countries with stronger tax capacity tend to host more, not fewer, billionaires. Economically, this is consistent with the idea that higher-tax countries often also provide the institutional and public-good environment that supports wealth creation and wealth retention—stable legal systems, infrastructure, education, and high-quality public services.
@@ -489,25 +490,4 @@ The Shapiro–Wilk test (p = 0.7615) suggests the residuals are approximately no
 The Breusch–Pagan test (p = 0.7439) shows no evidence of heteroskedasticity, meaning the error variance can be treated as constant.
 Taken together, these checks imply that our coefficient estimates and standard inference from this model are generally reliable.
 
-## 3) Expanding the model
-### 3.1 
-
-```{r}
-#| label: Chow test 
-#| message: false
-#| warning: false
-#| echo: false
-
-library(quantreg)
-
-quantiles <- c(0.1, 0.25, 0.5, 0.75, 0.9)
-
-fit_quant <- rq(nb_bill ~ tax + log_gdp + log(fdi), 
-                data = reg_data, 
-                tau = quantiles)
-
-summary(fit_quant)
-plot(summary(fit_quant))
-
-```
-
+## 3)
