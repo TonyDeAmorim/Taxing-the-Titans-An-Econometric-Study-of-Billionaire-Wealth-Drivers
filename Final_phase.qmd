@@ -666,11 +666,18 @@ country_scores_full <- country_risk %>%
 
 country_scores_full
 
-
+#probleme flight score avec la conversion logistique ca donne une proba de 0.5 alors que lescore est de 0
 ```
 
+The table aggregates the flight-risk indicators at the country level for countries with more than ten billionaires. It reports the number of billionaires, total billionaire wealth (in $bn), the average flight-risk score (our composite index), the average implied flight probability (from the calibrated logistic mapping), and the share of individuals classified as “high risk”.
 
-## 4) SCÉNARIOS POLITIQUES : IMPACT DE LA COORDINATION INTERNATIONALE
+Overall, the ranking is economically coherent: countries with higher average flight-risk scores also display higher average flight probabilities, confirming that the logistic calibration preserves the ordering of the underlying index while translating it into an interpretable mobility metric. At the top of the distribution, countries such as the United Kingdom, Israel, and Sweden exhibit the highest average risk scores and correspondingly high predicted mobility. This is consistent with our mechanisms: a greater presence of internationally mobile sectors and lower frictions to cross-border relocation (captured by our proximity proxy) increase the expected responsiveness of billionaire wealth to a new wealth tax.
+
+France appears in the upper-middle of the distribution, with a moderate-to-high average risk score and an implied mobility rate around the low-teens. This suggests that, while fiscal pressure can create incentives to relocate, the average predicted response remains limited by the composition and embeddedness of wealth (e.g., fortunes tied to less footloose activities or inherited structures). In contrast, the United States concentrates by far the largest number of billionaires and the largest total wealth, yet its average risk score is not among the highest. This result supports the idea that market size and domestic opportunities can reduce the need to relocate even in an open economy: large economies can host many billionaires without necessarily exhibiting the highest average mobility.
+
+Finally, the “% high-risk” column highlights within-country heterogeneity. Some countries have a relatively high share of high-risk profiles, indicating that potential tax-base erosion may be concentrated in a subset of individuals rather than uniformly spread. This distinction is important for policy simulations: revenue losses depend not only on average mobility but also on how risk is distributed across billionaire profiles and, especially, across the largest fortunes.
+
+
 ```{r}
 #| label: Define G7 and G20 members
 
