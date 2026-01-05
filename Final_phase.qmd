@@ -145,20 +145,20 @@ WB_names <-
   FDI |>
   distinct(`Country Name`)
 
-map_WB <- list(
-  "Czech Republic" ~ "Czechia",
-  "Egypt, Arab Rep." ~ "Egypt",
-  "Hong Kong SAR, China" ~ "Hong Kong",
-  "Macao SAR, China" ~ "Macau",
-  "Russian Federation" ~ "Russia",
-  "Korea, Rep." ~ "South Korea",
-  "Venezuela, RB" ~ "Venezuela",
-  "Viet Nam" ~ "Vietnam"
+map_WB <- c(
+  "Czechia" = "Czech Republic",
+  "Egypt, Arab Rep." = "Egypt",
+  "Hong Kong SAR, China" = "Hong Kong",
+  "Macao SAR, China" = "Macau",
+  "Russian Federation" = "Russia",
+  "Korea, Rep." = "South Korea",
+  "Venezuela, RB" = "Venezuela",
+  "Viet Nam" = "Vietnam"
 )
 
-FDI <- 
+FDI <-
   FDI |>
-  mutate(`Country Name` = case_match(`Country Name`, !!!map_WB, .default = `Country Name`))
+  mutate(`Country Name` = recode(`Country Name`, !!!map_WB))
 
 FDI <-
   FDI |>
@@ -171,7 +171,7 @@ FDI_reduced <-
 
 Tax_revenue <-
   Tax_revenue |>
-  mutate(`Country Name` = case_match(`Country Name`, !!!map_WB, .default = `Country Name`))
+  mutate(`Country Name` = recode(`Country Name`, !!!map_WB))
 
 Tax_revenue <-
   Tax_revenue |>
@@ -184,7 +184,7 @@ Tax_revenue_reduced <-
 
 Capital_formation <-
   Capital_formation |>
-  mutate(`Country Name` = case_match(`Country Name`, !!!map_WB, .default = `Country Name`))
+  mutate(`Country Name` = recode(`Country Name`, !!!map_WB))
 
 Capital_formation <-
   Capital_formation |>
@@ -197,7 +197,7 @@ Capital_formation_reduced <-
 
 Population <-
   Population |>
-  mutate(`Country Name` = case_match(`Country Name`, !!!map_WB, .default = `Country Name`))
+  mutate(`Country Name` = recode(`Country Name`, !!!map_WB))
 
 Population <-
   Population |>
@@ -207,7 +207,6 @@ Population <-
 Population_reduced <-
   Population |>
   select(COUNTRY, `1996`, `2000`, `2014`)
-
 ```
 
 # Introduction
@@ -554,9 +553,7 @@ flight_risk_index <-
 
 For each billionaire, four indicators are calculated, which are then combined to obtain the final flight risk score. For the calculation, we assigned the following coefficients :
 
-$$
-\text{Score} = 0.4 \cdot \text{Taxation} + 0.3 \cdot \text{Mobility} + 0.15 \cdot \text{Source of wealth} + 0.1 \cdot \text{Proximity}
-$$
+$\text{Score} = 0.4\cdot\text{Taxation} + 0.3\cdot\text{Mobility} + 0.15\cdot\text{Source_of_wealth} + 0.1\cdot\text{Proximity}$
 
 - Taxation has the highest coefficient because it is theoretically the most significant incentive to leave.
 - Mobility comes next, as it represents the most difficult physical constraint to overcome.
@@ -610,5 +607,86 @@ country_risk <-
 
 print(head(country_risk, 10))
 ```
+
+## 4) SCÉNARIOS POLITIQUES : IMPACT DE LA COORDINATION INTERNATIONALE
+```{r}
+## CHUNK 2.1 : Définition des groupes de pays
+# -----------------------------------------------------------------------------
+# On définit qui fait partie du G7 et du G20 pour modéliser les scénarios
+
+G7 <- c("United States", "United Kingdom", "Germany", "France", 
+        "Italy", "Canada", "Japan")
+
+G20 <- c(G7, "China", "India", "Brazil", "Russia", "Australia",
+         "South Korea", "Mexico", "Indonesia", "Turkey", "Saudi Arabia",
+         "Argentina", "South Africa")
+```
+
+
+```{r}
+## CHUNK 2.2 : Fonction de simulation des recettes fiscales
+# -----------------------------------------------------------------------------
+# Cette fonction calcule les recettes d'une taxe en tenant compte de la fuite
+# Elle prend en entrée un coefficient d'ajustement de la probabilité de fuite
+
+simulate_tax_scenario <- function(data, scenario_name, flight_multiplier) {
+  # flight_multiplier : ajuste la probabilité de fuite
+  # = 1.0 pour fuite normale, < 1.0 pour fuite réduite (coordination)
+  
+  results <- data %>%
+    mutate(
+      # Probabilité effective de fuite dans ce scénario
+      effective_flight_prob = flight_risk_score * flight_multiplier,
+      effective_flight_prob = pmin(effective_flight_prob, 1), # Max = 1
+      
+      # Richesse initiale taxable
+      initial_wealth = networthusbillion,
+      
+      # Richesse qui fuit à l'étranger
+      fled_wealth = initial_wealth * effective_flight_prob,
+      
+      # Richesse restante (qui sera taxée)
+      taxable_wealth = initial_wealth - fled_wealth,
+      
+      # Recettes potentielles (si aucune fuite)
+      potential_revenue = initial_wealth * 0.02, # Taxe de 2%
+      
+      # Recettes réelles (après fuite)
+      actual_revenue = taxable_wealth * 0.02,
+      
+      # Perte de recettes due à la fuite
+      lost_revenue = potential_revenue - actual_revenue
+    )
+  
+  # Résumé global
+  global_summary <- results %>%
+    summarise(
+      scenario = scenario_name,
+      total_billionaires = n(),
+      avg_flight_prob = mean(effective_flight_prob) * 100,
+      total_wealth_billion = sum(initial_wealth),
+      fled_wealth_billion = sum(fled_wealth),
+      potential_revenue_billion = sum(potential_revenue),
+      actual_revenue_billion = sum(actual_revenue),
+      lost_revenue_billion = sum(lost_revenue),
+      collection_efficiency = (actual_revenue_billion / potential_revenue_billion) * 100
+    )
+  
+  # Résumé par pays (top contributeurs)
+  country_summary <- results %>%
+    group_by(COUNTRY) %>%
+    summarise(
+      scenario = scenario_name,
+      nb_bill = n(),
+      potential = sum(potential_revenue),
+      actual = sum(actual_revenue),
+      lost = sum(lost_revenue)
+    ) %>%
+    arrange(desc(actual))
+  
+  return(list(global = global_summary, by_country = country_summary))
+}
+```
+
 
 
