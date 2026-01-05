@@ -660,10 +660,10 @@ country_risk <-
 top_country_risk <-
   country_risk |> 
   filter(nb_billionaires > 10) |> 
-  slice_max(order_by = avg_flight_risk, n = 10)
+  slice_max(order_by = avg_flight_prob, n = 10)
 
 top_country_risk |>
-  select(1, 2, 4) |>
+  select(1, 2, 5) |>
   kable(
     format = "latex", 
     booktabs = TRUE,        
@@ -671,7 +671,6 @@ top_country_risk |>
     caption = "Top Country Risk Analysis",
     digits = 2)
 
-top_country_risk
 
 #probleme flight score avec la conversion logistique ca donne une proba de 0.5 alors que lescore est de 0
 ```
