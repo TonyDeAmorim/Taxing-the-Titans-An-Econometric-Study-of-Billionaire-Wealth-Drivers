@@ -528,6 +528,7 @@ flight_risk_index <-
     mobile_sector = ifelse(industry %in% mobile_sectors, 1, 0),
     # source of wealth index computation
     is_selfmade = ifelse(selfmade == "self-made", 1, 0),
+    is_selfmade = replace_na(is_selfmade, 0),
 
   
     # proximity to tax haven index computation
