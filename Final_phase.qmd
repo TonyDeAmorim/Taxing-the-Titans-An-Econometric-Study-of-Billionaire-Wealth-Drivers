@@ -403,6 +403,7 @@ reg_data <- Billionaires_2014 |>
 modele <- lm(log_bill ~ tax + log_gdp + fdi + capital, data = reg_data)
 summary(modele)
 ```
+
 Our baseline regression links the (log) number of billionaires in a country to our taxation proxy (tax revenue), economic size (GDP), openness (FDI), and investment capacity (capital formation). Overall, the model fits the data well (Adjusted R²= 0.771; F-test p-value < 10^(-14)), suggesting these macroeconomic factors explain a large share of cross-country variation in billionaire presence.
 
 The coefficient on tax revenue is positive (β = 0.022) and marginally significant at the 10% level (p = 0.097). Interpreting tax revenue as a proxy for the overall level of taxation/fiscal pressure, this result suggests that countries with stronger tax capacity tend to host more, not fewer, billionaires. Economically, this is consistent with the idea that higher-tax countries often also provide the institutional and public-good environment that supports wealth creation and wealth retention—stable legal systems, infrastructure, education, and high-quality public services.
@@ -517,17 +518,16 @@ tax_havens <- c(
 flight_risk_index <-
   Billionaires_2014 |>
   left_join(Tax_revenue_reduced |> select(COUNTRY, tax = `2014`), by = "COUNTRY") |>
-  filter(!is.na(tax)) |>
   mutate(
     # tax burden score calculation
     tax_normalized =
-      (tax - min(tax, na.rm = TRUE)) / (max(tax, na.rm = TRUE) -
-        min(tax, na.rm = TRUE)),
+      ifelse(tax != 0, (tax - min(tax, na.rm = TRUE)) / (max(tax, na.rm = TRUE) - min(tax, na.rm = TRUE)), 0),
+    tax_normalized =
+      ifelse(is.na(tax) == TRUE, 0, tax_normalized ),
     # mobility score calculation
     mobile_sector = ifelse(industry %in% mobile_sectors, 1, 0),
     # source of wealth index computation
     is_selfmade = ifelse(selfmade == "self-made", 1, 0),
-    is_selfmade = replace_na(is_selfmade, 0),
 
   
     # proximity to tax haven index computation
@@ -551,7 +551,9 @@ flight_risk_index <-
       TRUE ~ 0
     ),
     in_tax_haven = ifelse(COUNTRY %in% tax_havens, 1, 0)
-    )
+    ) 
+
+
 ```
 
 For each billionaire, four indicators are calculated, which are then combined to obtain the final flight risk score. For the calculation, we assigned the following coefficients :
@@ -587,6 +589,7 @@ flight_risk_index <-
       flight_risk_score >= 0.6 ~ "High"
     )
   )
+
 ```
 
 We convert the flight-risk score into an expected flight probability using a logistic transformation because the score is an index (0–1) that ranks individuals by relative exposure to mobility incentives, but it is not directly interpretable as a probability or a share of wealth that would relocate. The logistic mapping ensures predicted values remain bounded between 0 and 1 and allows for a more realistic non-linear response: small changes in risk matter little for low-risk profiles, while effects become stronger for high-risk profiles without mechanically producing extreme flight rates.
@@ -638,33 +641,38 @@ Now that we have converted the flight-risk score into a calibrated flight probab
 #| warning: false
 #| echo: false
 
+library(knitr)
+library(kableExtra)
+
 country_risk <- 
   flight_risk_index |>
   summarise(
-    nb_billionaires = n(), # number of billionaires
+    nb_billionaires = n(),# number of billionaires
     total_wealth = sum(wealth_bil, na.rm = TRUE), # total wealth ($bn), unit-corrected
     avg_flight_risk = mean(flight_risk_score, na.rm = TRUE), # average risk score (index)
-    avg_flight_prob = mean(flight_prob, na.rm = TRUE), # average calibrated flight probability
-    nb_high_risk = sum(risk_category == "High", na.rm = TRUE), # count of high-risk individuals
+    avg_flight_prob = mean(flight_prob, na.rm = TRUE), # average risk score (prob)
+    nb_high_risk = sum(risk_category == "High", na.rm = TRUE), # average calibrated flight probability
     pct_high_risk = (nb_high_risk / n()) * 100, # % of high-risk individuals
-    tax = mean(tax, na.rm = TRUE),# average tax proxy (same within a country) 
-    .by = COUNTRY  # group by country (dplyr shortcut)
-  ) |>
+    tax = mean(tax, na.rm = TRUE), # average tax proxy (same within a country)
+    .by = COUNTRY
+  ) |> 
+  arrange(desc(avg_flight_risk)) 
+
+top_country_risk <-
+  country_risk |> 
   filter(nb_billionaires > 10) |> 
-  arrange(desc(avg_flight_risk))  # rank countries by average risk score
-#PK il y en a que 21
+  slice_max(order_by = avg_flight_risk, n = 10)
 
-country_scores_full <- country_risk %>%
-  transmute(
-    Country = COUNTRY,
-    `nb of billionaires` = nb_billionaires,
-    `Total wealth ($bn)` = round(total_wealth, 1),
-    `Avg flight-risk score` = round(avg_flight_risk, 3),
-    `Avg flight probability (%)` = round(100 * avg_flight_prob, 1),
-    `% high-risk` = round(pct_high_risk, 1),
-  )
+top_country_risk |>
+  select(1, 2, 4) |>
+  kable(
+    format = "latex", 
+    booktabs = TRUE,        
+    longtable = TRUE, 
+    caption = "Top Country Risk Analysis",
+    digits = 2)
 
-country_scores_full
+top_country_risk
 
 #probleme flight score avec la conversion logistique ca donne une proba de 0.5 alors que lescore est de 0
 ```
