@@ -630,7 +630,7 @@ flight_risk_index <- flight_risk_index %>%
 ```
 
 
-We can now aggregate and calculate the average flight risk and number of high-risk billionaires for each country. 
+Now that we have converted the flight-risk score into a calibrated flight probability (flight_prob), we aggregate the results at the country level. This allows us to compare countries in terms of (i) billionaire concentration, (ii) total billionaire wealth, and (iii) both the average risk index and the average implied mobility (probability), focusing on countries with a sufficiently large billionaire sample.
 
 ```{r}
 
@@ -641,17 +641,31 @@ We can now aggregate and calculate the average flight risk and number of high-ri
 country_risk <- 
   flight_risk_index |>
   summarise(
-    nb_billionaires = n(),
-    total_wealth = sum(wealth_bil, na.rm = TRUE),
-    avg_flight_risk = mean(flight_risk_score, na.rm = TRUE),
-    avg_flight_prob = mean(flight_prob, na.rm = TRUE), #AJOUT
-    nb_high_risk = sum(risk_category == "High", na.rm = TRUE),
-    pct_high_risk = (nb_high_risk / n()) * 100,
-    tax = mean(tax, na.rm = TRUE),
-    .by = COUNTRY
+    nb_billionaires = n(), # number of billionaires
+    total_wealth = sum(wealth_bil, na.rm = TRUE), # total wealth ($bn), unit-corrected
+    avg_flight_risk = mean(flight_risk_score, na.rm = TRUE), # average risk score (index)
+    avg_flight_prob = mean(flight_prob, na.rm = TRUE), # average calibrated flight probability
+    nb_high_risk = sum(risk_category == "High", na.rm = TRUE), # count of high-risk individuals
+    pct_high_risk = (nb_high_risk / n()) * 100, # % of high-risk individuals
+    tax = mean(tax, na.rm = TRUE),# average tax proxy (same within a country) 
+    .by = COUNTRY  # group by country (dplyr shortcut)
   ) |>
   filter(nb_billionaires > 10) |> 
-  arrange(desc(avg_flight_risk))
+  arrange(desc(avg_flight_risk))  # rank countries by average risk score
+#PK il y en a que 21
+
+country_scores_full <- country_risk %>%
+  transmute(
+    Country = COUNTRY,
+    `nb of billionaires` = nb_billionaires,
+    `Total wealth ($bn)` = round(total_wealth, 1),
+    `Avg flight-risk score` = round(avg_flight_risk, 3),
+    `Avg flight probability (%)` = round(100 * avg_flight_prob, 1),
+    `% high-risk` = round(pct_high_risk, 1),
+  )
+
+country_scores_full
+
 
 ```
 
@@ -749,6 +763,7 @@ summary_table_all
 
 ```
 
+concave loss of revenue 
 
 ```{r}
 #| label: Top 5 contributeurs à la perte 
