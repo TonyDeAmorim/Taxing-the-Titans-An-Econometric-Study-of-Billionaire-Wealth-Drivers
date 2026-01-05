@@ -145,20 +145,20 @@ WB_names <-
   FDI |>
   distinct(`Country Name`)
 
-map_WB <- c(
-  "Czechia" = "Czech Republic",
-  "Egypt, Arab Rep." = "Egypt",
-  "Hong Kong SAR, China" = "Hong Kong",
-  "Macao SAR, China" = "Macau",
-  "Russian Federation" = "Russia",
-  "Korea, Rep." = "South Korea",
-  "Venezuela, RB" = "Venezuela",
-  "Viet Nam" = "Vietnam"
+map_WB <- list(
+  "Czech Republic" ~ "Czechia",
+  "Egypt, Arab Rep." ~ "Egypt",
+  "Hong Kong SAR, China" ~ "Hong Kong",
+  "Macao SAR, China" ~ "Macau",
+  "Russian Federation" ~ "Russia",
+  "Korea, Rep." ~ "South Korea",
+  "Venezuela, RB" ~ "Venezuela",
+  "Viet Nam" ~ "Vietnam"
 )
 
-FDI <-
+FDI <- 
   FDI |>
-  mutate(`Country Name` = recode(`Country Name`, !!!map_WB))
+  mutate(`Country Name` = case_match(`Country Name`, !!!map_WB, .default = `Country Name`))
 
 FDI <-
   FDI |>
@@ -171,7 +171,7 @@ FDI_reduced <-
 
 Tax_revenue <-
   Tax_revenue |>
-  mutate(`Country Name` = recode(`Country Name`, !!!map_WB))
+  mutate(`Country Name` = case_match(`Country Name`, !!!map_WB, .default = `Country Name`))
 
 Tax_revenue <-
   Tax_revenue |>
@@ -184,7 +184,7 @@ Tax_revenue_reduced <-
 
 Capital_formation <-
   Capital_formation |>
-  mutate(`Country Name` = recode(`Country Name`, !!!map_WB))
+  mutate(`Country Name` = case_match(`Country Name`, !!!map_WB, .default = `Country Name`))
 
 Capital_formation <-
   Capital_formation |>
@@ -197,7 +197,7 @@ Capital_formation_reduced <-
 
 Population <-
   Population |>
-  mutate(`Country Name` = recode(`Country Name`, !!!map_WB))
+  mutate(`Country Name` = case_match(`Country Name`, !!!map_WB, .default = `Country Name`))
 
 Population <-
   Population |>
@@ -207,6 +207,7 @@ Population <-
 Population_reduced <-
   Population |>
   select(COUNTRY, `1996`, `2000`, `2014`)
+
 ```
 
 # Introduction
@@ -553,7 +554,9 @@ flight_risk_index <-
 
 For each billionaire, four indicators are calculated, which are then combined to obtain the final flight risk score. For the calculation, we assigned the following coefficients :
 
-$\text{Score} = 0.4\cdot\text{Taxation} + 0.3\cdot\text{Mobility} + 0.15\cdot\text{Source_of_wealth} + 0.1\cdot\text{Proximity}$
+$$
+\text{Score} = 0.4 \cdot \text{Taxation} + 0.3 \cdot \text{Mobility} + 0.15 \cdot \text{Source of wealth} + 0.1 \cdot \text{Proximity}
+$$
 
 - Taxation has the highest coefficient because it is theoretically the most significant incentive to leave.
 - Mobility comes next, as it represents the most difficult physical constraint to overcome.
@@ -608,6 +611,9 @@ country_risk <-
 
 
 ```
+
+
+
 
 ## 4) SCÉNARIOS POLITIQUES : IMPACT DE LA COORDINATION INTERNATIONALE
 ```{r}
