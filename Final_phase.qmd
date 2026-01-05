@@ -105,31 +105,31 @@ liste_pays <- c(
   "Venezuela", "Vietnam"
 )
 
-map_IMF <- c(
-  "Bahrain, Kingdom of" = "Bahrain",
-  "China, People's Republic of" = "China",
-  "Egypt, Arab Republic of" = "Egypt",
-  "Hong Kong Special Administrative Region, People's Republic of China" = "Hong Kong",
-  "Kazakhstan, Republic of" = "Kazakhstan",
-  "Liechtenstein, Principality of" = "Liechtenstein",
-  "Lithuania, Republic of" = "Lithuania",
-  "Macao Special Administrative Region, People's Republic of China" = "Macau",
-  "Netherlands, The" = "Netherlands",
-  "Poland, Republic of" = "Poland",
-  "Russian Federation" = "Russia",
-  "Korea, Republic of" = "South Korea",
-  "Eswatini, Kingdom of" = "Swaziland",
-  "Taiwan Province of China" = "Taiwan",
-  "Tanzania, United Republic of" = "Tanzania",
-  "Türkiye, Republic of" = "Turkey",
-  "Venezuela, República Bolivariana de" = "Venezuela"
+map_IMF <- list(
+  "Bahrain, Kingdom of" ~ "Bahrain",
+  "China, People's Republic of" ~ "China",
+  "Egypt, Arab Republic of" ~ "Egypt",
+  "Hong Kong Special Administrative Region, People's Republic of China" ~ "Hong Kong",
+  "Kazakhstan, Republic of" ~ "Kazakhstan",
+  "Liechtenstein, Principality of" ~ "Liechtenstein",
+  "Lithuania, Republic of" ~ "Lithuania",
+  "Macao Special Administrative Region, People's Republic of China" ~ "Macau",
+  "Netherlands, The" ~ "Netherlands",
+  "Poland, Republic of" ~ "Poland",
+  "Russian Federation" ~ "Russia",
+  "Korea, Republic of" ~ "South Korea",
+  "Eswatini, Kingdom of" ~ "Swaziland",
+  "Taiwan Province of China" ~ "Taiwan",
+  "Tanzania, United Republic of" ~ "Tanzania",
+  "Türkiye, Republic of" ~ "Turkey",
+  "Venezuela, República Bolivariana de" ~ "Venezuela"
 )
 
 
 
 IMF <-
   IMF |>
-  mutate(COUNTRY = recode(COUNTRY, !!!map_IMF))
+  mutate(COUNTRY =case_match(COUNTRY, !!!map_IMF, .default = COUNTRY))
 
 IMF <-
   IMF |>
@@ -493,7 +493,7 @@ After completing our first model, we decided to develop a flight risk score. The
 
 - A tax burden score between 0 and 1 calculated according to the following standardization : $\frac{(\text{tax in country i})- (\text{min tax})}{(\text{max tax})- (\text{min tax})}$. This score is thus normalized between 0 (minimum taxation) and 1 (maximum taxation). We consider that higher taxation would encourage more tax evasion.  
 - Whether the billionaire's main activity belongs to an industry considered to be internationally mobile. Among the industries in the original dataset, we have identified the following as mobile : "Diversified financial",  "Technology-Computer", "Hedge funds", "Private equity/leverage buyout",      "Venture capital", "Media", "Money Management". Belonging to one of this industry gives a score of 1 and 0 otherwise as we believe that working in such a sector would facilitate mobility for the billionaire. 
-- The source of the billionaire's wealth, with a score of 1 if ‘self-made’ and 0 if ‘inherited’. This score is used to capture the idea that inherited wealth is more likely to be accompanied by a strong attachment to the territory of origin. The idea is that inherited wealth tends to involve real estate and historically established industries, which provide incentives to stay put. 
+- The source of the billionaire's wealth, with a score of 1 if "self-made" and 0 if "inherited". This score is used to capture the idea that inherited wealth is more likely to be accompanied by a strong attachment to the territory of origin. The idea is that inherited wealth tends to involve real estate and historically established industries, which provide incentives to stay put. 
 - Proximity to a tax haven. Based on the official definition, we first drew up the following list of tax havens: "Switzerland", "Singapore", "Hong Kong", "Liechtenstein", "Monaco", "Luxembourg", "United Arab Emirates" and "Bermuda". We then identified the countries considered close enough to a tax haven to provide billionaires with a significant incentive to relocate. To do this, we took into account membership of the Schengen area for European countries (where mobility to the border of the tax haven is facilitated, whether for Switzerland, Luxembourg or Liechtenstein) and the sharing of a coastline with the same ocean for Asian and Caribbean tax havens. This gives us a score of 1 if close, 0 otherwise.
 
 ```{r}
@@ -556,7 +556,17 @@ For each billionaire, four indicators are calculated, which are then combined to
 
 $\text{Score} = 0.4\cdot\text{Taxation} + 0.3\cdot\text{Mobility} + 0.15\cdot\text{Source_of_wealth} + 0.1\cdot\text{Proximity}$
 
+- Taxation has the highest coefficient because it is theoretically the most significant incentive to leave.
+- Mobility comes next, as it represents the most difficult physical constraint to overcome.
+- The origin of wealth has a less significant coefficient because its impact remains limited due to the complexity of accurately establishing a billionaire's personal ties to their territory.
+- The smallest coefficient is associated with proximity to a tax haven. Despite the physical constraint that distance represents, the economy remains globalized and billionaires have ample means to circumvent the issue.
+
+Tax havens are assigned a default score of 0, and for the sake of clarity, categories are assigned according to the score: "Low" if below 0.3, “Medium” between 0.3 and 0.6, and "High" if above 0.6.
+
 ```{r}
+#| message: false
+#| warning: false
+#| echo: false
 
 
 flight_risk_index <- 
@@ -566,41 +576,36 @@ flight_risk_index <-
       mobile_sector * 0.30 +
       is_selfmade * 0.15 +
       near_haven * 0.10),
-    # Ajustement : si déjà dans un refuge, score = 0
     flight_risk_score = ifelse(in_tax_haven == 1, 0, flight_risk_score),
-
-    # Catégorisation pour faciliter l'analyse
     risk_category = case_when(
-      flight_risk_score < 0.3 ~ "Faible",
-      flight_risk_score >= 0.3 & flight_risk_score < 0.6 ~ "Moyen",
-      flight_risk_score >= 0.6 ~ "Élevé"
+      flight_risk_score < 0.3 ~ "Low",
+      flight_risk_score >= 0.3 & flight_risk_score < 0.6 ~ "Medium",
+      flight_risk_score >= 0.6 ~ "High"
     )
   )
 ```
 
+We can now aggregate and calculate the average flight risk and number of high-risk billionaires for each country. 
+
 ```{r}
-## CHUNK 1.4 : Agrégation par pays
+#| message: false
+#| warning: false
+#| echo: false
 
-# On calcule pour chaque pays le risque moyen de fuite et le nombre
-# de milliardaires à haut risque
-
-country_risk <- flight_data |>
-  group_by(COUNTRY) |>
+country_risk <- 
+  flight_risk_index |>
   summarise(
     nb_billionaires = n(),
     total_wealth = sum(networthusbillion, na.rm = TRUE),
     avg_flight_risk = mean(flight_risk_score, na.rm = TRUE),
     nb_high_risk = sum(risk_category == "Élevé", na.rm = TRUE),
     pct_high_risk = (nb_high_risk / n()) * 100,
-    tax = mean(tax, na.rm = TRUE)
+    tax = mean(tax, na.rm = TRUE),
+    .by = COUNTRY
   ) |>
   arrange(desc(avg_flight_risk))
 
 
-# ponderer par nb de milliardaires par pays à voir
 
-
-# Affichage des pays les plus vulnérables
-cat("=== TOP 10 PAYS LES PLUS VULNÉRABLES À LA FUITE FISCALE ===\n")
 print(head(country_risk, 10))
 ```
