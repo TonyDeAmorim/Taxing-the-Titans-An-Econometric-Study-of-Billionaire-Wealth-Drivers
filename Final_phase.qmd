@@ -608,7 +608,7 @@ country_risk <-
   arrange(desc(avg_flight_risk))
 
 
-print(head(country_risk, 10))
+
 ```
 
 
