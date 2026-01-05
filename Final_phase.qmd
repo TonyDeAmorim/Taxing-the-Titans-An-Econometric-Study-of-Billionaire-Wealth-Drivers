@@ -563,12 +563,6 @@ $\text{Score} = 0.4\cdot\text{Taxation} + 0.3\cdot\text{Mobility} + 0.15\cdot\te
 Tax havens are assigned a default score of 0, and for the sake of clarity, categories are assigned according to the score: "Low" if below 0.3, “Medium” between 0.3 and 0.6, and "High" if above 0.6.
 
 ```{r}
-<<<<<<< HEAD
-## CHUNK 1.3 : Calcul du score final pondéré
-# -----------------------------------------------------------------------------
-# On combine les 4 composantes avec des poids pour obtenir un score final
-# Poids choisis selon l'importance supposée de chaque facteur
-
 #| message: false
 #| warning: false
 #| echo: false
