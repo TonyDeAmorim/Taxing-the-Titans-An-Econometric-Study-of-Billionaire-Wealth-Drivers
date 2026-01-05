@@ -605,7 +605,7 @@ country_risk <-
   arrange(desc(avg_flight_risk))
 
 
-print(head(country_risk, 10))
+
 ```
 
 ## 4) SCÉNARIOS POLITIQUES : IMPACT DE LA COORDINATION INTERNATIONALE
