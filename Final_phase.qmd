@@ -403,7 +403,6 @@ reg_data <- Billionaires_2014 |>
 modele <- lm(log_bill ~ tax + log_gdp + fdi + capital, data = reg_data)
 summary(modele)
 ```
-
 Our baseline regression links the (log) number of billionaires in a country to our taxation proxy (tax revenue), economic size (GDP), openness (FDI), and investment capacity (capital formation). Overall, the model fits the data well (Adjusted R²= 0.771; F-test p-value < 10^(-14)), suggesting these macroeconomic factors explain a large share of cross-country variation in billionaire presence.
 
 The coefficient on tax revenue is positive (β = 0.022) and marginally significant at the 10% level (p = 0.097). Interpreting tax revenue as a proxy for the overall level of taxation/fiscal pressure, this result suggests that countries with stronger tax capacity tend to host more, not fewer, billionaires. Economically, this is consistent with the idea that higher-tax countries often also provide the institutional and public-good environment that supports wealth creation and wealth retention—stable legal systems, infrastructure, education, and high-quality public services.
@@ -487,7 +486,6 @@ The Shapiro–Wilk test (p = 0.7615) suggests the residuals are approximately no
 The Breusch–Pagan test (p = 0.7439) shows no evidence of heteroskedasticity, meaning the error variance can be treated as constant.
 Taken together, these checks imply that our coefficient estimates and standard inference from this model are generally reliable.
 
-
 ## 3) Modelling tax evasion by billionaires
 
 After completing our first model, we decided to develop a flight risk score. The aim of our approach is to establish, for each billionaire the risk of flight from their current national territory if a tax is introduced. With this in mind, our tax evasion risk score is based on four distinct components :
@@ -529,6 +527,7 @@ flight_risk_index <-
     mobile_sector = ifelse(industry %in% mobile_sectors, 1, 0),
     # source of wealth index computation
     is_selfmade = ifelse(selfmade == 1, 1, 0),
+  
     # proximity to tax haven index computation
     near_haven = case_when(
       COUNTRY %in% c(
@@ -550,7 +549,7 @@ flight_risk_index <-
       TRUE ~ 0
     ),
     in_tax_haven = ifelse(COUNTRY %in% tax_havens, 1, 0)
-  )
+    )
 ```
 
 For each billionaire, four indicators are calculated, which are then combined to obtain the final flight risk score. For the calculation, we assigned the following coefficients :
@@ -571,7 +570,6 @@ Tax havens are assigned a default score of 0, and for the sake of clarity, categ
 #| warning: false
 #| echo: false
 
-
 flight_risk_index <- 
   flight_risk_index |>
   mutate(
@@ -591,6 +589,7 @@ flight_risk_index <-
 We can now aggregate and calculate the average flight risk and number of high-risk billionaires for each country. 
 
 ```{r}
+
 #| message: false
 #| warning: false
 #| echo: false
@@ -607,7 +606,6 @@ country_risk <-
     .by = COUNTRY
   ) |>
   arrange(desc(avg_flight_risk))
-
 
 
 print(head(country_risk, 10))
