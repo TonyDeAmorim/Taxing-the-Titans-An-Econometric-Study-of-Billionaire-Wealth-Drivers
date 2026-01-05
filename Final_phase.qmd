@@ -605,7 +605,7 @@ country_risk <-
     tax = mean(tax, na.rm = TRUE),
     .by = COUNTRY
   ) |>
-  filter(nb_billionaires > 10)
+  filter(nb_billionaires > 10) |> 
   arrange(desc(avg_flight_risk))
 
 
