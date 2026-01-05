@@ -605,7 +605,7 @@ country_risk <-
     tax = mean(tax, na.rm = TRUE),
     .by = COUNTRY
   ) |>
-  filter(nb_billionaires > 10) |> 
+  filter(nb_billionaires > 10)
   arrange(desc(avg_flight_risk))
 
 
@@ -617,9 +617,7 @@ country_risk <-
 
 ## 4) SCÉNARIOS POLITIQUES : IMPACT DE LA COORDINATION INTERNATIONALE
 ```{r}
-## CHUNK 2.1 : Définition des groupes de pays
-# -----------------------------------------------------------------------------
-# On définit qui fait partie du G7 et du G20 pour modéliser les scénarios
+#| label: Define G7 and G20 members
 
 G7 <- c("United States", "United Kingdom", "Germany", "France", 
         "Italy", "Canada", "Japan")
@@ -664,6 +662,7 @@ simulate_tax_scenario <- function(data, scenario_name, flight_multiplier) {
       # Perte de recettes due à la fuite
       lost_revenue = potential_revenue - actual_revenue
     )
+  
   
   # Résumé global
   global_summary <- results %>%
