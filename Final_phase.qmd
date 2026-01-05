@@ -528,6 +528,11 @@ flight_risk_index <-
     mobile_sector = ifelse(industry %in% mobile_sectors, 1, 0),
     # source of wealth index computation
     is_selfmade = ifelse(selfmade == "self-made", 1, 0),
+<<<<<<< HEAD
+=======
+    is_selfmade = replace_na(is_selfmade, 0),
+
+>>>>>>> aaa155373263ce847144dc5c9583f46333f60159
   
     # proximity to tax haven index computation
     near_haven = case_when(
@@ -558,7 +563,7 @@ flight_risk_index <-
 For each billionaire, four indicators are calculated, which are then combined to obtain the final flight risk score. For the calculation, we assigned the following coefficients :
 
 $$
-\text{Score} = 0.4 \cdot \text{Taxation} + 0.3 \cdot \text{Mobility} + 0.15 \cdot \text{Source of wealth} + 0.1 \cdot \text{Proximity}
+\text{Score} = 0.45 \cdot \text{Taxation} + 0.3 \cdot \text{Mobility} + 0.15 \cdot \text{Source of wealth} + 0.1 \cdot \text{Proximity}
 $$
 
 - Taxation has the highest coefficient because it is theoretically the most significant incentive to leave.
@@ -576,6 +581,7 @@ Tax havens are assigned a default score of 0, and for the sake of clarity, categ
 flight_risk_index <- 
   flight_risk_index |>
   mutate(
+    wealth_bil = networthusbillion / 10, #conversion des dixiemes de milliards en milliards
     flight_risk_score = (tax_normalized * 0.45 +
       mobile_sector * 0.30 +
       is_selfmade * 0.15 +
@@ -589,6 +595,47 @@ flight_risk_index <-
   )
 
 ```
+
+We convert the flight-risk score into an expected flight probability using a logistic transformation because the score is an index (0–1) that ranks individuals by relative exposure to mobility incentives, but it is not directly interpretable as a probability or a share of wealth that would relocate. The logistic mapping ensures predicted values remain bounded between 0 and 1 and allows for a more realistic non-linear response: small changes in risk matter little for low-risk profiles, while effects become stronger for high-risk profiles without mechanically producing extreme flight rates.
+
+Since we do not observe actual relocation decisions in our data, we calibrate the logistic parameters $(\alpha)$ and $(\beta)$ transparently using two anchor points from the score distribution. Let $(p_i=\text{plogis}(\alpha+\beta,\text{score}*i))$. We set the 10th percentile of the score $((s*{10}))$ to correspond to a low expected flight rate $(p_{10}=2%)$, and the 90th percentile $((s_{90}))$ to correspond to a high expected flight rate $(p_{90}=25%)$. These values reflect a “moderate mobility” scenario: low-risk individuals have only a small chance to relocate, while high-risk individuals display a substantially higher—but still bounded—propensity to move. The resulting $(\alpha)$ and $(\beta)$ are then uniquely determined by matching $(p(s_{10})=0.02)$ and $(p(s_{90})=0.25)$, and this calibration yields an average implied flight probability of about 10.8% in the sample.
+
+We used AI assistance to refine and validate the implementation of the logit-based calibration code. 
+
+```{r}
+logit <- function(p) log(p/(1-p)) # Define the logit function: logit(p) = log(p / (1 - p))
+#two anchor points from the empirical distribution of the score:
+s_low  <- as.numeric(quantile(flight_risk_index$flight_risk_score, 0.10, na.rm = TRUE)) #    s_low  = 10th percentile of flight_risk_score (low-risk profiles)
+s_high <- as.numeric(quantile(flight_risk_index$flight_risk_score, 0.90, na.rm = TRUE)) #    s_high = 90th percentile of flight_risk_score (high-risk profiles)
+
+# Target flight probabilities at these anchors (moderate mobility scenario): 
+#p_low  is the expected flight probability at s_low
+#p_high is the expected flight probability at s_high
+p_low  <- 0.02 # ~2% expected flight at the low-risk (10th percentile) score
+p_high <- 0.25 # ~25% expected flight at the high-risk (90th percentile) score
+
+# Solve for beta and alpha in:
+#    p(score) = plogis(alpha + beta * score)
+# Using the logit transform:
+#    logit(p_low)  = alpha + beta * s_low
+#    logit(p_high) = alpha + beta * s_high
+# Subtracting the two equations gives beta, then alpha follows.
+beta  <- (logit(p_high) - logit(p_low)) / (s_high - s_low)
+alpha <- logit(p_low) - beta * s_low
+
+#Compute the implied flight probability for each billionaire:
+flight_risk_index <- flight_risk_index %>%
+  mutate(
+    flight_prob = plogis(alpha + beta * flight_risk_score)
+  )
+
+#on pourrait tester le modèle selon le type de calibration qu'on souhaite
+#calibration “modérée” : (2% → 25%) ICi
+#calibration “faible” : (1% → 15%)
+#calibration “forte” : (3% → 35%)
+#“Nous calibrons la transformation logistique en imposant que les individus au 10ᵉ percentile du score aient environ 2% de fuite attendue, et ceux au 90ᵉ percentile 25%. Cela donne une probabilité moyenne d’environ 10.8%.”
+```
+
 
 We can now aggregate and calculate the average flight risk and number of high-risk billionaires for each country. 
 
@@ -605,8 +652,8 @@ country_risk <-
   flight_risk_index |>
   summarise(
     nb_billionaires = n(),
-    total_wealth = sum(networthusbillion, na.rm = TRUE),
-    avg_flight_risk = mean(flight_risk_score, na.rm = TRUE),
+    total_wealth = sum(wealth_bil, na.rm = TRUE),
+    avg_flight_prob = mean(flight_prob, na.rm = TRUE),
     nb_high_risk = sum(risk_category == "High", na.rm = TRUE),
     pct_high_risk = (nb_high_risk / n()) * 100,
     tax = mean(tax, na.rm = TRUE),
@@ -628,11 +675,7 @@ top_country_risk |>
     caption = "Top Country Risk Analysis",
     digits = 2)
 
-
-
 ```
-
-
 
 
 ## 4) SCÉNARIOS POLITIQUES : IMPACT DE LA COORDINATION INTERNATIONALE
@@ -660,27 +703,14 @@ simulate_tax_scenario <- function(data, scenario_name, flight_multiplier) {
   
   results <- data |>
     mutate(
-      # Probabilité effective de fuite dans ce scénario
-      effective_flight_prob = flight_risk_score * flight_multiplier,
+      effective_flight_prob = flight_prob * flight_multiplier, # Probabilité effective de fuite dans ce scénario
       effective_flight_prob = pmin(effective_flight_prob, 1), # Max = 1
-      
-      # Richesse initiale taxable
-      initial_wealth = networthusbillion,
-      
-      # Richesse qui fuit à l'étranger
-      fled_wealth = initial_wealth * effective_flight_prob,
-      
-      # Richesse restante (qui sera taxée)
-      taxable_wealth = initial_wealth - fled_wealth,
-      
-      # Recettes potentielles (si aucune fuite)
-      potential_revenue = initial_wealth * 0.02, # Taxe de 2%
-      
-      # Recettes réelles (après fuite)
-      actual_revenue = taxable_wealth * 0.02,
-      
-      # Perte de recettes due à la fuite
-      lost_revenue = potential_revenue - actual_revenue
+      initial_wealth = wealth_bil,
+      fled_wealth = initial_wealth * effective_flight_prob, # Richesse qui fuit à l'étranger
+      taxable_wealth = initial_wealth - fled_wealth, # Richesse restante (qui sera taxée)
+      potential_revenue = initial_wealth * 0.02, # Recettes potentielles (si aucune fuite) 
+      actual_revenue = taxable_wealth * 0.02, # Recettes réelles (après fuite)
+      lost_revenue = potential_revenue - actual_revenue,  # Perte de recettes due à la fuite
     )
   
   
@@ -714,5 +744,70 @@ simulate_tax_scenario <- function(data, scenario_name, flight_multiplier) {
 }
 ```
 
+
+
+```{r}
+#| label: Test de scénarios
+#| echo: false
+#| message: false
+#| warning: false
+
+sc_fr  <- simulate_tax_scenario(flight_risk_index %>% filter(COUNTRY=="France"), "France seule", 1.5)
+sc_g7  <- simulate_tax_scenario(flight_risk_index %>% filter(COUNTRY %in% G7), "Coordination G7", 0.9)
+sc_g20 <- simulate_tax_scenario(flight_risk_index %>% filter(COUNTRY %in% G20), "Coordination G20", 0.7)
+
+summary_table_all <- bind_rows(sc_fr$global, sc_g7$global, sc_g20$global) %>%
+  transmute(
+    Scenario = scenario,
+    `# billionaires` = total_billionaires,
+    `Expected flight rate (%)` = round(avg_flight_prob, 1),
+    `Potential revenue ($bn)` = round(potential_revenue_billion, 3),
+    `Actual revenue ($bn)` = round(actual_revenue_billion, 3),
+    `Lost revenue ($bn)` = round(lost_revenue_billion, 3),
+    `Collection efficiency (%)` = round(collection_efficiency, 1)
+  )
+
+summary_table_all
+
+```
+
+
+```{r}
+#| label: Top 5 contributeurs à la perte 
+top_loss_fr <- flight_risk_index %>%
+  filter(COUNTRY=="France") %>%
+  mutate(
+    p_france = pmin(flight_prob*1.5, 1),
+    potential_rev = wealth_bil * 0.02,
+    actual_rev = wealth_bil * (1 - p_france) * 0.02,
+    lost_rev = potential_rev - actual_rev
+  ) %>%
+  arrange(desc(lost_rev)) %>%
+  select(name, wealth_bil, p_france, lost_rev, industry, selfmade) %>%
+  head(10)
+
+top_loss_fr
+
+```
+
+```{r}
+fr_detail <- flight_risk_index %>%
+  filter(COUNTRY=="France") %>%
+  mutate(
+    eff = pmin(flight_prob*1.5, 1),
+    lost = wealth_bil*0.02*eff
+  ) %>%
+  arrange(desc(wealth_bil)) %>%
+  mutate(
+    cum_lost_share = cumsum(lost)/sum(lost),
+    rank = row_number(),
+    pct = rank/n()
+  )
+
+# Part des pertes expliquée par le top 10% (les plus riches)
+fr_detail %>%
+  summarise(share_lost_top10 = max(cum_lost_share[pct<=0.10]))
+
+```
 
 
