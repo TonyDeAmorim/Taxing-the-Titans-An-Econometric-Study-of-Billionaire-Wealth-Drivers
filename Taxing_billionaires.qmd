@@ -494,4 +494,5 @@ Population_reduced <-
 ```
 
 
+
 [^1]: The only use of AI in our entire project was to help us extract the list of countries from our dataset into a list in the format “country_1,” “country_2,” etc., saving us time by avoiding having to do it manually.

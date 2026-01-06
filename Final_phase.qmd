@@ -252,13 +252,20 @@ update_geom_defaults("line",  list(colour = couleur_viridis))
 # Introduction
 ## How does taxing billionaire wealth affect economic performance, inequality, and national competitiveness in an open economy?
 
-Billionaire taxation has emerged as one of the most polarizing economic questions of our decade. In October 2024, French economist Gabriel Zucman presented to the G20 a proposal for a minimum 2% tax on fortunes exceeding one billion dollars, potentially generating $200-250 billion annually worldwide. Yet the debate divides deeply: while supporters see it as essential for fiscal equity and financing public services in an era of unprecedented wealth concentration (the top 1% now holds nearly 45% of global wealth), opponents fear massive capital flight toward more lenient jurisdictions. France perfectly illustrates this tension—with public debt exceeding 110% of GDP and approximately 40 billionaires whose combined wealth exceeds €500 billion. A 2% tax could theoretically yield €10 billion annually, but the country's experience with its abolished wealth tax (ISF) fuels concerns about fiscal exodus. The Zucman tax thus presents not merely a fiscal tool but a test of our ability to balance fiscal justice imperatives with economic competitiveness in regulating 21st century capitalism.
+Billionaire taxation has emerged as one of the most polarizing economic questions of our decade in an era of unprecedented wealth concentration. Indeed, the top 0.001% owns today three times more wealth than the entire bottom half of humanity combined[^World_inequality].In June 2024, French economist Gabriel Zucman presented to the G20 a proposal[^Zucman_paper] for a minimum 2% tax on fortunes exceeding one billion dollars, potentially generating $200-250 billion annually worldwide. Yet the debate divides deeply: while supporters see it as essential for fiscal equity and financing public services, opponents fear massive capital flight toward more lenient jurisdictions. France perfectly illustrates this tension—with public debt exceeding 115% of GDP[^French_debt] and approximately 40 billionaires whose combined wealth exceeds €500 billion. A 2% tax could theoretically yield €10 billion annually, but the country's experience with its abolished wealth tax (ISF) fuels concerns about fiscal exodus. The Zucman tax thus presents not merely a fiscal tool but a test of our ability to balance fiscal justice imperatives with economic competitiveness in regulating 21st century capitalism.
 
 ## Data sets description
 
-- The Peterson Institute for International Economics (2016): A dataset of global billionaires featuring 23 variables-such as citizenship, net worth, and origin of wealth-used to track the demographic and financial characteristics of the world's wealthiest individuals.
+- The Peterson Institute for International Economics (2016)[^Peterson]: A dataset of global billionaires featuring 23 variables-such as citizenship, net worth, and origin of wealth-used to track the demographic and financial characteristics of the world's wealthiest individuals.
 - National Fiscal Data (Tax Proxy): A dataset focusing on government tax revenue as a percentage of total revenue, utilized as a proxy for a country's fiscal pressure and level of taxation in response to the limited availability of direct tax rates in billionaire-heavy jurisdictions.
 - The World Bank (Macroeconomic Indicators): A collection of global economic metrics-including Foreign Direct Investment (FDI), Gross Capital Formation (% of GDP), Total Population, and GDP in PPP—used to control for market scale, investment climate, and national productivity.
+
+All the World Bank's datasets used are listed here :
+
+-   The [Total population](https://data.worldbank.org/indicator/SP.POP.TOTL) dataset
+-   The [Gross capital formation (% of GDP)](https://data.worldbank.org/indicator/NE.GDI.TOTL.ZS) dataset
+-   The [Foreign direct investment, net inflows (% of GDP)](https://data.worldbank.org/indicator/BX.KLT.DINV.WD.GD.ZS) dataset
+-   The [Tax revenue (% of GDP)](https://data.worldbank.org/indicator/GC.TAX.TOTL.GD.ZS) dataset
 
 # History and overview of the world's wealthiest individuals
 ## The evolution of billionaires wealth over the years 
@@ -978,7 +985,7 @@ kable(summary_table_all_2,
 
 ```
 
-The scenario table highlights a clear policy trade-off between the size of the tax base and the degree of international coordination. Moving from a unilateral French tax to broader coalitions (G7, G20, G20+North, quasi-global) mechanically increases the number of covered billionaires and the potential revenue, because more individuals and more wealth fall under the tax. At the same time, stronger coordination reduces the expected flight response: the implied average flight rate falls monotonically from 18.7% (France only) to 4.0% (quasi-global). This captures the key mechanism of coordination: by reducing the set of attractive “outside options,” coordination lowers the elasticity of the tax base to the policy.
+@tbl-scenarios highlights a clear policy trade-off between the size of the tax base and the degree of international coordination. Moving from a unilateral French tax to broader coalitions (G7, G20, G20+North, quasi-global) mechanically increases the number of covered billionaires and the potential revenue, because more individuals and more wealth fall under the tax. At the same time, stronger coordination reduces the expected flight response: the implied average flight rate falls monotonically from 18.7% (France only) to 4.0% (quasi-global). This captures the key mechanism of coordination: by reducing the set of attractive “outside options,” coordination lowers the elasticity of the tax base to the policy.
 
 In levels, potential revenue rises from $3.66bn (France) to $104.25bn (quasi-global). However, revenue losses due to flight do not increase monotonically with the coalition size. Losses peak around the intermediate coalitions (G7/G20) and then decline as coordination becomes broader (G20+North and quasi-global). Economically, this is intuitive: when the coalition expands a lot and coordination is stronger, the reduction in flight probabilities dominates the larger tax base, so less wealth is expected to escape. This is also reflected in collection efficiency, which improves steadily from 78.4% under unilateral action to 95.9% under quasi-global coordination. The key message is that coordination increases the effective yield of the wealth tax by compressing tax-base erosion, especially once participation becomes sufficiently broad.
 
@@ -1061,3 +1068,15 @@ fr_detail <- flight_risk_index |>
 fr_detail |>
   summarise(share_lost_top10 = max(cum_lost_share[pct <= 0.10]))
 ```
+
+
+
+# Bibli
+
+[^Zucman_paper]: Zucman, G. (2024). [A blueprint for a coordinated minimum effective taxation standard for ultra-high-net-worth individuals](https://gabriel-zucman.eu/files/report-g20.pdf). EU Tax Observatory. 
+
+[^Peterson]: Freund, C., & Oliver, S. (2016). [The origins of the superrich: The billionaire characteristics database](https://www.piie.com/publications/working-papers/origins-superrich-billionaire-characteristics-database) (Working Paper No. 16-1). Peterson Institute for International Economics. 
+
+[^World_inequality]: World Inequality Database. (2025, 10 décembre). World Inequality Report 2026 – [“Inequality persists at a very extreme level”](https://wid.world/news-article/world-inequality-report-2026-inequality-persist-at-a-very-extreme-level/). 
+
+[^French_debt]: Ministère de l'Économie, des Finances et de la Souveraineté industrielle et numérique. (s. d.). [5 minutes pour comprendre la dette publique](https://www.economie.gouv.fr/decryptage-5-minutes-pour-comprendre-la-dette-publique). 
