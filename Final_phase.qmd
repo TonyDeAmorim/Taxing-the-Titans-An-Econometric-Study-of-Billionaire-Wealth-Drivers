@@ -864,6 +864,34 @@ The scenario table highlights a clear policy trade-off between the size of the t
 
 In levels, potential revenue rises from $3.66bn (France) to $104.25bn (quasi-global). However, revenue losses due to flight do not increase monotonically with the coalition size. Losses peak around the intermediate coalitions (G7/G20) and then decline as coordination becomes broader (G20+North and quasi-global). Economically, this is intuitive: when the coalition expands a lot and coordination is stronger, the reduction in flight probabilities dominates the larger tax base, so less wealth is expected to escape. This is also reflected in collection efficiency, which improves steadily from 78.4% under unilateral action to 95.9% under quasi-global coordination. The key message is that coordination increases the effective yield of the wealth tax by compressing tax-base erosion, especially once participation becomes sufficiently broad.
 
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+loss_plot_df <- summary_table_all %>%
+  mutate(
+    Scenario = factor(
+      Scenario,
+      levels = c("France seule", "Coordination G7", "Coordination G20",
+                 "Coordination élargie (G20 + North)", "Coordination quasi-globale")
+    ),
+    # useful derived metric to interpret shape independent of scale
+    `Loss rate (%)` = 100 * (`Lost revenue ($bn)` / `Potential revenue ($bn)`)
+  )
+
+ggplot(loss_plot_df, aes(x = Scenario, y = `Loss rate (%)`, group = 1)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  labs(
+    title = "Tax-base erosion declines with stronger coordination",
+    x = NULL,
+    y = "Lost revenue as % of potential revenue"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(axis.text.x = element_text(angle = 20, hjust = 1))
+```
+
 
 
 
