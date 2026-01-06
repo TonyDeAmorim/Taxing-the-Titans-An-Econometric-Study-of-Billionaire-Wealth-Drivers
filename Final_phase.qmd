@@ -230,7 +230,6 @@ Population_reduced <-
 
 # Setting the color theme for our graphs
 
-
 theme_set(theme_clean(base_size = 8)) 
 options(
   ggplot2.continuous.colour = "viridis",
@@ -306,7 +305,7 @@ ggplot(Source, aes(y = factor(year), x = n, fill = selfmade)) +
 ```
 
 
-This graph tracks the evolution of billionaire wealth origins from 1996 to 2014, revealing a dramatic surge in the total number of billionaires globally, which increased from approximately 400 to over 1,600. While the billionaire population was much smaller and more evenly divided between inherited and self-made origins in 1996, the landscape shifted significantly by 2014. The expansion of this demographic over the eighteen-year period has been overwhelmingly driven by self-made entrepreneurs, who now constitute the vast majority of the total, indicating a global shift toward new wealth creation rather than the simple maintenance of inherited estates.
+@fig-wealth-source-evolution tracks the evolution of billionaire wealth origins from 1996 to 2014, revealing a dramatic surge in the total number of billionaires globally, which increased from approximately 400 to over 1,600. While the billionaire population was much smaller and more evenly divided between inherited and self-made origins in 1996, the landscape shifted significantly by 2014. The expansion of this demographic over the eighteen-year period has been overwhelmingly driven by self-made entrepreneurs, who now constitute the vast majority of the total, indicating a global shift toward new wealth creation rather than the simple maintenance of inherited estates.
 
 
 
@@ -388,7 +387,7 @@ print(map_count)
 
 For this specific map, we used AI assistance to help refine the R code and generate a clearer, more visual representation. We already had the initial intuition and the base approach, but we chose this mapping option because it is easier to read and more informative than a standard “classic” ggplot output.
 
-This map shows a strong concentration of billionaires in a small number of large, high-income economies. The United States clearly stands out as the main hub, while Western Europe and parts of East Asia form a second cluster. Russia and India also appear as major centers, highlighting the role of large domestic markets and resource wealth. In contrast, most of Sub-Saharan Africa and many smaller or lower-income countries show few or none, underlining how billionaire wealth tends to align with economic scale, financial development, and the presence of major business hubs.
+@fig-Mapping-graph-of-billionaires shows a strong concentration of billionaires in a small number of large, high-income economies. The United States clearly stands out as the main hub, while Western Europe and parts of East Asia form a second cluster. Russia and India also appear as major centers, highlighting the role of large domestic markets and resource wealth. In contrast, most of Sub-Saharan Africa and many smaller or lower-income countries show few or none, underlining how billionaire wealth tends to align with economic scale, financial development, and the presence of major business hubs.
 
 
 ```{r}
@@ -431,7 +430,7 @@ ggplot(Sectors, aes(x = reorder(sector, nombre_milliardaires), y = count, fill =
 
 ```
 
-This graph illustrates the distribution of billionaires across various industries, highlighting that real estate is the most prominent sector for amassing such wealth, followed by retail and construction. A significant trend across almost all sectors is the clear dominance of self-made individuals over those who inherited their fortunes. This disparity is particularly pronounced in modern industries like technology, software, and hedge funds, where inherited wealth is virtually non-existent, whereas more traditional sectors like oil and banking show a relatively higher presence of generational wealth.
+@fig-Distribution-of-billionaires illustrates the distribution of billionaires across various industries, highlighting that real estate is the most prominent sector for amassing such wealth, followed by retail and construction. A significant trend across almost all sectors is the clear dominance of self-made individuals over those who inherited their fortunes. This disparity is particularly pronounced in modern industries like technology, software, and hedge funds, where inherited wealth is virtually non-existent, whereas more traditional sectors like oil and banking show a relatively higher presence of generational wealth.
 
 # First model : understdanding the spacial distribution of billionaires
 ## Initial study and early results
@@ -701,7 +700,7 @@ We convert the flight-risk score into an expected flight probability using a log
 Because we do not observe actual relocation decisions in our data, we calibrate (rather than estimate) the logistic parameters $(\alpha)$ and $(\beta)$ transparently using two anchor points from the score distribution. 
 We define 
 
-$$(p_i=\text{plogis}(\alpha+\beta,\text{score}*i))$$ {#eq-logit_function}
+$$p_i=\text{plogis}(\alpha+\beta,\text{score}*i)$$ {#eq-logit_function}
 
 Then we impose that the 10th percentile of the score $((s*{10}))$ corresponds to a low expected flight rate $(p_{10}=2\%)$, and the 90th percentile $((s_{90}))$ correspond to a higher but still plausible rate $(p_{90}=25\%)$. This "moderate mobility" calibration pins down $(\alpha)$ and $(\beta)$ uniquely and yields an average implied flight probability of about 10.8\% in the sample. 
 
@@ -791,7 +790,7 @@ top_country_risk |>
 
 ```
 
-The table aggregates the flight-risk indicators at the country level for countries with more than ten billionaires. It reports the average flight-risk score (our composite index) and the average implied flight probability (from the calibrated logistic mapping). 
+@tbl-country-risk aggregates the flight-risk indicators at the country level for countries with more than ten billionaires. It reports the average flight-risk score (our composite index) and the average implied flight probability (from the calibrated logistic mapping). 
 
 The United Kingdom, Israel, and Sweden appear at the top with relatively high average probabilities, which fits an interpretation where a larger share of fortunes is connected to internationally mobile activities (finance, tech, media) and where cross-border relocation is comparatively frictionless. Malaysia and Thailand also rank relatively high despite smaller billionaire populations, suggesting a composition effect: even with fewer individuals, the billionaire profiles present there may be more concentrated in footloose sectors, pushing up the average mobility indicator.
 
@@ -827,10 +826,10 @@ In the top panel, self-made billionaires display higher predicted mobility than 
 
 The bottom density plot summarizes the overall distribution of flight probabilities in the sample. It is strongly right-skewed: most individuals cluster at low probabilities, while a smaller group forms a long tail toward higher values. This matters because it implies heterogeneity in behavioral responses? Indeeed, the flight risk is not evenly spread across billionaires. The density also appears multi-peaked, which is consistent with the index being built from discrete components (mobile sector, proximity, self-made status) combined with a continuous tax term: different “profiles” of billionaires naturally bunch at different probability ranges.
 
-Overall, these figures suggest that mobility risk is not uniform across billionaires. Most individuals cluster at low predicted flight probabilities, especially among inherited fortunes, but there is a clear right tail driven largely by self-made profiles. In other words, the potential response to a wealth tax is concentrated in a smaller, more mobile subset rather than spread evenly across the entire billionaire population.
+Overall, @fig-Basic-analysis-plots suggest that mobility risk is not uniform across billionaires. Most individuals cluster at low predicted flight probabilities, especially among inherited fortunes, but there is a clear right tail driven largely by self-made profiles. In other words, the potential response to a wealth tax is concentrated in a smaller, more mobile subset rather than spread evenly across the entire billionaire population.
 
 
-## Scenario testing : the impact of new taxation 
+# Scenario testing : the impact of new taxation 
 
 In this section, we move from descriptive evidence to policy evaluation. Building on our flight-risk framework, we simulate the expected fiscal impact of introducing a new 2% billionaire wealth tax under alternative institutional settings. The goal is to quantify how different degrees of international coordination affect wealth mobility, the erosion of the tax base, and ultimately the amount of revenue that can be effectively collected.
 
