@@ -800,7 +800,7 @@ flight_risk_index <-
 
 ### Analysis of the results
 
-Now that we have converted the flight-risk score into a calibrated flight probability (flight_prob), we aggregate the results at the country level. This allows us to compare countries in terms of (i) billionaire concentration, (ii) total billionaire wealth, and (iii) both the average risk index and the average implied mobility (probability), focusing on countries with a sufficiently large billionaire sample.
+Now that we have converted the flight-risk score into a calibrated flight probability (flight_prob), we aggregate the results at the country level. This allows us to compare countries in terms of (i) billionaire concentration, (ii) total billionaire wealth, and (iii) both the average risk index and the average implied mobility (probability), focusing on countries with a sufficiently large billionaire sample ($>10$).
 
 ```{r}
 #| label: tbl-country-risk
@@ -840,7 +840,7 @@ top_country_risk |>
 
 @tbl-country-risk aggregates the flight-risk indicators at the country level for countries with more than ten billionaires. It reports the average flight-risk score (our composite index) and the average implied flight probability (from the calibrated logistic mapping). 
 
-The United Kingdom, Israel, and Sweden appear at the top with relatively high average probabilities, which fits an interpretation where a larger share of fortunes is connected to internationally mobile activities (finance, tech, media) and where cross-border relocation is comparatively frictionless. Malaysia and Thailand also rank relatively high despite smaller billionaire populations, suggesting a composition effect: even with fewer individuals, the billionaire profiles present there may be more concentrated in footloose sectors, pushing up the average mobility indicator.
+The United Kingdom, Israel, and Sweden appear at the top with relatively high average probabilities, which fits an interpretation where a larger share of fortunes is connected to internationally mobile activities (finance, tech, media) and where cross-border relocation is comparatively frictionless. Malaysia and Thailand also rank relatively high despite smaller billionaire populations, suggesting a composition effect: although their numbers are smaller, the billionaire profiles present in these sectors may be more concentrated in less restrictive sectors, which drives up the average mobility indicator.
 
 France sits in an intermediate position: its average flight probability is meaningful but below the top countries, consistent with the idea that part of French billionaire wealth is tied to established domestic firms and less mobile assets that anchor residence and business operations. The United States is a useful contrast. Despite having by far the largest number of billionaires, its average flight probability is only moderate. This supports a “home-market” mechanism: deep domestic opportunities and large market scale can reduce the incentive to relocate on average, even though there may still be a sizable high-mobility minority in absolute numbers.
 
@@ -870,9 +870,10 @@ plot_region <- ggplot(flight_risk_index, aes(x = flight_prob))+
 plot_region / plot_distrib
 
 ```
+
 In the top panel, self-made billionaires display higher predicted mobility than inherited ones. Inherited wealth is concentrated at very low flight probabilities, consistent with fortunes that are more anchored in domestic assets and long-established family structures, which make relocation costlier. By contrast, the self-made distribution has a thicker right tail, indicating more individuals with medium-to-high flight probabilities. This fits an economic interpretation where self-made wealth is more often tied to internationally scalable businesses and financial assets that are easier to reorganize across borders.
 
-The bottom density plot summarizes the overall distribution of flight probabilities in the sample. It is strongly right-skewed: most individuals cluster at low probabilities, while a smaller group forms a long tail toward higher values. This matters because it implies heterogeneity in behavioral responses? Indeeed, the flight risk is not evenly spread across billionaires. The density also appears multi-peaked, which is consistent with the index being built from discrete components (mobile sector, proximity, self-made status) combined with a continuous tax term: different “profiles” of billionaires naturally bunch at different probability ranges.
+The bottom density plot summarizes the overall distribution of flight probabilities in the sample. It is strongly right-skewed: most individuals cluster at low probabilities, while a smaller group forms a long tail toward higher values. This matters because it implies heterogeneity in behavioral responses. Indeed, the flight risk is not evenly spread across billionaires. The density also appears multi-peaked, which is consistent with the index being built from discrete components (mobile sector, proximity, self-made status) combined with a continuous tax term: different “profiles” of billionaires naturally bunch at different probability ranges.
 
 Overall, @fig-Basic-analysis-plots suggest that mobility risk is not uniform across billionaires. Most individuals cluster at low predicted flight probabilities, especially among inherited fortunes, but there is a clear right tail driven largely by self-made profiles. In other words, the potential response to a wealth tax is concentrated in a smaller, more mobile subset rather than spread evenly across the entire billionaire population.
 
@@ -913,11 +914,11 @@ GLOBAL <- unique(flight_risk_index$COUNTRY) #All countries in our sample
 We then implement a revenue simulation that converts our calibrated individual flight probability into fiscal outcomes under each policy setting. For each billionaire, the baseline flight probability (`flight_prob`) is scaled by a scenario-specific multiplier—higher under unilateral action and lower under broader coordination—and capped at 1 to avoid probabilities above 100%. With a 2% tax rate on billionaire wealth, the simulation computes the potential revenue assuming no flight, the amount of wealth expected to relocate, the remaining taxable base, and the resulting actual revenue. The difference between potential and actual revenue gives the revenue loss attributable to flight, and their ratio provides a collection-efficiency measure. More explicitely, it is defined as the share of the theoretical tax yield that is effectively collected once flight is taken into account. It serves as a summary indicator of tax-base erosion: higher values imply limited leakage and stronger enforceability of the policy, whereas lower values indicate substantial revenue losses due to mobility.
 
 ```{r}
+#| label: Tax revenue simulation function
+#| echo: false
 #| message: false
 #| warning: false
-#| echo: false
-## CHUNK 2.2 : Fonction de simulation des recettes fiscales
-# -----------------------------------------------------------------------------
+
 # Cette fonction calcule les recettes d'une taxe en tenant compte de la fuite
 # Elle prend en entrée un coefficient d'ajustement de la probabilité de fuite
 
