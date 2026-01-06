@@ -462,7 +462,7 @@ Geographically, this wealth remains concentrated in high-income hubs (the United
 # First model : understdanding the spacial distribution of billionaires
 ## Initial study and early results
 
-Our baseline regression, see @tbl-first-model, offers the following equation : 
+Our baseline regression, see @tbl-first-model, follows the following equation : 
 
 $$log(Nb) = \beta_0 + \beta_1 \cdot tax + \beta_2 \cdot log(GDP) + \beta_3 \cdot FDI + \beta_4 \cdot Capital$$ {#eq-first_model} 
 
@@ -470,11 +470,11 @@ It links the (log) number of billionaires ($Nb$) in a country to our taxation pr
 
 Overall, the model fits the data well (Adjusted $R^2= 0.770$; F-test p-value $< 10^{-14}$), suggesting these macroeconomic factors explain a large share of cross-country variation in billionaire presence.
 
-The coefficient on tax revenue is positive ($\beta_1 = 0.022$) and marginally significant at the 10% level (p = 0.097). Interpreting tax revenue as a proxy for the overall level of taxation/fiscal pressure, this result suggests that countries with stronger tax capacity tend to host more, not fewer, billionaires. Economically, this is consistent with the idea that higher-tax countries often also provide the institutional and public-good environment that supports wealth creation and wealth retention—stable legal systems, infrastructure, education, and high-quality public services.
+The coefficient on tax revenue is positive ($\beta_1 = 0.022$) and marginally significant at the 10% level (p = 0.097). Interpreting tax revenue as a proxy for the overall level of taxation/fiscal pressure, this result suggests that countries with stronger tax capacity tend to host more, not fewer, billionaires. This apparent paradox can be explained by the underlying implication of high taxation. Indeed, countries with heavy taxation are often more developed, due to the significant difficulties and costs involved in implementing an effective tax system. As a result, these nations more often offer less extractive institutional systems that are conducive to business activity and development. Added to this is the quality of education, health, and the environment, all of which are characteristics that promote the development of profitable businesses. Thus, our model would indicate that these indirect positive effects of taxation would outweigh the direct negative effects of higher taxation.
 
 Therefore, taxation does not automatically translate into a weaker ability to attract or maintain top wealth holders. In the context of an open economy, this weak but positive association also suggests that “competitiveness” is not solely driven by low taxation: some high-tax jurisdictions can remain attractive because they compensate with stability and market opportunities.
 
-The strongest determinant is economic scale: log GDP is highly significant and large. This implies that larger economies systematically host more billionaires, which aligns with the idea that big markets generate more high-value firms, deeper capital markets, and more opportunities for large fortunes. This is important for our research question because it highlights that billionaire wealth concentration is strongly linked to market size and overall economic performance—taxation effects must be interpreted conditional on these structural fundamentals.
+The strongest determinant is economic scale: log GDP is highly significant and large. This implies that larger economies systematically host more billionaires, which aligns with the idea that big markets generate more high-value firms, deeper capital markets, and more opportunities for large fortunes. This is important for our research question because it highlights that billionaire wealth concentration is strongly linked to market size and overall economic performance-taxation effects must be interpreted conditional on these structural fundamentals.
 
 FDI is also positive and significant, indicating that more open and internationally connected economies tend to have more billionaires. This supports the “national competitiveness in an open economy” channel: countries that attract foreign investment and integrate into global capital flows are also those where billionaire wealth is more prevalent. In other words, openness and investment attractiveness appear complementary to the presence of ultra-wealthy individuals rather than substitutable.
 
@@ -728,14 +728,34 @@ flight_risk_index <-
 
 ### Conversion of the flight-score into a probability using a logistic transformation
 
-We convert the flight-risk score into an expected flight probability using a logistic transformation. The score is a 0–1 index that ranks individuals by exposure to mobility incentives, but it cannot be read directly as a probability (or as the share of wealth that would relocate). The logistic mapping keeps predicted values bounded between 0 and 1 and introduces a realistic non-linearity: changes in risk have limited effects for low-risk profiles, while the response becomes stronger for high-risk profiles without mechanically implying extreme flight rates.
+We convert the flight-risk score into an expected flight probability using a logistic transformation. The score is a 0–1 index that ranks individuals by exposure to mobility incentives, but it cannot be read directly as a probability (or as the share of wealth that would relocate). The logistic function, or sigmoid function, converts a probability into a real score. Its initial form is as follows:
 
-Because we do not observe actual relocation decisions in our data, we calibrate (rather than estimate) the logistic parameters $(\alpha)$ and $(\beta)$ transparently using two anchor points from the score distribution. 
-We define 
+$$f(z) = \frac{1}{1+e^{-z}}$$ {#eq-logistic}
 
-$$p_i=\text{plogis}(\alpha+\beta,\text{score}*i)$$ {#eq-logit_function}
+We therefore use its inverse, the logit function:
 
-Then we impose that the 10th percentile of the score $((s*{10}))$ corresponds to a low expected flight rate $(p_{10}=2\%)$, and the 90th percentile $((s_{90}))$ correspond to a higher but still plausible rate $(p_{90}=25\%)$. This "moderate mobility" calibration pins down $(\alpha)$ and $(\beta)$ uniquely and yields an average implied flight probability of about 10.8\% in the sample. 
+$$logit(p) = log(\frac{1}{1-p})$$ {#eq-logit}
+
+This function can then be used to convert a probability into a score:
+
+$$p = \frac{1}{1+e^{-(\alpha + \beta S)}}$$ {#eq-prob_to_score}
+
+Where $\beta$ represents the sensitivity of the leakage risk relative to the score and $\alpha$ is the adjustment constant (the intercept).
+
+Because we do not observe actual relocation decisions in our data, we calibrate (rather than estimate) the logistic parameters $(\alpha)$ and $(\beta)$ transparently using two anchor points from the score distribution : The score corresponding to the 10th percentile of billionaires $s_{low}$ (low-risk profiles) and the score corresponding to the 90th percentile $s_{high}$ (high-risk profiles). 
+
+LAAAAAAAAAA
+
+These scores are then assigned two flight probabilities $p_{low}$ and $p_{high}$ in order to find the parameters after solving a system of two equations :
+
+$$
+\begin{cases} 
+\beta = \frac{\text{logit}(p_{high}) - \text{logit}(p_{low})}{s_{high} - s_{low}} \\ 
+\alpha = \text{logit}(p_{low}) - \beta \cdot s_{low} 
+\end{cases}
+$$ {#eq-system}
+
+We can now use @eq-prob_to_score and convert our score into a probability.
 
 We could test the model according to the type of calibration we want :
 
@@ -775,11 +795,13 @@ beta <- (logit(p_high) - logit(p_low)) / (s_high - s_low)
 alpha <- logit(p_low) - beta * s_low
 
 # Compute the implied flight probability for each billionaire:
+
 flight_risk_index <- 
   flight_risk_index |>
   mutate(
-    flight_prob = ifelse(flight_risk_score!=0, plogis(alpha + beta * flight_risk_score), 0)
+    flight_prob = ifelse(flight_risk_score!=0, 1/(1+exp(-(alpha + beta*flight_risk_score))), 0)
   )
+
 ```
 
 
