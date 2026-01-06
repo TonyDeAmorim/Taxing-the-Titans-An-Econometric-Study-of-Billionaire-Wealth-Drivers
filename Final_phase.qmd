@@ -231,7 +231,8 @@ Billionaire taxation has emerged as one of the most polarizing economic question
 ### 1.1 Global mapping of billionaires
 
 ```{r}
-#| label: Mapping graoh of billionaires
+#| label: fig-Mapping-graph-of-billionaires
+#| fig-cap: "Mapping of billionaires in the world in 2014"
 #| echo: false
 #| message: false
 #| warning: false
@@ -719,7 +720,8 @@ France appears in the upper-middle of the distribution, with a moderate-to-high 
 Finally, the “% high-risk” column highlights within-country heterogeneity. Some countries have a relatively high share of high-risk profiles, indicating that potential tax-base erosion may be concentrated in a subset of individuals rather than uniformly spread. This distinction is important for policy simulations: revenue losses depend not only on average mobility but also on how risk is distributed across billionaire profiles and, especially, across the largest fortunes.
 
 ```{r}
-#| label: Basic analysis plots
+#| label: fig-Basic-analysis-plots
+#| fig-cap: "Distribution of flight probability"
 #| echo: false
 #| message: false
 #| warning: false
@@ -887,6 +889,8 @@ In levels, potential revenue rises from $3.66bn (France) to $104.25bn (quasi-glo
 #| message: false
 #| warning: false
 #| echo: false
+#| label: fig-coordination
+#| fig-cap: "Tax-base erosion declines with stronger coordination"
 
 loss_plot_df <- summary_table_all %>%
   mutate(
@@ -903,7 +907,6 @@ ggplot(loss_plot_df, aes(x = Scenario, y = `Loss rate (%)`, group = 1)) +
   geom_line(linewidth = 1) +
   geom_point(size = 2) +
   labs(
-    title = "Tax-base erosion declines with stronger coordination",
     x = NULL,
     y = "Lost revenue as % of potential revenue"
   ) +
