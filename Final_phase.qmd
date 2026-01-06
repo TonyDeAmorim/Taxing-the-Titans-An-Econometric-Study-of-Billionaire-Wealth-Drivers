@@ -707,7 +707,7 @@ We convert the flight-risk score into an expected flight probability using a log
 Because we do not observe actual relocation decisions in our data, we calibrate (rather than estimate) the logistic parameters $(\alpha)$ and $(\beta)$ transparently using two anchor points from the score distribution. 
 We define 
 
-$$p_i=\text{plogis}(\alpha+\beta,\text{score}*i)$$ {#eq-logit_function}
+$$p_i=\text{plogis}(\alpha+\beta,\text{score}_i)$$ {#eq-logit_function}
 
 Then we impose that the 10th percentile of the score $((s*{10}))$ corresponds to a low expected flight rate $(p_{10}=2\%)$, and the 90th percentile $((s_{90}))$ correspond to a higher but still plausible rate $(p_{90}=25\%)$. This "moderate mobility" calibration pins down $(\alpha)$ and $(\beta)$ uniquely and yields an average implied flight probability of about 10.8\% in the sample. 
 
@@ -805,7 +805,7 @@ France sits in an intermediate position: its average flight probability is meani
 
 
 ```{r}
-#| label: fig-Basic-analysis-plots
+#| label: fig-Basic-analysis-plotsl23
 #| fig-cap: "Distribution of flight probability"
 #| echo: false
 #| message: false
@@ -988,6 +988,8 @@ kable(summary_table_all_2,
 @tbl-scenarios highlights a clear policy trade-off between the size of the tax base and the degree of international coordination. Moving from a unilateral French tax to broader coalitions (G7, G20, G20+North, quasi-global) mechanically increases the number of covered billionaires and the potential revenue, because more individuals and more wealth fall under the tax. At the same time, stronger coordination reduces the expected flight response: the implied average flight rate falls monotonically from 18.7% (France only) to 4.0% (quasi-global). This captures the key mechanism of coordination: by reducing the set of attractive “outside options,” coordination lowers the elasticity of the tax base to the policy.
 
 In levels, potential revenue rises from $3.66bn (France) to $104.25bn (quasi-global). However, revenue losses due to flight do not increase monotonically with the coalition size. Losses peak around the intermediate coalitions (G7/G20) and then decline as coordination becomes broader (G20+North and quasi-global). Economically, this is intuitive: when the coalition expands a lot and coordination is stronger, the reduction in flight probabilities dominates the larger tax base, so less wealth is expected to escape. This is also reflected in collection efficiency, which improves steadily from 78.4% under unilateral action to 95.9% under quasi-global coordination. The key message is that coordination increases the effective yield of the wealth tax by compressing tax-base erosion, especially once participation becomes sufficiently broad.
+
+Our scenario results can be benchmarked against Zucman (2024)’s enforcement bounds. Zucman reports that a 2%-of-wealth minimum tax on billionaires would raise $242bn under perfect enforcement and $193bn when assuming that 20% of revenues are lost to avoidance/evasion, implying a collection ratio of about 80% (193/242). In our unilateral-France simulation, the collection efficiency is 78.4%, which is of the same order of magnitude as Zucman’s low-end enforcement scenario. As international coordination expands in our framework, collection efficiency rises to 95.9% in the quasi-global benchmark, consistent with the notion that reducing outside options (through coordination mechanisms) compresses tax-base erosion.
 
 ```{r}
 #| message: false
