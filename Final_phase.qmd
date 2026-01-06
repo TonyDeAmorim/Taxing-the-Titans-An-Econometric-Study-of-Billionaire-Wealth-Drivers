@@ -311,7 +311,8 @@ This map shows a strong concentration of billionaires in a small number of large
 ### 1.2 Caracteristics and origin of billionaires' wealth 
 
 ```{r}
-#| label: Distribution of billionaires graph
+#| label: fig-Distribution-of-billionaires
+#| fig-cap: "Distribution of billionaires by sector and origin of wealth in 2014"
 #| echo: false
 #| message: false
 #| warning: false
@@ -341,7 +342,6 @@ Plot_sector <- ggplot(Sectors, aes(x = reorder(sector, nombre_milliardaires), y 
   geom_col() +
   coord_flip() +
   labs(
-    title = "Distribution of billionaires by sector and origin of wealth in 2014",
     x = "Sector",
     y = "Total number of billionaires",
     fill = "Type of welath"
@@ -429,7 +429,7 @@ We here test for multicollinearity among the explanatory variables using the Var
 
 ```{r}
 #| label: tbl-vif
-#| tbl-cap: "Analyse de la multicolinéarité (VIF)"
+#| tbl-cap: "Multicolinearity analysis (VIF)"
 #| message: false
 #| warning: false
 #| echo: false
@@ -458,7 +458,7 @@ Here, we test whether our data are distributed according to a normal distributio
 
 ```{r}
 #| label: tbl-shapiro
-#| tbl-cap: "Test de normalité de Shapiro-Wilk"
+#| tbl-cap: "Shapiro-Wilk"
 #| message: false
 #| warning: false
 #| echo: false
