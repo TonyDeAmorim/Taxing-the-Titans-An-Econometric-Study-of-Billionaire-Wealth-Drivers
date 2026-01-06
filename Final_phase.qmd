@@ -129,7 +129,7 @@ map_IMF <- list(
 
 IMF <-
   IMF |>
-  mutate(COUNTRY =case_match(COUNTRY, !!!map_IMF, .default = COUNTRY))
+  mutate(COUNTRY = case_match(COUNTRY, !!!map_IMF, .default = COUNTRY))
 
 IMF <-
   IMF |>
@@ -156,7 +156,7 @@ map_WB <- list(
   "Viet Nam" ~ "Vietnam"
 )
 
-FDI <- 
+FDI <-
   FDI |>
   mutate(`Country Name` = case_match(`Country Name`, !!!map_WB, .default = `Country Name`))
 
@@ -207,7 +207,6 @@ Population <-
 Population_reduced <-
   Population |>
   select(COUNTRY, `1996`, `2000`, `2014`)
-
 ```
 
 # Introduction
@@ -299,6 +298,7 @@ map_count <- ggplot() +
 
 print(map_count)
 ```
+
 For this specific map, we used AI assistance to help refine the R code and generate a clearer, more visual representation. We already had the initial intuition and the base approach, but we chose this mapping option because it is easier to read and more informative than a standard “classic” ggplot output.
 
 This map shows a strong concentration of billionaires in a small number of large, high-income economies. The United States clearly stands out as the main hub, while Western Europe and parts of East Asia form a second cluster. Russia and India also appear as major centers, highlighting the role of large domestic markets and resource wealth. In contrast, most of Sub-Saharan Africa and many smaller or lower-income countries show few or none, underlining how billionaire wealth tends to align with economic scale, financial development, and the presence of major business hubs.
@@ -513,7 +513,7 @@ tax_havens <- c(
   "Monaco", "Luxembourg", "United Arab Emirates", "Bermuda"
 )
 
-# Calcul of the 4 indicators 
+# Calcul of the 4 indicators
 
 flight_risk_index <-
   Billionaires_2014 |>
@@ -523,7 +523,7 @@ flight_risk_index <-
     tax_normalized =
       ifelse(tax != 0, (tax - min(tax, na.rm = TRUE)) / (max(tax, na.rm = TRUE) - min(tax, na.rm = TRUE)), 0),
     tax_normalized =
-      ifelse(is.na(tax) == TRUE, 0, tax_normalized ),
+      ifelse(is.na(tax) == TRUE, 0, tax_normalized),
     # mobility score calculation
     mobile_sector = ifelse(industry %in% mobile_sectors, 1, 0),
     # source of wealth index computation
@@ -544,16 +544,16 @@ flight_risk_index <-
       ) ~ 1,
       COUNTRY %in% c(
         "Saudi Arabia", "Kuwait", "Israel", "Turkey", "Egypt",
-        "Lebanon", "Oman") ~ 1,
+        "Lebanon", "Oman"
+      ) ~ 1,
       COUNTRY %in% c(
         "United States", "Canada", "Brazil", "Mexico", "Colombia",
-        "Venezuela", "St. Kitts and Nevis") ~ 1,
+        "Venezuela", "St. Kitts and Nevis"
+      ) ~ 1,
       TRUE ~ 0
     ),
     in_tax_haven = ifelse(COUNTRY %in% tax_havens, 1, 0)
-    ) 
-
-
+  )
 ```
 
 For each billionaire, four indicators are calculated, which are then combined to obtain the final flight risk score. For the calculation, we assigned the following coefficients :
@@ -574,10 +574,10 @@ Tax havens are assigned a default score of 0, and for the sake of clarity, categ
 #| warning: false
 #| echo: false
 
-flight_risk_index <- 
+flight_risk_index <-
   flight_risk_index |>
   mutate(
-    wealth_bil = networthusbillion / 10, #conversion des dixiemes de milliards en milliards
+    wealth_bil = networthusbillion / 10, # Conversion of tenths of billions into billions
     flight_risk_score = (tax_normalized * 0.45 +
       mobile_sector * 0.30 +
       is_selfmade * 0.15 +
@@ -589,25 +589,37 @@ flight_risk_index <-
       flight_risk_score >= 0.6 ~ "High"
     )
   )
-
 ```
 
 We convert the flight-risk score into an expected flight probability using a logistic transformation because the score is an index (0–1) that ranks individuals by relative exposure to mobility incentives, but it is not directly interpretable as a probability or a share of wealth that would relocate. The logistic mapping ensures predicted values remain bounded between 0 and 1 and allows for a more realistic non-linear response: small changes in risk matter little for low-risk profiles, while effects become stronger for high-risk profiles without mechanically producing extreme flight rates.
 
-Since we do not observe actual relocation decisions in our data, we calibrate the logistic parameters $(\alpha)$ and $(\beta)$ transparently using two anchor points from the score distribution. Let $(p_i=\text{plogis}(\alpha+\beta,\text{score}*i))$. We set the 10th percentile of the score $((s*{10}))$ to correspond to a low expected flight rate $(p_{10}=2%)$, and the 90th percentile $((s_{90}))$ to correspond to a high expected flight rate $(p_{90}=25%)$. These values reflect a “moderate mobility” scenario: low-risk individuals have only a small chance to relocate, while high-risk individuals display a substantially higher—but still bounded—propensity to move. The resulting $(\alpha)$ and $(\beta)$ are then uniquely determined by matching $(p(s_{10})=0.02)$ and $(p(s_{90})=0.25)$, and this calibration yields an average implied flight probability of about 10.8% in the sample.
+Since we do not observe actual relocation decisions in our data, we calibrate the logistic parameters $(\alpha)$ and $(\beta)$ transparently using two anchor points from the score distribution. 
+Let $(p_i=\text{plogis}(\alpha+\beta,\text{score}*i))$. We set the 10th percentile of the score $((s*{10}))$ to correspond to a low expected flight rate $(p_{10}=2\%)$, and the 90th percentile $((s_{90}))$ to correspond to a high expected flight rate $(p_{90}=25\%)$. These values reflect a “moderate mobility” scenario: low-risk individuals have only a small chance to relocate, while high-risk individuals display a substantially higher—but still bounded—propensity to move. The resulting $(\alpha)$ and $(\beta)$ are then uniquely determined by matching $(p(s_{10})=0.02)$ and $(p(s_{90})=0.25)$, and this calibration yields an average implied flight probability of about 10.8% in the sample.
+
+We could test the model according to the type of calibration we want :
+
+- "Moderate" calibration: (2% → 25%) used here. We calibrate the logistic transformation by requiring that individuals in the 10th percentile of the score have an expected leakage of approximately 2%, and those in the 90th percentile have an expected leakage of 25%. This gives an average probability of approximately 10.8%
+- "Low" calibration: (1% → 15%)
+- "High" calibration: (3% → 35%)
+
 
 We used AI assistance to refine and validate the implementation of the logit-based calibration code. 
 
 ```{r}
-logit <- function(p) log(p/(1-p)) # Define the logit function: logit(p) = log(p / (1 - p))
-#two anchor points from the empirical distribution of the score:
-s_low  <- as.numeric(quantile(flight_risk_index$flight_risk_score, 0.10, na.rm = TRUE)) #    s_low  = 10th percentile of flight_risk_score (low-risk profiles)
+#| message: false
+#| warning: false
+#| echo: false
+
+
+logit <- function(p) log(p / (1 - p)) # Define the logit function: logit(p) = log(p / (1 - p))
+# two anchor points from the empirical distribution of the score:
+s_low <- as.numeric(quantile(flight_risk_index$flight_risk_score, 0.10, na.rm = TRUE)) #    s_low  = 10th percentile of flight_risk_score (low-risk profiles)
 s_high <- as.numeric(quantile(flight_risk_index$flight_risk_score, 0.90, na.rm = TRUE)) #    s_high = 90th percentile of flight_risk_score (high-risk profiles)
 
-# Target flight probabilities at these anchors (moderate mobility scenario): 
-#p_low  is the expected flight probability at s_low
-#p_high is the expected flight probability at s_high
-p_low  <- 0.02 # ~2% expected flight at the low-risk (10th percentile) score
+# Target flight probabilities at these anchors (moderate mobility scenario):
+# p_low  is the expected flight probability at s_low
+# p_high is the expected flight probability at s_high
+p_low <- 0.02 # ~2% expected flight at the low-risk (10th percentile) score
 p_high <- 0.25 # ~25% expected flight at the high-risk (90th percentile) score
 
 # Solve for beta and alpha in:
@@ -616,27 +628,21 @@ p_high <- 0.25 # ~25% expected flight at the high-risk (90th percentile) score
 #    logit(p_low)  = alpha + beta * s_low
 #    logit(p_high) = alpha + beta * s_high
 # Subtracting the two equations gives beta, then alpha follows.
-beta  <- (logit(p_high) - logit(p_low)) / (s_high - s_low)
+beta <- (logit(p_high) - logit(p_low)) / (s_high - s_low)
 alpha <- logit(p_low) - beta * s_low
 
-#Compute the implied flight probability for each billionaire:
-flight_risk_index <- flight_risk_index %>%
+# Compute the implied flight probability for each billionaire:
+flight_risk_index <- 
+  flight_risk_index |>
   mutate(
-    flight_prob = plogis(alpha + beta * flight_risk_score)
+    flight_prob = ifelse(flight_risk_score!=0, plogis(alpha + beta * flight_risk_score), 0)
   )
-
-#on pourrait tester le modèle selon le type de calibration qu'on souhaite
-#calibration “modérée” : (2% → 25%) ICi
-#calibration “faible” : (1% → 15%)
-#calibration “forte” : (3% → 35%)
-#“Nous calibrons la transformation logistique en imposant que les individus au 10ᵉ percentile du score aient environ 2% de fuite attendue, et ceux au 90ᵉ percentile 25%. Cela donne une probabilité moyenne d’environ 10.8%.”
 ```
 
 
 Now that we have converted the flight-risk score into a calibrated flight probability (flight_prob), we aggregate the results at the country level. This allows us to compare countries in terms of (i) billionaire concentration, (ii) total billionaire wealth, and (iii) both the average risk index and the average implied mobility (probability), focusing on countries with a sufficiently large billionaire sample.
 
 ```{r}
-
 #| message: false
 #| warning: false
 #| echo: false
@@ -644,10 +650,10 @@ Now that we have converted the flight-risk score into a calibrated flight probab
 library(knitr)
 library(kableExtra)
 
-country_risk <- 
+country_risk <-
   flight_risk_index |>
   summarise(
-    nb_billionaires = n(),# number of billionaires
+    nb_billionaires = n(), # number of billionaires
     total_wealth = sum(wealth_bil, na.rm = TRUE), # total wealth ($bn), unit-corrected
     avg_flight_risk = mean(flight_risk_score, na.rm = TRUE), # average risk score (index)
     avg_flight_prob = mean(flight_prob, na.rm = TRUE), # average risk score (prob)
@@ -655,25 +661,26 @@ country_risk <-
     pct_high_risk = (nb_high_risk / n()) * 100, # % of high-risk individuals
     tax = mean(tax, na.rm = TRUE), # average tax proxy (same within a country)
     .by = COUNTRY
-  ) |> 
-  arrange(desc(avg_flight_risk)) 
+  ) |>
+  arrange(desc(avg_flight_risk))
 
 top_country_risk <-
-  country_risk |> 
-  filter(nb_billionaires > 10) |> 
+  country_risk |>
+  filter(nb_billionaires > 10) |>
   slice_max(order_by = avg_flight_prob, n = 10)
 
 top_country_risk |>
   select(1, 2, 5) |>
   kable(
-    format = "latex", 
-    booktabs = TRUE,        
-    longtable = TRUE, 
+    format = "latex",
+    booktabs = TRUE,
+    longtable = TRUE,
     caption = "Top Country Risk Analysis",
-    digits = 2)
+    digits = 2
+  )
 
 
-#probleme flight score avec la conversion logistique ca donne une proba de 0.5 alors que lescore est de 0
+# probleme flight score avec la conversion logistique ca donne une proba de 0.5 alors que le score est de 0
 ```
 
 The table aggregates the flight-risk indicators at the country level for countries with more than ten billionaires. It reports the number of billionaires, total billionaire wealth (in $bn), the average flight-risk score (our composite index), the average implied flight probability (from the calibrated logistic mapping), and the share of individuals classified as “high risk”.
@@ -688,12 +695,16 @@ Finally, the “% high-risk” column highlights within-country heterogeneity. S
 ```{r}
 #| label: Define G7 and G20 members
 
-G7 <- c("United States", "United Kingdom", "Germany", "France", 
-        "Italy", "Canada", "Japan")
+G7 <- c(
+  "United States", "United Kingdom", "Germany", "France",
+  "Italy", "Canada", "Japan"
+)
 
-G20 <- c(G7, "China", "India", "Brazil", "Russia", "Australia",
-         "South Korea", "Mexico", "Indonesia", "Turkey", "Saudi Arabia",
-         "Argentina", "South Africa")
+G20 <- c(
+  G7, "China", "India", "Brazil", "Russia", "Australia",
+  "South Korea", "Mexico", "Indonesia", "Turkey", "Saudi Arabia",
+  "Argentina", "South Africa"
+)
 ```
 
 
@@ -706,7 +717,7 @@ G20 <- c(G7, "China", "India", "Brazil", "Russia", "Australia",
 simulate_tax_scenario <- function(data, scenario_name, flight_multiplier) {
   # flight_multiplier : ajuste la probabilité de fuite
   # = 1.0 pour fuite normale, < 1.0 pour fuite réduite (coordination)
-  
+
   results <- data |>
     mutate(
       effective_flight_prob = flight_prob * flight_multiplier, # Probabilité effective de fuite dans ce scénario
@@ -714,12 +725,12 @@ simulate_tax_scenario <- function(data, scenario_name, flight_multiplier) {
       initial_wealth = wealth_bil,
       fled_wealth = initial_wealth * effective_flight_prob, # Richesse qui fuit à l'étranger
       taxable_wealth = initial_wealth - fled_wealth, # Richesse restante (qui sera taxée)
-      potential_revenue = initial_wealth * 0.02, # Recettes potentielles (si aucune fuite) 
+      potential_revenue = initial_wealth * 0.02, # Recettes potentielles (si aucune fuite)
       actual_revenue = taxable_wealth * 0.02, # Recettes réelles (après fuite)
-      lost_revenue = potential_revenue - actual_revenue,  # Perte de recettes due à la fuite
+      lost_revenue = potential_revenue - actual_revenue, # Perte de recettes due à la fuite
     )
-  
-  
+
+
   # Résumé global
   global_summary <- results |>
     summarise(
@@ -733,7 +744,7 @@ simulate_tax_scenario <- function(data, scenario_name, flight_multiplier) {
       lost_revenue_billion = sum(lost_revenue),
       collection_efficiency = (actual_revenue_billion / potential_revenue_billion) * 100
     )
-  
+
   # Résumé par pays (top contributeurs)
   country_summary <- results |>
     group_by(COUNTRY) |>
@@ -745,7 +756,7 @@ simulate_tax_scenario <- function(data, scenario_name, flight_multiplier) {
       lost = sum(lost_revenue)
     ) |>
     arrange(desc(actual))
-  
+
   return(list(global = global_summary, by_country = country_summary))
 }
 ```
@@ -758,11 +769,11 @@ simulate_tax_scenario <- function(data, scenario_name, flight_multiplier) {
 #| message: false
 #| warning: false
 
-sc_fr  <- simulate_tax_scenario(flight_risk_index %>% filter(COUNTRY=="France"), "France seule", 1.5)
-sc_g7  <- simulate_tax_scenario(flight_risk_index %>% filter(COUNTRY %in% G7), "Coordination G7", 0.9)
-sc_g20 <- simulate_tax_scenario(flight_risk_index %>% filter(COUNTRY %in% G20), "Coordination G20", 0.7)
+sc_fr <- simulate_tax_scenario(flight_risk_index |> filter(COUNTRY == "France"), "France seule", 1.5)
+sc_g7 <- simulate_tax_scenario(flight_risk_index |> filter(COUNTRY %in% G7), "Coordination G7", 0.9)
+sc_g20 <- simulate_tax_scenario(flight_risk_index |> filter(COUNTRY %in% G20), "Coordination G20", 0.7)
 
-summary_table_all <- bind_rows(sc_fr$global, sc_g7$global, sc_g20$global) %>%
+summary_table_all <- bind_rows(sc_fr$global, sc_g7$global, sc_g20$global) |>
   transmute(
     Scenario = scenario,
     `# billionaires` = total_billionaires,
@@ -774,47 +785,42 @@ summary_table_all <- bind_rows(sc_fr$global, sc_g7$global, sc_g20$global) %>%
   )
 
 summary_table_all
-
 ```
 
 concave loss of revenue 
 
 ```{r}
-#| label: Top 5 contributeurs à la perte 
-top_loss_fr <- flight_risk_index %>%
-  filter(COUNTRY=="France") %>%
+#| label: Top 5 contributeurs à la perte
+top_loss_fr <- flight_risk_index |>
+  filter(COUNTRY == "France") |>
   mutate(
-    p_france = pmin(flight_prob*1.5, 1),
+    p_france = pmin(flight_prob * 1.5, 1),
     potential_rev = wealth_bil * 0.02,
     actual_rev = wealth_bil * (1 - p_france) * 0.02,
     lost_rev = potential_rev - actual_rev
-  ) %>%
-  arrange(desc(lost_rev)) %>%
-  select(name, wealth_bil, p_france, lost_rev, industry, selfmade) %>%
+  ) |>
+  arrange(desc(lost_rev)) |>
+  select(name, wealth_bil, p_france, lost_rev, industry, selfmade) |>
   head(10)
 
 top_loss_fr
-
 ```
 
 ```{r}
-fr_detail <- flight_risk_index %>%
-  filter(COUNTRY=="France") %>%
+fr_detail <- flight_risk_index |>
+  filter(COUNTRY == "France") |>
   mutate(
-    eff = pmin(flight_prob*1.5, 1),
-    lost = wealth_bil*0.02*eff
-  ) %>%
-  arrange(desc(wealth_bil)) %>%
+    eff = pmin(flight_prob * 1.5, 1),
+    lost = wealth_bil * 0.02 * eff
+  ) |>
+  arrange(desc(wealth_bil)) |>
   mutate(
-    cum_lost_share = cumsum(lost)/sum(lost),
+    cum_lost_share = cumsum(lost) / sum(lost),
     rank = row_number(),
-    pct = rank/n()
+    pct = rank / n()
   )
 
 # Part des pertes expliquée par le top 10% (les plus riches)
-fr_detail %>%
-  summarise(share_lost_top10 = max(cum_lost_share[pct<=0.10]))
-
+fr_detail |>
+  summarise(share_lost_top10 = max(cum_lost_share[pct <= 0.10]))
 ```
-
-
