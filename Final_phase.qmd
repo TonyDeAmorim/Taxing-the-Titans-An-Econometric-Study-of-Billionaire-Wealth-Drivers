@@ -254,6 +254,18 @@ update_geom_defaults("line",  list(colour = couleur_viridis))
 
 Billionaire taxation has emerged as one of the most polarizing economic questions of our decade in an era of unprecedented wealth concentration. Indeed, the top 0.001% owns today three times more wealth than the entire bottom half of humanity combined[^World_inequality].In June 2024, French economist Gabriel Zucman presented to the G20 a proposal[^Zucman_paper] for a minimum 2% tax on fortunes exceeding one billion dollars, potentially generating $200-250 billion annually worldwide. Yet the debate divides deeply: while supporters see it as essential for fiscal equity and financing public services, opponents fear massive capital flight toward more lenient jurisdictions. France perfectly illustrates this tension—with public debt exceeding 115% of GDP[^French_debt] and approximately 40 billionaires whose combined wealth exceeds €500 billion. A 2% tax could theoretically yield €10 billion annually, but the country's experience with its abolished wealth tax (ISF) fuels concerns about fiscal exodus. The Zucman tax thus presents not merely a fiscal tool but a test of our ability to balance fiscal justice imperatives with economic competitiveness in regulating 21st century capitalism.
 
+Our study therefore aims to gain a better understanding of the key characteristics of the wealthiest individuals and to improve our ability to predict their tax behavior.
+
+To anticipate evasion behavior, we develop a flight risk score based on sector mobility, the origin of wealth (self-made vs. inherited), and proximity to tax havens. Logistic modeling reveals that the risk of mobility is highly concentrated among self-made billionaires operating in dematerialized sectors such as tech or finance.
+
+Finally, our revenue simulations for a 2% tax demonstrate a critical trade-off:
+
+- Unilateral implementation by France would result in a 18.7% loss of revenue due to capital flight.
+
+- International coordination (G20 or quasi-global) automatically reduces relocation options, bringing the leakage rate down to 4% and increasing collection efficiency to 95.9%.
+
+The study concludes that international tax cooperation is a prerequisite for transforming tax justice into an effective budgetary lever without compromising national competitiveness.
+
 ## Data sets description
 
 - The Peterson Institute for International Economics (2016)[^Peterson]: A dataset of global billionaires featuring 23 variables-such as citizenship, net worth, and origin of wealth-used to track the demographic and financial characteristics of the world's wealthiest individuals.
@@ -266,6 +278,8 @@ All the World Bank's datasets used are listed here :
 -   The [Gross capital formation (% of GDP)](https://data.worldbank.org/indicator/NE.GDI.TOTL.ZS) dataset
 -   The [Foreign direct investment, net inflows (% of GDP)](https://data.worldbank.org/indicator/BX.KLT.DINV.WD.GD.ZS) dataset
 -   The [Tax revenue (% of GDP)](https://data.worldbank.org/indicator/GC.TAX.TOTL.GD.ZS) dataset
+
+A more detailed presentation of the data used in this project can be find [here](https://github.com/TonyDeAmorim/Taxing-the-Titans-An-Econometric-Study-of-Billionaire-Wealth-Drivers/blob/main/Taxing_billionaires.qmd)
 
 # History and overview of the world's wealthiest individuals
 ## The evolution of billionaires wealth over the years 
@@ -288,7 +302,7 @@ ggplot(Total_wealth, aes(x = year, y =total_wealth))+
 
 ```
 
-@fig-wealth-evolution shows the evolution of the aggregate wealth of the largest fortunes between 1996, 2001 and 2014. There has been a steady increase, but particularly rapid since the beginning of the 21st century: +261% between 2001 and 2014 compared to +70% between 1996 and 2001. This difference can be explained by the emergence of information and communication technologies at the beginning of the century, the creation of large-scale oligopolies through the proliferation of M&A transactions, and the ongoing process of globalisation. These phenomena, combined with very high returns on capital during this period, even despite the crises, explain the results shown in this figure. 
+@fig-wealth-evolution shows the evolution of the aggregate wealth of the largest fortunes between 1996, 2001 and 2014. There has been a steady increase, but particularly rapid since the beginning of the 21st century: +261% between 2001 and 2014 compared to +70% between 1996 and 2001. This difference can be explained by the emergence of information and communication technologies at the beginning of the century, the creation of large-scale oligopolies through the proliferation of M&A transactions, and the ongoing process of globalization. These phenomena, combined with very high returns on capital during this period, even despite the crises, explain the results shown in this figure. 
 
 ```{r}
 #| label: fig-wealth-source-evolution
@@ -313,12 +327,14 @@ ggplot(Source, aes(y = factor(year), x = n, fill = selfmade)) +
 ```
 
 
-@fig-wealth-source-evolution tracks the evolution of billionaire wealth origins from 1996 to 2014, revealing a surge in the total number of billionaires globally, which increased from approximately 400 to over 1,600. While the billionaire population was much smaller and more evenly divided between inherited and self-made origins in 1996, the landscape shifted significantly by 2014. The expansion of this demographic over the eighteen-year period has been overwhelmingly driven by self-made entrepreneurs, who now constitute the vast majority of the total, indicating a global shift toward new wealth creation rather than the simple maintenance of inherited estates.
+As @fig-wealth-source-evolution indicates a surge in the number of billionaires occurred from 1996 to 2014, which increased from approximately 400 to over 1,600. While the billionaire population was much smaller and more evenly divided between inherited and self-made origins in 1996, the landscape shifted significantly by 2014. The expansion of this demographic over the eighteen-year period has been overwhelmingly driven by self-made entrepreneurs, who now constitute the vast majority of the total, indicating a global shift toward new wealth creation rather than the simple maintenance of inherited estates.
 
 
 
 
 ## State of the world of billionaires in 2014
+
+@fig-Mapping-graph-of-billionaires shows a strong concentration of billionaires in a small number of large, high-income economies. The United States clearly stands out as the main hub, while Western Europe and parts of East Asia form a second cluster. Russia and India also appear as major centers, highlighting the role of large domestic markets and resource wealth. In contrast, most of Sub-Saharan Africa and many smaller or lower-income countries show few or none, underlining how billionaire wealth tends to align with economic scale, financial development, and the presence of major business hubs. This visualization thus confirmed our intuition to econometrically link billionaires and national macroeconomic characteristics.
 
 ```{r}
 #| label: fig-Mapping-graph-of-billionaires
@@ -395,7 +411,8 @@ print(map_count)
 
 For this specific map, we found inspiration for the code among R resources[^map_tuto] found on the web and we then used AI assistance to help refine the R code and generate a clearer, more visual representation.
 
-@fig-Mapping-graph-of-billionaires shows a strong concentration of billionaires in a small number of large, high-income economies. The United States clearly stands out as the main hub, while Western Europe and parts of East Asia form a second cluster. Russia and India also appear as major centers, highlighting the role of large domestic markets and resource wealth. In contrast, most of Sub-Saharan Africa and many smaller or lower-income countries show few or none, underlining how billionaire wealth tends to align with economic scale, financial development, and the presence of major business hubs. This visualization thus confirmed our intuition to econometrically link billionaires and national macroeconomic characteristics.
+
+@fig-Distribution-of-billionaires illustrates the distribution of billionaires across various industries, highlighting that real estate is the most prominent sector for amassing such wealth, followed by retail and construction. A significant trend across almost all sectors is the clear dominance of self-made individuals over those who inherited their fortunes. This disparity is particularly pronounced in modern industries like technology, software, and hedge funds, where inherited wealth is virtually non-existent, whereas more traditional sectors like oil and banking show a relatively higher presence of generational wealth.
 
 
 ```{r}
@@ -438,14 +455,22 @@ ggplot(Sectors, aes(x = reorder(sector, nombre_milliardaires), y = count, fill =
 
 ```
 
-@fig-Distribution-of-billionaires illustrates the distribution of billionaires across various industries, highlighting that real estate is the most prominent sector for amassing such wealth, followed by retail and construction. A significant trend across almost all sectors is the clear dominance of self-made individuals over those who inherited their fortunes. This disparity is particularly pronounced in modern industries like technology, software, and hedge funds, where inherited wealth is virtually non-existent, whereas more traditional sectors like oil and banking show a relatively higher presence of generational wealth.
+An analysis of billionaires' wealth between 1996 and 2014 reveals a profound structural change. Beyond the exponential growth in their net worth (notably a 261% increase since 2001), the most significant change lies in the source of their wealth: “self-made” entrepreneurs have now largely overtaken heirs.
+
+Geographically, this wealth remains concentrated in high-income hubs (the United States, Western Europe, and East Asia), anchored in traditional sectors such as real estate, while increasingly driven by technology and finance. The emergence of this self-made and highly mobile elite suggests that their location depends less on tradition than on the economic environment. This brings us to our econometric analysis, in which we will examine how market size, openness, and taxation influence the spatial distribution of these global “titans.”
 
 # First model : understdanding the spacial distribution of billionaires
 ## Initial study and early results
 
-Our baseline regression, see @tbl-first-model, links the (log) number of billionaires in a country to our taxation proxy (tax revenue), economic size (GDP), openness (FDI), and investment capacity (capital formation). Overall, the model fits the data well (Adjusted R²= 0.770; F-test p-value < 10^(-14)), suggesting these macroeconomic factors explain a large share of cross-country variation in billionaire presence.
+Our baseline regression, see @tbl-first-model, offers the following equation : 
 
-The coefficient on tax revenue is positive (β = 0.022) and marginally significant at the 10% level (p = 0.097). Interpreting tax revenue as a proxy for the overall level of taxation/fiscal pressure, this result suggests that countries with stronger tax capacity tend to host more, not fewer, billionaires. Economically, this is consistent with the idea that higher-tax countries often also provide the institutional and public-good environment that supports wealth creation and wealth retention—stable legal systems, infrastructure, education, and high-quality public services.
+$$log(Nb) = \beta_0 + \beta_1 \cdot tax + \beta_2 \cdot log(GDP) + \beta_3 \cdot FDI + \beta_4 \cdot Capital$$ {#eq-first_model} 
+
+It links the (log) number of billionaires ($Nb$) in a country to our taxation proxy ($tax$), economic size ($GDP$), openness ($FDI$), and investment capacity ($capital$). 
+
+Overall, the model fits the data well (Adjusted $R^2= 0.770$; F-test p-value $< 10^{-14}$), suggesting these macroeconomic factors explain a large share of cross-country variation in billionaire presence.
+
+The coefficient on tax revenue is positive ($\beta_1 = 0.022$) and marginally significant at the 10% level (p = 0.097). Interpreting tax revenue as a proxy for the overall level of taxation/fiscal pressure, this result suggests that countries with stronger tax capacity tend to host more, not fewer, billionaires. Economically, this is consistent with the idea that higher-tax countries often also provide the institutional and public-good environment that supports wealth creation and wealth retention—stable legal systems, infrastructure, education, and high-quality public services.
 
 Therefore, taxation does not automatically translate into a weaker ability to attract or maintain top wealth holders. In the context of an open economy, this weak but positive association also suggests that “competitiveness” is not solely driven by low taxation: some high-tax jurisdictions can remain attractive because they compensate with stability and market opportunities.
 
@@ -502,7 +527,7 @@ modelsummary(
 
 ## Multicolinearity analysis
 
-We here test for multicollinearity among the explanatory variables using the Variance Inflation Factor (VIF).
+We here test for multicollinearity among the explanatory variables using the Variance Inflation Factor (VIF)[^multico].
 
 ```{r}
 #| label: tbl-vif
@@ -531,7 +556,7 @@ The VIF values (≈1.19–1.34) are close to 1, indicating no meaningful multico
 
 ## Normality test for residuals
 
-Here, we test whether our data are distributed according to a normal distribution. To do this, we calculate the Shapiro-Wilk normality test statistics. We obtain the following results :
+Here, we test whether our data are distributed according to a normal distribution. To do this, we calculate the Shapiro-Wilk normality test statistics[^shapiro]. We obtain the following results :
 
 ```{r}
 #| label: tbl-shapiro
@@ -553,7 +578,7 @@ The p-value is 0.7815 :  It is well above the critical threshold of 0.05 (or 5%)
 
 ## Heteroscedasticity 
 
-We here test for heteroscedasticity using the Breusch–Pagan test to check whether the error variance is constant. 
+We here test for heteroscedasticity using the Breusch–Pagan test[^Breusch] to check whether the error variance is constant. 
 
 ```{r}
 #| label: tbl-breusch-pagan
@@ -1078,8 +1103,14 @@ fr_detail |>
 
 [^Peterson]: Freund, C., & Oliver, S. (2016). [The origins of the superrich: The billionaire characteristics database](https://www.piie.com/publications/working-papers/origins-superrich-billionaire-characteristics-database) (Working Paper No. 16-1). Peterson Institute for International Economics. 
 
-[^World_inequality]: World Inequality Database. (2025, 10 décembre). World Inequality Report 2026 – [“Inequality persists at a very extreme level”](https://wid.world/news-article/world-inequality-report-2026-inequality-persist-at-a-very-extreme-level/). 
+[^World_inequality]: World Inequality Database. (2025, 10th of december). World Inequality Report 2026 – [“Inequality persists at a very extreme level”](https://wid.world/news-article/world-inequality-report-2026-inequality-persist-at-a-very-extreme-level/). 
 
 [^French_debt]: Ministère de l'Économie, des Finances et de la Souveraineté industrielle et numérique. (s. d.). [5 minutes pour comprendre la dette publique](https://www.economie.gouv.fr/decryptage-5-minutes-pour-comprendre-la-dette-publique). 
 
-[^map_tuto]: Kassambara, A. (s. d.).[ How to create a map using ggplot2: The best reference](https://www.datanovia.com/en/blog/how-to-create-a-map-using-ggplot2/). Datanovia. 
+[^map_tuto]: Kassambara, A. (s. d.).[ How to create a map using ggplot2: The best reference](https://www.datanovia.com/en/blog/how-to-create-a-map-using-ggplot2/). Datanovia.
+
+[^shapiro]: Kassambara, A. (s. d.).[ Normality test in R](http://www.sthda.com/english/wiki/normality-test-in-r#normality-test). STHDA. 
+
+[^multico]: Kassambara, A. (s. d.).[ Multicollinearity essentials and VIF in R](https://www.sthda.com/english/articles/39-regression-model-diagnostics/160-multicollinearity-essentials-and-vif-in-r/). STHDA. 
+
+[^Breusch]: Bobbitt, Z. (2020, 31th of december). [How to perform a Breusch-Pagan test in R](https://www.statology.org/breusch-pagan-test-r/). Statology. 
