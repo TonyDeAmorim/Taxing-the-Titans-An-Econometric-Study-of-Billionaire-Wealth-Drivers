@@ -1,14 +1,13 @@
 ---
 title: "Taxing the Titans : An Econometric Study of Billionaire Wealth Drivers"
+subtitle: "Université Paris-Dauphine PSL"
 author:
   - name: Philipine Poirier
-    affiliations: "Université Paris-Dauphine PSL"
   - name: Tony De Amorim
-    affiliations: "Université Paris-Dauphine PSL"
 date: today
 date-format: "MMMM D, YYYY"
 abstract: |
-  Billionaire taxation has emerged as one of the most polarizing economic questions of our decade. In October 2024, French economist Gabriel Zucman presented to the G20 a proposal for a minimum 2% tax on fortunes exceeding one billion dollars, potentially generating $200-250 billion annually worldwide. Yet the debate divides deeply: while supporters see it as essential for fiscal equity and financing public services in an era of unprecedented wealth concentration (the top 1% now holds nearly 45% of global wealth), opponents fear massive capital flight toward more lenient jurisdictions. France perfectly illustrates this tension—with public debt exceeding 110% of GDP and approximately 40 billionaires whose combined wealth exceeds €500 billion. A 2% tax could theoretically yield €10 billion annually, but the country's experience with its abolished wealth tax (ISF) fuels concerns about fiscal exodus. The Zucman tax thus presents not merely a fiscal tool but a test of our ability to balance fiscal justice imperatives with economic competitiveness in regulating 21st century capitalism.
+  This project was carried out as part of the data management course taught during the first year of the quantitative economics and international affairs and development master's programmes. The use of AI is indicated each time it is used and was only employed to correct the code, confirm intuitions and expand on our initial ideas. 
 format:
   pdf:
     papersize: a4
@@ -225,6 +224,12 @@ Population_reduced <-
   select(COUNTRY, `1996`, `2000`, `2014`)
 ```
 
+\newpage
+
+# Introduction
+## How does taxing billionaire wealth affect economic performance, inequality, and national competitiveness in an open economy?
+
+Billionaire taxation has emerged as one of the most polarizing economic questions of our decade. In October 2024, French economist Gabriel Zucman presented to the G20 a proposal for a minimum 2% tax on fortunes exceeding one billion dollars, potentially generating $200-250 billion annually worldwide. Yet the debate divides deeply: while supporters see it as essential for fiscal equity and financing public services in an era of unprecedented wealth concentration (the top 1% now holds nearly 45% of global wealth), opponents fear massive capital flight toward more lenient jurisdictions. France perfectly illustrates this tension—with public debt exceeding 110% of GDP and approximately 40 billionaires whose combined wealth exceeds €500 billion. A 2% tax could theoretically yield €10 billion annually, but the country's experience with its abolished wealth tax (ISF) fuels concerns about fiscal exodus. The Zucman tax thus presents not merely a fiscal tool but a test of our ability to balance fiscal justice imperatives with economic competitiveness in regulating 21st century capitalism.
 
 ## Data sets description
 
@@ -861,10 +866,9 @@ simulate_tax_scenario <- function(data, scenario_name, flight_multiplier) {
 ```
 
 
-
 ```{r}
-
-#| label: Test de scénarios
+#| label: tbl-scenarios
+#| tbl-cap: "Tax scenarios resume"
 #| echo: false
 #| message: false
 #| warning: false
@@ -896,8 +900,24 @@ summary_table_all <- bind_rows(sc_fr$global, sc_g7$global, sc_g20$global, sc_g20
     `Collection efficiency (%)` = round(collection_efficiency, 1)
   )
 
-summary_table_all
+summary_table_all_2 <- bind_rows(sc_fr$global, sc_g7$global, sc_g20$global, sc_g20_north$global, sc_global$global) |>
+  transmute(
+    Scenario = scenario,
+    `bn` = total_billionaires,
+    `EFR (%)` = round(avg_flight_prob, 1),
+    `PR($bn)` = round(potential_revenue_billion, 3),
+    `AR ($bn)` = round(actual_revenue_billion, 3),
+    `LR ($bn)` = round(lost_revenue_billion, 3),
+    `CE (%)` = round(collection_efficiency, 1)
+  )
+
+kable(summary_table_all_2, 
+             booktabs = TRUE, 
+             digits = 2) |> 
+  kable_styling(latex_options = "hold_position")
+
 ```
+
 The scenario table highlights a clear policy trade-off between the size of the tax base and the degree of international coordination. Moving from a unilateral French tax to broader coalitions (G7, G20, G20+North, quasi-global) mechanically increases the number of covered billionaires and the potential revenue, because more individuals and more wealth fall under the tax. At the same time, stronger coordination reduces the expected flight response: the implied average flight rate falls monotonically from 18.7% (France only) to 4.0% (quasi-global). This captures the key mechanism of coordination: by reducing the set of attractive “outside options,” coordination lowers the elasticity of the tax base to the policy.
 
 In levels, potential revenue rises from $3.66bn (France) to $104.25bn (quasi-global). However, revenue losses due to flight do not increase monotonically with the coalition size. Losses peak around the intermediate coalitions (G7/G20) and then decline as coordination becomes broader (G20+North and quasi-global). Economically, this is intuitive: when the coalition expands a lot and coordination is stronger, the reduction in flight probabilities dominates the larger tax base, so less wealth is expected to escape. This is also reflected in collection efficiency, which improves steadily from 78.4% under unilateral action to 95.9% under quasi-global coordination. The key message is that coordination increases the effective yield of the wealth tax by compressing tax-base erosion, especially once participation becomes sufficiently broad.
@@ -909,7 +929,7 @@ In levels, potential revenue rises from $3.66bn (France) to $104.25bn (quasi-glo
 #| label: fig-coordination
 #| fig-cap: "Tax-base erosion declines with stronger coordination"
 
-loss_plot_df <- summary_table_all %>%
+loss_plot_df <- summary_table_all |>
   mutate(
     Scenario = factor(
       Scenario,
@@ -933,9 +953,11 @@ ggplot(loss_plot_df, aes(x = Scenario, y = `Loss rate (%)`, group = 1)) +
 
 
 
+\newpage 
 
 ```{r}
-#| label: Top 5 contributeurs à la perte
+#| label: tbl-Top-5-contributors-loss
+#| tbl-cap: "Top 5 contributors to loss"
 #| message: false
 #| warning: false
 #| echo: false
@@ -951,13 +973,18 @@ top_loss_fr <- flight_risk_index |>
   select(name, wealth_bil, p_france, lost_rev, industry, selfmade) |>
   head(10)
 
-top_loss_fr
+kable(top_loss_fr, 
+             booktabs = TRUE, 
+             digits = 2) |> 
+  kable_styling(latex_options = "hold_position")
 ```
 
 ```{r}
+#| label: tbl-share-lost-top10
+#| tbl-cap: "Share lost explained by the top 10"
+#| echo: false
 #| message: false
 #| warning: false
-#| echo: false
 
 fr_detail <- flight_risk_index |>
   filter(COUNTRY == "France") |>
