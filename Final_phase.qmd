@@ -227,6 +227,25 @@ Population <-
 Population_reduced <-
   Population |>
   select(COUNTRY, `1996`, `2000`, `2014`)
+
+# Setting the color theme for our graphs
+
+
+theme_set(theme_clean(base_size = 8)) 
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill   = "viridis",
+  ggplot2.discrete.colour   = scales::viridis_pal(option = "D")(8),
+  ggplot2.discrete.fill     = scales::viridis_pal(option = "D")(8)
+)
+
+couleur_viridis <- scales::viridis_pal(option = "D")(8)[1] 
+
+update_geom_defaults("col",   list(fill = couleur_viridis, colour = "white"))
+update_geom_defaults("bar",   list(fill = couleur_viridis, colour = "white"))
+update_geom_defaults("point", list(colour = couleur_viridis))
+update_geom_defaults("line",  list(colour = couleur_viridis))
+
 ```
 
 \newpage
@@ -254,7 +273,12 @@ Billionaire taxation has emerged as one of the most polarizing economic question
 
 Total_wealth <-
   Billionaires |> 
-  summarise(total_wealth = sum(networthusbillion), .by = year)
+  summarise(total_wealth = sum(networthusbillion), .by = year) |> 
+  mutate(year = factor(year))
+
+ggplot(Total_wealth, aes(x = year, y =total_wealth))+
+  geom_col()+
+  labs(x = "Year", y = "Total net worth in USD billions")
 
 ```
 
@@ -278,8 +302,7 @@ ggplot(Source, aes(y = factor(year), x = n, fill = selfmade)) +
     y = "Year",
     x = "Number",
     fill = "Origin"
-  ) +
-  theme_clean(base_size = 10)
+  )
 ```
 
 
@@ -403,8 +426,7 @@ ggplot(Sectors, aes(x = reorder(sector, nombre_milliardaires), y = count, fill =
     x = "Sector",
     y = "Total number of billionaires",
     fill = "Type of welath"
-  ) +
-  theme_clean(base_size = 10)
+  )
 
 
 ```
@@ -788,8 +810,7 @@ plot_distrib <- ggplot(flight_risk_index, aes(x = flight_prob))+
   labs(
     title = "Distribution of the flight probability",
     x = "Probability"
-  ) +
-  theme_clean(base_size = 10)
+  )
 
 plot_region <- ggplot(flight_risk_index, aes(x = flight_prob))+
   geom_histogram()+
@@ -797,9 +818,7 @@ plot_region <- ggplot(flight_risk_index, aes(x = flight_prob))+
   labs(
     title = "Distribution of the flight probability by source of wealth",
     x = "Probability"
-  ) +
-  theme_clean(base_size = 10)
-
+  )
 
 plot_region / plot_distrib
 
@@ -989,7 +1008,6 @@ ggplot(loss_plot_df, aes(x = Scenario, y = `Loss rate (%)`, group = 1)) +
     x = NULL,
     y = "Lost revenue as % of potential revenue"
   ) +
-  theme_clean(base_size = 11) +
   theme(axis.text.x = element_text(angle = 20, hjust = 1))
 ```
 
