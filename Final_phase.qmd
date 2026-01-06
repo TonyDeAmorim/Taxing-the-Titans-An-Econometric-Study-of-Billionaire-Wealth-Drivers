@@ -288,6 +288,7 @@ ggplot(Total_wealth, aes(x = year, y =total_wealth))+
 
 ```
 
+@fig-wealth-evolution shows the evolution of the aggregate wealth of the largest fortunes between 1996, 2001 and 2014. There has been a steady increase, but particularly rapid since the beginning of the 21st century: +261% between 2001 and 2014 compared to +70% between 1996 and 2001. This difference can be explained by the emergence of information and communication technologies at the beginning of the century, the creation of large-scale oligopolies through the proliferation of M&A transactions, and the ongoing process of globalisation. These phenomena, combined with very high returns on capital during this period, even despite the crises, explain the results shown in this figure. 
 
 ```{r}
 #| label: fig-wealth-source-evolution
@@ -312,7 +313,7 @@ ggplot(Source, aes(y = factor(year), x = n, fill = selfmade)) +
 ```
 
 
-@fig-wealth-source-evolution tracks the evolution of billionaire wealth origins from 1996 to 2014, revealing a dramatic surge in the total number of billionaires globally, which increased from approximately 400 to over 1,600. While the billionaire population was much smaller and more evenly divided between inherited and self-made origins in 1996, the landscape shifted significantly by 2014. The expansion of this demographic over the eighteen-year period has been overwhelmingly driven by self-made entrepreneurs, who now constitute the vast majority of the total, indicating a global shift toward new wealth creation rather than the simple maintenance of inherited estates.
+@fig-wealth-source-evolution tracks the evolution of billionaire wealth origins from 1996 to 2014, revealing a surge in the total number of billionaires globally, which increased from approximately 400 to over 1,600. While the billionaire population was much smaller and more evenly divided between inherited and self-made origins in 1996, the landscape shifted significantly by 2014. The expansion of this demographic over the eighteen-year period has been overwhelmingly driven by self-made entrepreneurs, who now constitute the vast majority of the total, indicating a global shift toward new wealth creation rather than the simple maintenance of inherited estates.
 
 
 
@@ -392,9 +393,9 @@ map_count <- ggplot() +
 print(map_count)
 ```
 
-For this specific map, we used AI assistance to help refine the R code and generate a clearer, more visual representation. We already had the initial intuition and the base approach, but we chose this mapping option because it is easier to read and more informative than a standard “classic” ggplot output.
+For this specific map, we found inspiration for the code among R resources[^map_tuto] found on the web and we then used AI assistance to help refine the R code and generate a clearer, more visual representation.
 
-@fig-Mapping-graph-of-billionaires shows a strong concentration of billionaires in a small number of large, high-income economies. The United States clearly stands out as the main hub, while Western Europe and parts of East Asia form a second cluster. Russia and India also appear as major centers, highlighting the role of large domestic markets and resource wealth. In contrast, most of Sub-Saharan Africa and many smaller or lower-income countries show few or none, underlining how billionaire wealth tends to align with economic scale, financial development, and the presence of major business hubs.
+@fig-Mapping-graph-of-billionaires shows a strong concentration of billionaires in a small number of large, high-income economies. The United States clearly stands out as the main hub, while Western Europe and parts of East Asia form a second cluster. Russia and India also appear as major centers, highlighting the role of large domestic markets and resource wealth. In contrast, most of Sub-Saharan Africa and many smaller or lower-income countries show few or none, underlining how billionaire wealth tends to align with economic scale, financial development, and the presence of major business hubs. This visualization thus confirmed our intuition to econometrically link billionaires and national macroeconomic characteristics.
 
 
 ```{r}
@@ -1080,3 +1081,5 @@ fr_detail |>
 [^World_inequality]: World Inequality Database. (2025, 10 décembre). World Inequality Report 2026 – [“Inequality persists at a very extreme level”](https://wid.world/news-article/world-inequality-report-2026-inequality-persist-at-a-very-extreme-level/). 
 
 [^French_debt]: Ministère de l'Économie, des Finances et de la Souveraineté industrielle et numérique. (s. d.). [5 minutes pour comprendre la dette publique](https://www.economie.gouv.fr/decryptage-5-minutes-pour-comprendre-la-dette-publique). 
+
+[^map_tuto]: Kassambara, A. (s. d.).[ How to create a map using ggplot2: The best reference](https://www.datanovia.com/en/blog/how-to-create-a-map-using-ggplot2/). Datanovia. 
