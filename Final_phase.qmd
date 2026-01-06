@@ -16,15 +16,17 @@ library(readxl) # To open the billionaires dataset
 library(tidyverse) # To clean, modify and analyze our data
 library(ggplot2) # For graphical representation
 library(stringr) # To clean the data
-library(dplyr)
-library(maps)
-library(viridis)
+library(dplyr) # working with df
+library(maps) # use of mpa objects at multiple time
+library(viridis) # for better color scale
 library(ggrepel)
 library(broom)
 library(scales)
-library(patchwork)
-library(ggthemes)
+library(patchwork) # for better graph display
+library(ggthemes) # for better graph display
 library(lmtest) # heteroscedasticity
+library(knitr) # for better df display
+library(kableExtra) # for better df display
 
 # Data import
 
@@ -228,9 +230,10 @@ Billionaire taxation has emerged as one of the most polarizing economic question
 ### 1.1 Global mapping of billionaires
 
 ```{r}
+#| label: Mapping graoh of billionaires
+#| echo: false
 #| message: false
 #| warning: false
-#| echo: false
 
 # Aggregation by country: number and total wealth
 
@@ -307,9 +310,10 @@ This map shows a strong concentration of billionaires in a small number of large
 ### 1.2 Caracteristics and origin of billionaires' wealth 
 
 ```{r}
+#| label: Distribution of billionaires graph
+#| echo: false
 #| message: false
 #| warning: false
-#| echo: false
 
 Sectors <-
   Billionaires_2014 |>
@@ -332,7 +336,7 @@ Sectors <-
   mutate(origine = ifelse(origine == "nb_self_made", "Self-made", "Inherited"))
 
 
-ggplot(Sectors, aes(x = reorder(sector, nombre_milliardaires), y = count, fill = origine)) +
+Plot_sector <- ggplot(Sectors, aes(x = reorder(sector, nombre_milliardaires), y = count, fill = origine)) +
   geom_col() +
   coord_flip() +
   labs(
@@ -342,23 +346,13 @@ ggplot(Sectors, aes(x = reorder(sector, nombre_milliardaires), y = count, fill =
     fill = "Type of welath"
   ) +
   theme_clean(base_size = 10)
-```
-
-This first graph illustrates the distribution of billionaires across various industries, highlighting that real estate is the most prominent sector for amassing such wealth, followed by retail and construction. A significant trend across almost all sectors is the clear dominance of self-made individuals over those who inherited their fortunes. This disparity is particularly pronounced in modern industries like technology, software, and hedge funds, where inherited wealth is virtually non-existent, whereas more traditional sectors like oil and banking show a relatively higher presence of generational wealth.
-
-
-```{r}
-#| message: false
-#| warning: false
-#| echo: false
-
 
 Source <-
   Billionaires |>
   drop_na(selfmade) |>
   summarise(n = n(), .by = c(selfmade, year))
 
-ggplot(Source, aes(y = factor(year), x = n, fill = selfmade)) +
+Plot_year <- ggplot(Source, aes(y = factor(year), x = n, fill = selfmade)) +
   geom_col() +
   labs(
     title = "Source of wealth by year",
@@ -367,9 +361,13 @@ ggplot(Source, aes(y = factor(year), x = n, fill = selfmade)) +
     fill = "Origin"
   ) +
   theme_clean(base_size = 10)
+
+Plot_sector / Plot_year
 ```
 
-This graph tracks the evolution of billionaire wealth origins from 1996 to 2014, revealing a dramatic surge in the total number of billionaires globally, which increased from approximately 400 to over 1,600. While the billionaire population was much smaller and more evenly divided between inherited and self-made origins in 1996, the landscape shifted significantly by 2014. The expansion of this demographic over the eighteen-year period has been overwhelmingly driven by self-made entrepreneurs, who now constitute the vast majority of the total, indicating a global shift toward new wealth creation rather than the simple maintenance of inherited estates.
+The first graph illustrates the distribution of billionaires across various industries, highlighting that real estate is the most prominent sector for amassing such wealth, followed by retail and construction. A significant trend across almost all sectors is the clear dominance of self-made individuals over those who inherited their fortunes. This disparity is particularly pronounced in modern industries like technology, software, and hedge funds, where inherited wealth is virtually non-existent, whereas more traditional sectors like oil and banking show a relatively higher presence of generational wealth.
+
+The second graph tracks the evolution of billionaire wealth origins from 1996 to 2014, revealing a dramatic surge in the total number of billionaires globally, which increased from approximately 400 to over 1,600. While the billionaire population was much smaller and more evenly divided between inherited and self-made origins in 1996, the landscape shifted significantly by 2014. The expansion of this demographic over the eighteen-year period has been overwhelmingly driven by self-made entrepreneurs, who now constitute the vast majority of the total, indicating a global shift toward new wealth creation rather than the simple maintenance of inherited estates.
 
 ## 2) First model
 
@@ -427,7 +425,9 @@ We here test for multicollinearity among the explanatory variables using the Var
 #| message: false
 #| warning: false
 #| echo: false
+
 library(car) # vif, setting it here to avoid conflict with dplyr
+
 vif_df <- data.frame(
   Variable = names(vif(modele)),
   VIF = as.numeric(vif(modele))
@@ -488,6 +488,7 @@ The Breusch–Pagan test (p = 0.7439) shows no evidence of heteroskedasticity, m
 Taken together, these checks imply that our coefficient estimates and standard inference from this model are generally reliable.
 
 ## 3) Modelling tax evasion by billionaires
+### 3.1 Creation of a flight-risk score
 
 After completing our first model, we decided to develop a flight risk score. The aim of our approach is to establish, for each billionaire the risk of flight from their current national territory if a tax is introduced. With this in mind, our tax evasion risk score is based on four distinct components :
 
@@ -497,9 +498,10 @@ After completing our first model, we decided to develop a flight risk score. The
 - Proximity to a tax haven. Based on the official definition, we first drew up the following list of tax havens: "Switzerland", "Singapore", "Hong Kong", "Liechtenstein", "Monaco", "Luxembourg", "United Arab Emirates" and "Bermuda". We then identified the countries considered close enough to a tax haven to provide billionaires with a significant incentive to relocate. To do this, we took into account membership of the Schengen area for European countries (where mobility to the border of the tax haven is facilitated, whether for Switzerland, Luxembourg or Liechtenstein) and the sharing of a coastline with the same ocean for Asian and Caribbean tax havens. This gives us a score of 1 if close, 0 otherwise.
 
 ```{r}
+#| label: Creation of the 4 scores
+#| echo: false
 #| message: false
 #| warning: false
-#| echo: false
 
 
 # Sectors considered "mobile"
@@ -527,6 +529,7 @@ flight_risk_index <-
     # mobility score calculation
     mobile_sector = ifelse(industry %in% mobile_sectors, 1, 0),
     # source of wealth index computation
+    selfmade = ifelse(is.na(selfmade) == TRUE, "self-made", selfmade),
     is_selfmade = ifelse(selfmade == "self-made", 1, 0),
     is_selfmade = replace_na(is_selfmade, 0),
 
@@ -570,9 +573,10 @@ $$
 Tax havens are assigned a default score of 0, and for the sake of clarity, categories are assigned according to the score: "Low" if below 0.3, “Medium” between 0.3 and 0.6, and "High" if above 0.6.
 
 ```{r}
+#| label: Aggregation of the 4 scores
+#| echo: false
 #| message: false
 #| warning: false
-#| echo: false
 
 flight_risk_index <-
   flight_risk_index |>
@@ -591,6 +595,8 @@ flight_risk_index <-
   )
 ```
 
+### 3.2 Conversion of the flight-score into a probability using a logistic transformation
+
 We convert the flight-risk score into an expected flight probability using a logistic transformation because the score is an index (0–1) that ranks individuals by relative exposure to mobility incentives, but it is not directly interpretable as a probability or a share of wealth that would relocate. The logistic mapping ensures predicted values remain bounded between 0 and 1 and allows for a more realistic non-linear response: small changes in risk matter little for low-risk profiles, while effects become stronger for high-risk profiles without mechanically producing extreme flight rates.
 
 Since we do not observe actual relocation decisions in our data, we calibrate the logistic parameters $(\alpha)$ and $(\beta)$ transparently using two anchor points from the score distribution. 
@@ -605,10 +611,13 @@ We could test the model according to the type of calibration we want :
 
 We used AI assistance to refine and validate the implementation of the logit-based calibration code. 
 
+
+
 ```{r}
+#| label: Conversion using the logistic function
+#| echo: false
 #| message: false
 #| warning: false
-#| echo: false
 
 
 logit <- function(p) log(p / (1 - p)) # Define the logit function: logit(p) = log(p / (1 - p))
@@ -639,16 +648,17 @@ flight_risk_index <-
   )
 ```
 
+### 3.3 Analysis of the results
 
 Now that we have converted the flight-risk score into a calibrated flight probability (flight_prob), we aggregate the results at the country level. This allows us to compare countries in terms of (i) billionaire concentration, (ii) total billionaire wealth, and (iii) both the average risk index and the average implied mobility (probability), focusing on countries with a sufficiently large billionaire sample.
 
 ```{r}
+#| label: Preparing the results' display
+#| echo: false
 #| message: false
 #| warning: false
-#| echo: false
 
-library(knitr)
-library(kableExtra)
+
 
 country_risk <-
   flight_risk_index |>
@@ -679,8 +689,6 @@ top_country_risk |>
     digits = 2
   )
 
-
-# probleme flight score avec la conversion logistique ca donne une proba de 0.5 alors que le score est de 0
 ```
 
 The table aggregates the flight-risk indicators at the country level for countries with more than ten billionaires. It reports the number of billionaires, total billionaire wealth (in $bn), the average flight-risk score (our composite index), the average implied flight probability (from the calibrated logistic mapping), and the share of individuals classified as “high risk”.
@@ -692,8 +700,15 @@ France appears in the upper-middle of the distribution, with a moderate-to-high 
 Finally, the “% high-risk” column highlights within-country heterogeneity. Some countries have a relatively high share of high-risk profiles, indicating that potential tax-base erosion may be concentrated in a subset of individuals rather than uniformly spread. This distinction is important for policy simulations: revenue losses depend not only on average mobility but also on how risk is distributed across billionaire profiles and, especially, across the largest fortunes.
 
 
+
+
+## 4) Scenario testing : the impact of new taxation 
+
 ```{r}
 #| label: Define G7 and G20 members
+#| message: false
+#| warning: false
+#| echo: false
 
 G7 <- c(
   "United States", "United Kingdom", "Germany", "France",
@@ -709,6 +724,9 @@ G20 <- c(
 
 
 ```{r}
+#| message: false
+#| warning: false
+#| echo: false
 ## CHUNK 2.2 : Fonction de simulation des recettes fiscales
 # -----------------------------------------------------------------------------
 # Cette fonction calcule les recettes d'une taxe en tenant compte de la fuite
@@ -764,6 +782,7 @@ simulate_tax_scenario <- function(data, scenario_name, flight_multiplier) {
 
 
 ```{r}
+
 #| label: Test de scénarios
 #| echo: false
 #| message: false
@@ -791,6 +810,9 @@ concave loss of revenue
 
 ```{r}
 #| label: Top 5 contributeurs à la perte
+#| message: false
+#| warning: false
+#| echo: false
 top_loss_fr <- flight_risk_index |>
   filter(COUNTRY == "France") |>
   mutate(
@@ -807,6 +829,10 @@ top_loss_fr
 ```
 
 ```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
 fr_detail <- flight_risk_index |>
   filter(COUNTRY == "France") |>
   mutate(
