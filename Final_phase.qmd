@@ -305,7 +305,7 @@ map_count <- ggplot() +
     color = "white", linewidth = 0.1
   ) +
   scale_fill_viridis(
-    option = "plasma",
+    option = "mako",
     name = "Number of\nbillionaires",
     trans = "log10", # Apply logarithmic transformation
     breaks = c(1, 5, 10, 50, 100, 500),
