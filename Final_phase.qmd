@@ -699,7 +699,33 @@ France appears in the upper-middle of the distribution, with a moderate-to-high 
 
 Finally, the “% high-risk” column highlights within-country heterogeneity. Some countries have a relatively high share of high-risk profiles, indicating that potential tax-base erosion may be concentrated in a subset of individuals rather than uniformly spread. This distinction is important for policy simulations: revenue losses depend not only on average mobility but also on how risk is distributed across billionaire profiles and, especially, across the largest fortunes.
 
+```{r}
+#| label: Basic analysis plots
+#| echo: false
+#| message: false
+#| warning: false
 
+plot_distrib <- ggplot(flight_risk_index, aes(x = flight_prob))+
+  geom_density()+
+  labs(
+    title = "Distribution of the flight probability",
+    x = "Probability"
+  ) +
+  theme_clean(base_size = 10)
+
+plot_region <- ggplot(flight_risk_index, aes(x = flight_prob))+
+  geom_histogram()+
+  facet_wrap(~selfmade)+
+  labs(
+    title = "Distribution of the flight probability by source of wealth",
+    x = "Probability"
+  ) +
+  theme_clean(base_size = 10)
+
+
+plot_region / plot_distrib
+
+```
 
 
 ## 4) Scenario testing : the impact of new taxation 
