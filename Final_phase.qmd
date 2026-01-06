@@ -27,6 +27,7 @@ library(ggthemes) # for better graph display
 library(lmtest) # heteroscedasticity
 library(knitr) # for better df display
 library(kableExtra) # for better df display
+library(modelsummary)
 
 # Data import
 
@@ -310,7 +311,8 @@ This map shows a strong concentration of billionaires in a small number of large
 ### 1.2 Caracteristics and origin of billionaires' wealth 
 
 ```{r}
-#| label: Distribution of billionaires graph
+#| label: fig-Distribution-of-billionaires
+#| fig-cap: "Distribution of billionaires by sector and origin of wealth in 2014"
 #| echo: false
 #| message: false
 #| warning: false
@@ -340,7 +342,6 @@ Plot_sector <- ggplot(Sectors, aes(x = reorder(sector, nombre_milliardaires), y 
   geom_col() +
   coord_flip() +
   labs(
-    title = "Distribution of billionaires by sector and origin of wealth in 2014",
     x = "Sector",
     y = "Total number of billionaires",
     fill = "Type of welath"
@@ -399,7 +400,13 @@ reg_data <- Billionaires_2014 |>
 # First model
 
 modele <- lm(log_bill ~ tax + log_gdp + fdi + capital, data = reg_data)
-summary(modele)
+modelsummary(
+  modele,
+  estimate  = "{estimate}{stars} ({std.error})", 
+  statistic = NULL, 
+  gof_omit = "AIC|BIC|Log.Lik|F|RMSE",
+  output = "kableExtra" 
+)
 ```
 
 Our baseline regression links the (log) number of billionaires in a country to our taxation proxy (tax revenue), economic size (GDP), openness (FDI), and investment capacity (capital formation). Overall, the model fits the data well (Adjusted R²= 0.771; F-test p-value < 10^(-14)), suggesting these macroeconomic factors explain a large share of cross-country variation in billionaire presence.
@@ -421,18 +428,25 @@ Taken together, this baseline model suggests that, using tax revenue as a proxy 
 We here test for multicollinearity among the explanatory variables using the Variance Inflation Factor (VIF).
 
 ```{r}
-#| label: Multicolinearity analysis
+#| label: tbl-vif
+#| tbl-cap: "Multicolinearity analysis (VIF)"
 #| message: false
 #| warning: false
 #| echo: false
 
-library(car) # vif, setting it here to avoid conflict with dplyr
+library(car)
 
 vif_df <- data.frame(
   Variable = names(vif(modele)),
   VIF = as.numeric(vif(modele))
 )
-vif_df
+
+kable(vif_df,
+      col.names = c("Independent Variable", "VIF"),
+      digits = 3,
+      booktabs = TRUE) |> 
+  kable_styling(latex_options = c("striped", "hold_position"),
+                full_width = FALSE)
 ```
 
 The VIF values (≈1.19–1.34) are close to 1, indicating no meaningful multicollinearity among the regressors, so coefficient significance is unlikely to be driven by correlated explanatory variables.
@@ -443,14 +457,19 @@ The VIF values (≈1.19–1.34) are close to 1, indicating no meaningful multico
 Here, we test whether our data are distributed according to a normal distribution. To do this, we calculate the Shapiro-Wilk normality test statistics. We obtain the following results :
 
 ```{r}
-#| label: Normality test for residuals
+#| label: tbl-shapiro
+#| tbl-cap: "Shapiro-Wilk"
 #| message: false
 #| warning: false
 #| echo: false
 
-shapiro_test <- shapiro.test(residuals(modele))
+shapiro_test <- tidy(shapiro.test(residuals(modele)))
 
-shapiro_test
+kable(shapiro_test,
+      col.names = c("W", "p-value", "Méthode"),
+      digits = 4,
+      booktabs = TRUE) |> 
+  kable_styling(latex_options = "hold_position")
 ```
 
 - The p-value is 0.7615 :  It is well above the critical threshold of 0.05 (or 5%), which means that we do not reject the null hypothesis (H0). We conclude that the residuals of our model follow a normal distribution.
@@ -461,21 +480,25 @@ shapiro_test
 We here test for heteroscedasticity using the Breusch–Pagan test to check whether the error variance is constant. 
 
 ```{r}
-#| label: Heteroscedasticy
+#| label: tbl-breusch-pagan
+#| tbl-cap: "Breusch-Pagan"
 #| message: false
 #| warning: false
 #| echo: false
 
 bp <- bptest(modele)
 
-
 bp_df <- data.frame(
-  Test = "Studentized Breusch–Pagan",
+  Test = "Studentized Breusch-Pagan",
   Test_statistic = as.numeric(bp$statistic),
   p_value = as.numeric(bp$p.value)
 )
 
-bp_df
+kable(bp_df[, 2:3], 
+      digits = 4, 
+      booktabs = TRUE) |> 
+  kable_styling(latex_options = "hold_position", 
+                font_size = 9)
 ```
 
 With a p-value of 0.7439, we fail to reject the null hypothesis of constant error variance, meaning there is no evidence of heteroskedasticity in the model.
@@ -490,12 +513,15 @@ Taken together, these checks imply that our coefficient estimates and standard i
 ## 3) Modelling tax evasion by billionaires
 ### 3.1 Creation of a flight-risk score
 
-After completing our first model, we decided to develop a flight risk score. The aim of our approach is to establish, for each billionaire the risk of flight from their current national territory if a tax is introduced. With this in mind, our tax evasion risk score is based on four distinct components :
+After completing our first model, we decided to develop a flight risk score. The aim of our approach is to establish, for each billionaire the risk of flight from their current national territory if a tax is introduced. With this in mind, our tax evasion risk score is based on four distinct components.
 
-- A tax burden score between 0 and 1 calculated according to the following standardization : $\frac{(\text{tax in country i})- (\text{min tax})}{(\text{max tax})- (\text{min tax})}$. This score is thus normalized between 0 (minimum taxation) and 1 (maximum taxation). We consider that higher taxation would encourage more tax evasion.  
-- Whether the billionaire's main activity belongs to an industry considered to be internationally mobile. Among the industries in the original dataset, we have identified the following as mobile : "Diversified financial",  "Technology-Computer", "Hedge funds", "Private equity/leverage buyout",      "Venture capital", "Media", "Money Management". Belonging to one of this industry gives a score of 1 and 0 otherwise as we believe that working in such a sector would facilitate mobility for the billionaire. 
-- The source of the billionaire's wealth, with a score of 1 if "self-made" and 0 if "inherited". This score is used to capture the idea that inherited wealth is more likely to be accompanied by a strong attachment to the territory of origin. The idea is that inherited wealth tends to involve real estate and historically established industries, which provide incentives to stay put. 
-- Proximity to a tax haven. Based on the official definition, we first drew up the following list of tax havens: "Switzerland", "Singapore", "Hong Kong", "Liechtenstein", "Monaco", "Luxembourg", "United Arab Emirates" and "Bermuda". We then identified the countries considered close enough to a tax haven to provide billionaires with a significant incentive to relocate. To do this, we took into account membership of the Schengen area for European countries (where mobility to the border of the tax haven is facilitated, whether for Switzerland, Luxembourg or Liechtenstein) and the sharing of a coastline with the same ocean for Asian and Caribbean tax havens. This gives us a score of 1 if close, 0 otherwise.
+A tax burden score between 0 and 1 calculated according to the following standardization : $\frac{(\text{tax in country i})- (\text{min tax})}{(\text{max tax})- (\text{min tax})}$. This score is thus normalized between 0 (minimum taxation) and 1 (maximum taxation). We consider that higher taxation would encourage more tax evasion.  
+
+Whether the billionaire's main activity belongs to an industry considered to be internationally mobile. Among the industries in the original dataset, we have identified the following as mobile : "Diversified financial",  "Technology-Computer", "Hedge funds", "Private equity/leverage buyout",      "Venture capital", "Media", "Money Management". Belonging to one of this industry gives a score of 1 and 0 otherwise as we believe that working in such a sector would facilitate mobility for the billionaire. 
+
+The source of the billionaire's wealth, with a score of 1 if "self-made" and 0 if "inherited". This score is used to capture the idea that inherited wealth is more likely to be accompanied by a strong attachment to the territory of origin. The idea is that inherited wealth tends to involve real estate and historically established industries, which provide incentives to stay put. 
+
+Proximity to a tax haven. Based on the official definition, we first drew up the following list of tax havens: "Switzerland", "Singapore", "Hong Kong", "Liechtenstein", "Monaco", "Luxembourg", "United Arab Emirates" and "Bermuda". We then identified the countries considered close enough to a tax haven to provide billionaires with a significant incentive to relocate. To do this, we took into account membership of the Schengen area for European countries (where mobility to the border of the tax haven is facilitated, whether for Switzerland, Luxembourg or Liechtenstein) and the sharing of a coastline with the same ocean for Asian and Caribbean tax havens. This gives us a score of 1 if close, 0 otherwise.
 
 ```{r}
 #| label: Creation of the 4 scores
@@ -565,10 +591,7 @@ $$
 \text{Score} = 0.45 \cdot \text{Taxation} + 0.3 \cdot \text{Mobility} + 0.15 \cdot \text{Source of wealth} + 0.1 \cdot \text{Proximity}
 $$
 
-- Taxation has the highest coefficient because it is theoretically the most significant incentive to leave.
-- Mobility comes next, as it represents the most difficult physical constraint to overcome.
-- The origin of wealth has a less significant coefficient because its impact remains limited due to the complexity of accurately establishing a billionaire's personal ties to their territory.
-- The smallest coefficient is associated with proximity to a tax haven. Despite the physical constraint that distance represents, the economy remains globalized and billionaires have ample means to circumvent the issue.
+Taxation has the highest coefficient because it is theoretically the most significant incentive to leave. Mobility comes next, as it represents the most difficult physical constraint to overcome. The origin of wealth has a less significant coefficient because its impact remains limited due to the complexity of accurately establishing a billionaire's personal ties to their territory. The smallest coefficient is associated with proximity to a tax haven. Despite the physical constraint that distance represents, the economy remains globalized and billionaires have ample means to circumvent the issue.
 
 Tax havens are assigned a default score of 0, and for the sake of clarity, categories are assigned according to the score: "Low" if below 0.3, “Medium” between 0.3 and 0.6, and "High" if above 0.6.
 
@@ -653,12 +676,11 @@ flight_risk_index <-
 Now that we have converted the flight-risk score into a calibrated flight probability (flight_prob), we aggregate the results at the country level. This allows us to compare countries in terms of (i) billionaire concentration, (ii) total billionaire wealth, and (iii) both the average risk index and the average implied mobility (probability), focusing on countries with a sufficiently large billionaire sample.
 
 ```{r}
-#| label: Preparing the results' display
+#| label: tbl-country-risk
+#| tbl-cap: "Top Country Risk Analysis"
 #| echo: false
 #| message: false
 #| warning: false
-
-
 
 country_risk <-
   flight_risk_index |>
@@ -679,15 +701,12 @@ top_country_risk <-
   filter(nb_billionaires > 10) |>
   slice_max(order_by = avg_flight_prob, n = 10)
 
-top_country_risk |>
-  select(1, 2, 5) |>
-  kable(
-    format = "latex",
-    booktabs = TRUE,
-    longtable = TRUE,
-    caption = "Top Country Risk Analysis",
-    digits = 2
-  )
+top_country_risk |> 
+  select(1, 2, 5) |> 
+  kable(format = "latex",
+        booktabs = TRUE,
+        longtable = TRUE,
+        digits = 2)
 
 ```
 
