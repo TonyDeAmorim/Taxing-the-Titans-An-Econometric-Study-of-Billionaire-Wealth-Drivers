@@ -374,7 +374,8 @@ The second graph tracks the evolution of billionaire wealth origins from 1996 to
 ## 2) First model
 
 ```{r}
-#| label: First model
+#| label: tbl-firs-model
+#| tbl-cap: "First model results"
 #| message: false
 #| warning: false
 #| echo: false
@@ -401,13 +402,14 @@ reg_data <- Billionaires_2014 |>
 # First model
 
 modele <- lm(log_bill ~ tax + log_gdp + fdi + capital, data = reg_data)
-modelsummary(
-  modele,
-  estimate  = "{estimate}{stars} ({std.error})", 
-  statistic = NULL, 
-  gof_omit = "AIC|BIC|Log.Lik|F|RMSE",
-  output = "kableExtra" 
-)
+
+tidy_modele <- tidy(modele)
+kable(tidy_modele, 
+      digits = 3, 
+      booktabs = TRUE,
+      col.names = c("Variable", "Coefficient", "Standard error", "t-Stat", "p-value")) |> 
+  kable_styling(latex_options = c("striped", "hold_position"))
+
 ```
 
 Our baseline regression links the (log) number of billionaires in a country to our taxation proxy (tax revenue), economic size (GDP), openness (FDI), and investment capacity (capital formation). Overall, the model fits the data well (Adjusted R²= 0.771; F-test p-value < 10^(-14)), suggesting these macroeconomic factors explain a large share of cross-country variation in billionaire presence.
@@ -910,7 +912,7 @@ ggplot(loss_plot_df, aes(x = Scenario, y = `Loss rate (%)`, group = 1)) +
     x = NULL,
     y = "Lost revenue as % of potential revenue"
   ) +
-  theme_minimal(base_size = 11) +
+  theme_clean(base_size = 11) +
   theme(axis.text.x = element_text(angle = 20, hjust = 1))
 ```
 
