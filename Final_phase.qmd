@@ -1,6 +1,19 @@
 ---
-title: "Final_phase"
-format: pdf
+title: "Taxing the Titans : An Econometric Study of Billionaire Wealth Drivers"
+author:
+  - name: Philipine Poirier
+    affiliations: "Université Paris-Dauphine PSL"
+  - name: Tony De Amorim
+    affiliations: "Université Paris-Dauphine PSL"
+date: today
+date-format: "MMMM D, YYYY"
+abstract: |
+  Billionaire taxation has emerged as one of the most polarizing economic questions of our decade. In October 2024, French economist Gabriel Zucman presented to the G20 a proposal for a minimum 2% tax on fortunes exceeding one billion dollars, potentially generating $200-250 billion annually worldwide. Yet the debate divides deeply: while supporters see it as essential for fiscal equity and financing public services in an era of unprecedented wealth concentration (the top 1% now holds nearly 45% of global wealth), opponents fear massive capital flight toward more lenient jurisdictions. France perfectly illustrates this tension—with public debt exceeding 110% of GDP and approximately 40 billionaires whose combined wealth exceeds €500 billion. A 2% tax could theoretically yield €10 billion annually, but the country's experience with its abolished wealth tax (ISF) fuels concerns about fiscal exodus. The Zucman tax thus presents not merely a fiscal tool but a test of our ability to balance fiscal justice imperatives with economic competitiveness in regulating 21st century capitalism.
+format:
+  pdf:
+    papersize: a4
+    number-sections: false
+    toc: true
 ---
 
 
@@ -212,11 +225,6 @@ Population_reduced <-
   select(COUNTRY, `1996`, `2000`, `2014`)
 ```
 
-# Introduction
-## How does taxing billionaire wealth affect economic performance, inequality, and national competitiveness in an open economy?
-
-Billionaire taxation has emerged as one of the most polarizing economic questions of our decade. In October 2024, French economist Gabriel Zucman presented to the G20 a proposal for a minimum 2% tax on fortunes exceeding one billion dollars, potentially generating $200-250 billion annually worldwide. Yet the debate divides deeply: while supporters see it as essential for fiscal equity and financing public services in an era of unprecedented wealth concentration (the top 1% now holds nearly 45% of global wealth), opponents fear massive capital flight toward more lenient jurisdictions. France perfectly illustrates this tension—with public debt exceeding 110% of GDP and approximately 40 billionaires whose combined wealth exceeds €500 billion. A 2% tax could theoretically yield €10 billion annually, but the country's experience with its abolished wealth tax (ISF) fuels concerns about fiscal exodus. The Zucman tax thus presents not merely a fiscal tool but a test of our ability to balance fiscal justice imperatives with economic competitiveness in regulating 21st century capitalism.
-
 
 ## Data sets description
 
@@ -224,7 +232,7 @@ Billionaire taxation has emerged as one of the most polarizing economic question
 - National Fiscal Data (Tax Proxy): A dataset focusing on government tax revenue as a percentage of total revenue, utilized as a proxy for a country's fiscal pressure and level of taxation in response to the limited availability of direct tax rates in billionaire-heavy jurisdictions.
 - The World Bank (Macroeconomic Indicators): A collection of global economic metrics-including Foreign Direct Investment (FDI), Gross Capital Formation (% of GDP), Total Population, and GDP in PPP—used to control for market scale, investment climate, and national productivity.
 
-# PARTIE I : LES DÉTERMINANTS DE LA RICHESSE ET DE LA LOCALISATION DES MILLIARDAIRES
+# Part I : Determinant of wealth for billionaires
 
 ## 1) State of the world of billionaires in 2014
 
@@ -309,6 +317,7 @@ For this specific map, we used AI assistance to help refine the R code and gener
 This map shows a strong concentration of billionaires in a small number of large, high-income economies. The United States clearly stands out as the main hub, while Western Europe and parts of East Asia form a second cluster. Russia and India also appear as major centers, highlighting the role of large domestic markets and resource wealth. In contrast, most of Sub-Saharan Africa and many smaller or lower-income countries show few or none, underlining how billionaire wealth tends to align with economic scale, financial development, and the presence of major business hubs.
 
 
+
 ### 1.2 Caracteristics and origin of billionaires' wealth 
 
 ```{r}
@@ -370,6 +379,7 @@ Plot_sector / Plot_year
 The first graph illustrates the distribution of billionaires across various industries, highlighting that real estate is the most prominent sector for amassing such wealth, followed by retail and construction. A significant trend across almost all sectors is the clear dominance of self-made individuals over those who inherited their fortunes. This disparity is particularly pronounced in modern industries like technology, software, and hedge funds, where inherited wealth is virtually non-existent, whereas more traditional sectors like oil and banking show a relatively higher presence of generational wealth.
 
 The second graph tracks the evolution of billionaire wealth origins from 1996 to 2014, revealing a dramatic surge in the total number of billionaires globally, which increased from approximately 400 to over 1,600. While the billionaire population was much smaller and more evenly divided between inherited and self-made origins in 1996, the landscape shifted significantly by 2014. The expansion of this demographic over the eighteen-year period has been overwhelmingly driven by self-made entrepreneurs, who now constitute the vast majority of the total, indicating a global shift toward new wealth creation rather than the simple maintenance of inherited estates.
+
 
 ## 2) First model
 
@@ -513,8 +523,10 @@ The Shapiro–Wilk test (p = 0.7615) suggests the residuals are approximately no
 The Breusch–Pagan test (p = 0.7439) shows no evidence of heteroskedasticity, meaning the error variance can be treated as constant.
 Taken together, these checks imply that our coefficient estimates and standard inference from this model are generally reliable.
 
-## 3) Modelling tax evasion by billionaires
-### 3.1 Creation of a flight-risk score
+
+# Part II : Understanding and anticipating the behaviour of the wealthiest individuals
+## 1) Modelling the risk of tax evasion by billionaires
+### 1.1 Creation of a flight-risk score
 
 After completing our first model, we decided to develop a flight risk score. The aim of our approach is to establish, for each billionaire the risk of flight from their current national territory if a tax is introduced. With this in mind, our tax evasion risk score is based on four distinct components.
 
@@ -621,7 +633,8 @@ flight_risk_index <-
   )
 ```
 
-### 3.2 Conversion of the flight-score into a probability using a logistic transformation
+
+### 1.2 Conversion of the flight-score into a probability using a logistic transformation
 
 We convert the flight-risk score into an expected flight probability using a logistic transformation because the score is an index (0–1) that ranks individuals by relative exposure to mobility incentives, but it is not directly interpretable as a probability or a share of wealth that would relocate. The logistic mapping ensures predicted values remain bounded between 0 and 1 and allows for a more realistic non-linear response: small changes in risk matter little for low-risk profiles, while effects become stronger for high-risk profiles without mechanically producing extreme flight rates.
 
@@ -674,7 +687,8 @@ flight_risk_index <-
   )
 ```
 
-### 3.3 Analysis of the results
+
+### 1.3 Analysis of the results
 
 Now that we have converted the flight-risk score into a calibrated flight probability (flight_prob), we aggregate the results at the country level. This allows us to compare countries in terms of (i) billionaire concentration, (ii) total billionaire wealth, and (iii) both the average risk index and the average implied mobility (probability), focusing on countries with a sufficiently large billionaire sample.
 
@@ -751,7 +765,8 @@ plot_region / plot_distrib
 ```
 
 
-## 4) Scenario testing : the impact of new taxation 
+
+## 2) Scenario testing : the impact of new taxation 
 
 In this section, we move from descriptive evidence to policy evaluation. Building on our flight-risk framework, we simulate the expected fiscal impact of introducing a new 2% billionaire wealth tax under alternative institutional settings. The goal is to quantify how different degrees of international coordination affect wealth mobility, the erosion of the tax base, and ultimately the amount of revenue that can be effectively collected.
 
