@@ -745,7 +745,7 @@ $$p = \frac{1}{1+e^{-(\alpha + \beta S)}}$$ {#eq-prob_to_score}
 
 Where $\beta$ represents the sensitivity of the leakage risk relative to the score and $\alpha$ is the adjustment constant (the intercept).
 
-Because we do not observe actual relocation decisions in our data, we calibrate (rather than estimate with the Maximum Likelihood Method) the logistic parameters $(\alpha)$ and $(\beta)$ transparently using two anchor points from the score distribution : The score corresponding to the 10th percentile of billionaires $s_{low}$ (low-risk profiles) and the score corresponding to the 90th percentile $s_{high}$ (high-risk profiles). This "moderate mobility" calibration pins down $(\alpha)$ and $(\beta)$ uniquely and yields an average implied flight probability of about 10.8\% in the sample. 
+Because we do not observe actual relocation decisions in our data, we calibrate (rather than estimate with the Maximum Likelihood Method) the logistic parameters $(\alpha)$ and $(\beta)$ transparently using two anchor points from the score distribution : The score corresponding to the 10th percentile of billionaires $s_{low}$ (low-risk profiles) and the score corresponding to the 90th percentile $s_{high}$ (high-risk profiles). This "moderate mobility" calibration pins down $(\alpha)$ and $(\beta)$ uniquely and yields an average implied flight probability of about 10.06\% (as we draw it from @tbl-country-risk) in the sample. 
 
 LAAAAAAAAAA
 
