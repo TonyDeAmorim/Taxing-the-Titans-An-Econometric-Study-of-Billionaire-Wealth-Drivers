@@ -842,7 +842,11 @@ simulate_tax_scenario <- function(data, scenario_name, flight_multiplier) {
 }
 ```
 
+Finally, we compare a unilateral implementation (France alone) to increasingly broad coalitions (G7, G20, G20+North, and a quasi-global benchmark). Each scenario is characterised by a specific flight multiplier that captures how coordination constrains relocation opportunities: the multiplier is highest under unilateral action and progressively lower as the coalition expands. 
 
+We choose the flight multipliers to capture how the outside option for relocating wealth shrinks as coordination becomes broader. The baseline individual probability (flight_prob) already reflects heterogeneity across billionaires; the multiplier simply scales the overall intensity of flight under each institutional setting. In the unilateral case (France alone), we set the multiplier to 1.5 to reflect stronger incentives to relocate when alternative jurisdictions remain fully available (a 50% increase relative to baseline). For G7 coordination, we use 0.9, assuming a modest reduction in flight because major advanced economies move together but many destinations remain outside the agreement. For the broader G20 coalition, we set 0.7 to represent a stronger constraint on exit options as most large markets participate. We then reduce the multiplier further to 0.55 for “G20 + North,” reflecting coordination extended to a wider set of high-income jurisdictions that are plausible relocation destinations. Finally, the quasi-global benchmark uses 0.40, capturing near-universal adoption where remaining outside options are limited, implying the lowest effective mobility response.
+
+As a robustness check, the same simulations could be rerun using alternative flight multipliers to assess how sensitive our results are to the assumed strength of behavioural responses. In practice, we can define “low-mobility” and “high-mobility” variants around the baseline ladder (slightly higher or lower multipliers in each scenario) and verify whether the qualitative ranking of scenarios and the main conclusions on revenue losses and collection efficiency remain unchanged.
 
 ```{r}
 
