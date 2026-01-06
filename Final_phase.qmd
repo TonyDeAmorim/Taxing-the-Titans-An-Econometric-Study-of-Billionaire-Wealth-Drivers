@@ -7,9 +7,14 @@ author:
 date: today
 date-format: "MMMM D, YYYY"
 abstract: |
-  This project was carried out as part of the data management course taught during the first year of the quantitative economics and international affairs and development master's programmes. The use of AI is indicated each time it is used and was only employed to correct the code, confirm intuitions and expand on our initial ideas. 
+  This project was carried out as part of the data management course taught during the first year of the Quantitative Economics master's programme and International Affairs and Development master's programme. The use of AI is indicated each time it is used and was only employed to correct the code, confirm intuitions and expand on our initial ideas. 
 format:
   pdf:
+    geometry:
+      - left=20mm   # Marge gauche (ajustez selon votre besoin)
+      - right=20mm  # Marge droite
+      - top=25mm    # Marge haute
+      - bottom=25mm # Marge basse
     papersize: a4
     number-sections: false
     toc: true
@@ -490,8 +495,8 @@ kable(shapiro_test,
   kable_styling(latex_options = "hold_position")
 ```
 
-- The p-value is 0.7615 :  It is well above the critical threshold of 0.05 (or 5%), which means that we do not reject the null hypothesis (H0). We conclude that the residuals of our model follow a normal distribution.
-- The points (our data) follow the reference line almost perfectly, there are no major deviations, either at the extremes (no serious outliers) or in the centre. The distribution is symmetrical.
+The p-value is 0.7615 :  It is well above the critical threshold of 0.05 (or 5%), which means that we do not reject the null hypothesis (H0). We conclude that the residuals of our model follow a normal distribution.
+The points (our data) follow the reference line almost perfectly, there are no major deviations, either at the extremes (no serious outliers) or in the centre. The distribution is symmetrical.
 
 ### 2.3 Heteroscedasticity 
 
@@ -727,9 +732,8 @@ top_country_risk |>
   kable(format = "latex",
         booktabs = TRUE,
         longtable = TRUE,
-        digits = 2)
-
-top_country_risk
+        digits = 2) |> 
+  kable_styling(latex_options = "hold_position", position = "center")
 
 ```
 
@@ -920,7 +924,7 @@ summary_table_all_2 <- bind_rows(sc_fr$global, sc_g7$global, sc_g20$global, sc_g
 kable(summary_table_all_2, 
              booktabs = TRUE, 
              digits = 2) |> 
-  kable_styling(latex_options = "hold_position")
+  kable_styling(latex_options = "hold_position", position = "center")
 
 ```
 
@@ -959,7 +963,6 @@ ggplot(loss_plot_df, aes(x = Scenario, y = `Loss rate (%)`, group = 1)) +
 
 
 
-\newpage 
 
 ```{r}
 #| label: tbl-Top-5-contributors-loss
