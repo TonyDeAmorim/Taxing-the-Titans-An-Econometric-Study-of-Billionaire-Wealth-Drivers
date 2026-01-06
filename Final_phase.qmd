@@ -753,11 +753,16 @@ G20 <- c(
   "Argentina", "South Africa"
 )
 
-extra_countries <- country_risk %>%
-  filter(nb_billionaires > 10, !(COUNTRY %in% G20)) %>%
+NORTH <- flight_risk_index |>
+  filter(north == 1) |>
+  distinct(COUNTRY) |>
   pull(COUNTRY)
 
-G20_plus <- unique(c(G20, extra_countries))
+# Coalition 4: G20 + Global North (broader coordination among advanced economies)
+G20_North <- unique(c(G20, NORTH))
+
+# Coalition 5: quasi-global (all countries in our sample)
+GLOBAL <- unique(flight_risk_index$COUNTRY)
 ```
 
 
@@ -829,14 +834,20 @@ simulate_tax_scenario <- function(data, scenario_name, flight_multiplier) {
 sc_fr <- simulate_tax_scenario(flight_risk_index |> filter(COUNTRY == "France"), "France seule", 1.5)
 sc_g7 <- simulate_tax_scenario(flight_risk_index |> filter(COUNTRY %in% G7), "Coordination G7", 0.9)
 sc_g20 <- simulate_tax_scenario(flight_risk_index |> filter(COUNTRY %in% G20), "Coordination G20", 0.7)
-sc_g20_plus <- simulate_tax_scenario(
-  flight_risk_index |> filter(COUNTRY %in% G20_plus),
-  "Coordination renforcée (G20+)",
-  0.6
+sc_g20_north <- simulate_tax_scenario(
+  flight_risk_index |> filter(COUNTRY %in% G20_North),
+  "Coordination élargie (G20 + North)",
+  0.55
+)
+
+sc_global <- simulate_tax_scenario(
+  flight_risk_index |> filter(COUNTRY %in% GLOBAL),
+  "Coordination quasi-globale",
+  0.40
 )
 
 
-summary_table_all <- bind_rows(sc_fr$global, sc_g7$global, sc_g20$global, sc_g20_plus$global) |>
+summary_table_all <- bind_rows(sc_fr$global, sc_g7$global, sc_g20$global, sc_g20_north$global, sc_global$global) |>
   transmute(
     Scenario = scenario,
     `# billionaires` = total_billionaires,
@@ -850,7 +861,7 @@ summary_table_all <- bind_rows(sc_fr$global, sc_g7$global, sc_g20$global, sc_g20
 summary_table_all
 ```
 
-As coordination expands, revenue losses fall, but at a decreasing rate: the first steps toward coordination deliver the largest reductions in tax-base flight, while additional coordination yields smaller marginal gains—consistent with a concave relationship.
+
 
 ```{r}
 #| label: Top 5 contributeurs à la perte
