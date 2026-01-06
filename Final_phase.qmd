@@ -728,6 +728,8 @@ flight_risk_index <-
 
 ### Conversion of the flight-score into a probability using a logistic transformation
 
+*For this phase, we knew we wanted to convert our scores into probabilities so that we could interpret them effectively. We based our work on Niculescu-Mizil and Caruana[^Niculescu] (2005) and found various online sources[^Sources] explaining the main principles of probability calculation using logistic regression. Finally, the use of AI enabled us to confirm our method and refine our code.*
+
 We convert the flight-risk score into an expected flight probability using a logistic transformation. The score is a 0–1 index that ranks individuals by exposure to mobility incentives, but it cannot be read directly as a probability (or as the share of wealth that would relocate). The logistic function, or sigmoid function, converts a probability into a real score. Its initial form is as follows:
 
 $$f(z) = \frac{1}{1+e^{-z}}$$ {#eq-logistic}
@@ -742,7 +744,7 @@ $$p = \frac{1}{1+e^{-(\alpha + \beta S)}}$$ {#eq-prob_to_score}
 
 Where $\beta$ represents the sensitivity of the leakage risk relative to the score and $\alpha$ is the adjustment constant (the intercept).
 
-Because we do not observe actual relocation decisions in our data, we calibrate (rather than estimate) the logistic parameters $(\alpha)$ and $(\beta)$ transparently using two anchor points from the score distribution : The score corresponding to the 10th percentile of billionaires $s_{low}$ (low-risk profiles) and the score corresponding to the 90th percentile $s_{high}$ (high-risk profiles). 
+Because we do not observe actual relocation decisions in our data, we calibrate (rather than estimate with the Maximum Likelihood Method) the logistic parameters $(\alpha)$ and $(\beta)$ transparently using two anchor points from the score distribution : The score corresponding to the 10th percentile of billionaires $s_{low}$ (low-risk profiles) and the score corresponding to the 90th percentile $s_{high}$ (high-risk profiles). 
 
 LAAAAAAAAAA
 
@@ -757,14 +759,15 @@ $$ {#eq-system}
 
 We can now use @eq-prob_to_score and convert our score into a probability.
 
-We could test the model according to the type of calibration we want :
+
+**Note**
+
+We do want to precise that we could have tested the model according to different types of calibration :
 
 - "Moderate" calibration: (2% → 25%) used here. We calibrate the logistic transformation by requiring that individuals in the 10th percentile of the score have an expected leakage of approximately 2%, and those in the 90th percentile have an expected leakage of 25%. This gives an average probability of approximately 10.8%
 - "Low" calibration: (1% → 15%)
 - "High" calibration: (3% → 35%)
 
-
-We used AI assistance to refine and validate the implementation of the logit-based calibration code. 
 
 
 ```{r}
@@ -1136,3 +1139,7 @@ fr_detail |>
 [^multico]: Kassambara, A. (s. d.).[ Multicollinearity essentials and VIF in R](https://www.sthda.com/english/articles/39-regression-model-diagnostics/160-multicollinearity-essentials-and-vif-in-r/). STHDA. 
 
 [^Breusch]: Bobbitt, Z. (2020, 31th of december). [How to perform a Breusch-Pagan test in R](https://www.statology.org/breusch-pagan-test-r/). Statology. 
+
+[^Niculescu]: Niculescu-Mizil, A., & Caruana, R. (2005). [Predicting good probabilities with supervised learning](https://www.cs.cornell.edu/~alexn/papers/calibration.icml05.crc.rev3.pdf). Proceedings of the 22nd International Conference on Machine Learning (ICML 2005).
+
+[^Sources]: See [Probability Calculation Using Logistic Regression](https://docs.tibco.com/pub/sfire-dsc/6.5.0/doc/html/TIB_sfire-dsc_user-guide/GUID-C4D05ED0-3392-4407-B62A-7D29B26DC566.html) and [Logistic Regression – Explained](https://towardsdatascience.com/logistic-regression-explained-593e9ddb7c6c/)
