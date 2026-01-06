@@ -541,7 +541,11 @@ Taken together, these checks imply that our coefficient estimates and standard i
 
 The aim of this part is to establish, for each billionaire the risk of flight from their current national territory if a tax is introduced. We will therefore create in this section a flight risk score, based on four distinct component :
 
-A tax burden score between 0 and 1 calculated according to the following standardization : $\frac{(\text{tax in country i})- (\text{min tax})}{(\text{max tax})- (\text{min tax})}$. This score is thus normalized between 0 (minimum taxation) and 1 (maximum taxation). We consider that higher taxation would encourage more tax evasion.  
+A tax burden score between 0 and 1 calculated according to the following standardization :
+
+$$\frac{(\text{tax in country i})- (\text{min tax})}{(\text{max tax})- (\text{min tax})}$$ {#eq-standardization} 
+
+This score is thus normalized between 0 (minimum taxation) and 1 (maximum taxation). We consider that higher taxation would encourage more tax evasion.  
 
 Whether the billionaire's main activity belongs to an industry considered to be internationally mobile. Among the industries in the original dataset, we have identified the following as mobile : "Diversified financial",  "Technology-Computer", "Hedge funds", "Private equity/leverage buyout",      "Venture capital", "Media", "Money Management". Belonging to one of this industry gives a score of 1 and 0 otherwise as we believe that working in such a sector would facilitate mobility for the billionaire. 
 
@@ -615,7 +619,7 @@ For each billionaire, four indicators are calculated, which are then combined to
 
 $$
 \text{Score} = 0.45 \cdot \text{Taxation} + 0.3 \cdot \text{Mobility} + 0.15 \cdot \text{Source of wealth} + 0.1 \cdot \text{Proximity}
-$$
+$$ {#eq-weighting}
 
 Taxation has the highest coefficient because it is theoretically the most significant incentive to leave. Mobility comes next, as it represents the most difficult physical constraint to overcome. The origin of wealth has a less significant coefficient because its impact remains limited due to the complexity of accurately establishing a billionaire's personal ties to their territory. The smallest coefficient is associated with proximity to a tax haven. Despite the physical constraint that distance represents, the economy remains globalized and billionaires have ample means to circumvent the issue.
 
@@ -650,7 +654,11 @@ flight_risk_index <-
 We convert the flight-risk score into an expected flight probability using a logistic transformation. The score is a 0–1 index that ranks individuals by exposure to mobility incentives, but it cannot be read directly as a probability (or as the share of wealth that would relocate). The logistic mapping keeps predicted values bounded between 0 and 1 and introduces a realistic non-linearity: changes in risk have limited effects for low-risk profiles, while the response becomes stronger for high-risk profiles without mechanically implying extreme flight rates.
 
 Because we do not observe actual relocation decisions in our data, we calibrate (rather than estimate) the logistic parameters $(\alpha)$ and $(\beta)$ transparently using two anchor points from the score distribution. 
-We define $(p_i=\text{plogis}(\alpha+\beta,\text{score}*i))$, and impose that the 10th percentile of the score $((s*{10}))$ corresponds to a low expected flight rate $(p_{10}=2\%)$, and the 90th percentile $((s_{90}))$ correspond to a higher but still plausible rate $(p_{90}=25\%)$. This "moderate mobility" calibration pins down $(\alpha)$ and $(\beta)$ uniquely and yields an average implied flight probability of about 10.8\% in the sample. 
+We define 
+
+$$(p_i=\text{plogis}(\alpha+\beta,\text{score}*i))$$ {#eq-logit_function}
+
+Then we impose that the 10th percentile of the score $((s*{10}))$ corresponds to a low expected flight rate $(p_{10}=2\%)$, and the 90th percentile $((s_{90}))$ correspond to a higher but still plausible rate $(p_{90}=25\%)$. This "moderate mobility" calibration pins down $(\alpha)$ and $(\beta)$ uniquely and yields an average implied flight probability of about 10.8\% in the sample. 
 
 We could test the model according to the type of calibration we want :
 
