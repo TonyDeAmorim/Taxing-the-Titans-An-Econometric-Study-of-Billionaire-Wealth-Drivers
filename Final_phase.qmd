@@ -728,7 +728,7 @@ flight_risk_index <-
 
 ### Conversion of the flight-score into a probability using a logistic transformation
 
-*For this phase, we knew we wanted to convert our scores into probabilities so that we could interpret them effectively. We based our work on Niculescu-Mizil and Caruana[^Niculescu] (2005) and found various online sources[^Sources] explaining the main principles of probability calculation using logistic regression. Finally, the use of AI enabled us to confirm our method and refine our code.*
+*For this phase, we wanted to convert our scores into probabilities so that we could interpret them effectively. We based our work on Niculescu-Mizil and Caruana[^Niculescu] (2005) and found various online sources[^Sources] explaining the main principles of probability calculation using logistic regression. Finally, the use of AI enabled us to confirm our method and refine our code.*
 
 We convert the flight-risk score into an expected flight probability using a logistic transformation. The score is a 0–1 index that ranks individuals by exposure to mobility incentives, but it cannot be read directly as a probability (or as the share of wealth that would relocate). The logistic function, or sigmoid function, converts a probability into a real score. Its initial form is as follows:
 
@@ -758,16 +758,6 @@ $$
 $$ {#eq-system}
 
 We can now use @eq-prob_to_score and convert our score into a probability.
-
-
-**Note**
-
-We do want to precise that we could have tested the model according to different types of calibration :
-
-- "Moderate" calibration: (2% → 25%) used here. We calibrate the logistic transformation by requiring that individuals in the 10th percentile of the score have an expected leakage of approximately 2%, and those in the 90th percentile have an expected leakage of 25%. This gives an average probability of approximately 10.8%
-- "Low" calibration: (1% → 15%)
-- "High" calibration: (3% → 35%)
-
 
 
 ```{r}
