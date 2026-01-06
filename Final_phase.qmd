@@ -830,7 +830,7 @@ The bottom density plot summarizes the overall distribution of flight probabilit
 Overall, these figures suggest that mobility risk is not uniform across billionaires. Most individuals cluster at low predicted flight probabilities, especially among inherited fortunes, but there is a clear right tail driven largely by self-made profiles. In other words, the potential response to a wealth tax is concentrated in a smaller, more mobile subset rather than spread evenly across the entire billionaire population.
 
 
-## Scenario testing : the impact of new taxation 
+# Scenario testing : the impact of new taxation 
 
 In this section, we move from descriptive evidence to policy evaluation. Building on our flight-risk framework, we simulate the expected fiscal impact of introducing a new 2% billionaire wealth tax under alternative institutional settings. The goal is to quantify how different degrees of international coordination affect wealth mobility, the erosion of the tax base, and ultimately the amount of revenue that can be effectively collected.
 
