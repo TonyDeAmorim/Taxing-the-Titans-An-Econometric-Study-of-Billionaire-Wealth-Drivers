@@ -311,8 +311,7 @@ map_count <- ggplot() +
     breaks = c(1, 5, 10, 50, 100, 500),
     direction = -1
   ) +
-  theme_void() + # Remove axes and background for clean map
-  labs(title = "Global distribution of billionaires in 2014") +
+  theme_void() +
   theme(
     plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
     plot.subtitle = element_text(size = 12, hjust = 0.5),
@@ -392,9 +391,22 @@ The second graph tracks the evolution of billionaire wealth origins from 1996 to
 
 
 ## 2) First model
+Our baseline regression, see @tbl-first-model, links the (log) number of billionaires in a country to our taxation proxy (tax revenue), economic size (GDP), openness (FDI), and investment capacity (capital formation). Overall, the model fits the data well (Adjusted R²= 0.770; F-test p-value < 10^(-14)), suggesting these macroeconomic factors explain a large share of cross-country variation in billionaire presence.
+
+The coefficient on tax revenue is positive (β = 0.022) and marginally significant at the 10% level (p = 0.097). Interpreting tax revenue as a proxy for the overall level of taxation/fiscal pressure, this result suggests that countries with stronger tax capacity tend to host more, not fewer, billionaires. Economically, this is consistent with the idea that higher-tax countries often also provide the institutional and public-good environment that supports wealth creation and wealth retention—stable legal systems, infrastructure, education, and high-quality public services.
+
+Therefore, taxation does not automatically translate into a weaker ability to attract or maintain top wealth holders. In the context of an open economy, this weak but positive association also suggests that “competitiveness” is not solely driven by low taxation: some high-tax jurisdictions can remain attractive because they compensate with stability and market opportunities.
+
+The strongest determinant is economic scale: log GDP is highly significant and large. This implies that larger economies systematically host more billionaires, which aligns with the idea that big markets generate more high-value firms, deeper capital markets, and more opportunities for large fortunes. This is important for our research question because it highlights that billionaire wealth concentration is strongly linked to market size and overall economic performance—taxation effects must be interpreted conditional on these structural fundamentals.
+
+FDI is also positive and significant, indicating that more open and internationally connected economies tend to have more billionaires. This supports the “national competitiveness in an open economy” channel: countries that attract foreign investment and integrate into global capital flows are also those where billionaire wealth is more prevalent. In other words, openness and investment attractiveness appear complementary to the presence of ultra-wealthy individuals rather than substitutable.
+
+Finally, capital formation is not statistically significant (p = 0.40), suggesting that once GDP size and FDI are accounted for, differences in domestic investment intensity (as measured here) do not add much explanatory power for billionaire counts.
+
+Taken together, this baseline model suggests that, using tax revenue as a proxy for taxation, higher taxation is not associated with a lower billionaire presence, while economic performance (GDP) and openness/competitiveness (FDI) are strongly associated with billionaire concentration. This supports an interpretation where taxation can coexist with competitiveness in open economies, provided the broader institutional and market conditions remain favorable.
 
 ```{r}
-#| label: tbl-firs-model
+#| label: tbl-first-model
 #| tbl-cap: "First model results"
 #| message: false
 #| warning: false
@@ -423,28 +435,18 @@ reg_data <- Billionaires_2014 |>
 
 modele <- lm(log_bill ~ tax + log_gdp + fdi + capital, data = reg_data)
 
-tidy_modele <- tidy(modele)
-kable(tidy_modele, 
-      digits = 3, 
-      booktabs = TRUE,
-      col.names = c("Variable", "Coefficient", "Standard error", "t-Stat", "p-value")) |> 
-  kable_styling(latex_options = c("striped", "hold_position"))
+modelsummary(
+  modele, 
+  output = "kableExtra",
+  fmt = 3,
+  shape = term + statistic ~ model, 
+  stars = TRUE,
+  gof_map = c("r.squared", "adj.r.squared", "nobs")) |> 
+  kable_styling(latex_options = c("striped", "scale_down", "hold_position"))
 
 ```
 
-Our baseline regression links the (log) number of billionaires in a country to our taxation proxy (tax revenue), economic size (GDP), openness (FDI), and investment capacity (capital formation). Overall, the model fits the data well (Adjusted R²= 0.771; F-test p-value < 10^(-14)), suggesting these macroeconomic factors explain a large share of cross-country variation in billionaire presence.
 
-The coefficient on tax revenue is positive (β = 0.022) and marginally significant at the 10% level (p = 0.097). Interpreting tax revenue as a proxy for the overall level of taxation/fiscal pressure, this result suggests that countries with stronger tax capacity tend to host more, not fewer, billionaires. Economically, this is consistent with the idea that higher-tax countries often also provide the institutional and public-good environment that supports wealth creation and wealth retention—stable legal systems, infrastructure, education, and high-quality public services.
-
-Therefore, taxation does not automatically translate into a weaker ability to attract or maintain top wealth holders. In the context of an open economy, this weak but positive association also suggests that “competitiveness” is not solely driven by low taxation: some high-tax jurisdictions can remain attractive because they compensate with stability and market opportunities.
-
-The strongest determinant is economic scale: log GDP is highly significant and large. This implies that larger economies systematically host more billionaires, which aligns with the idea that big markets generate more high-value firms, deeper capital markets, and more opportunities for large fortunes. This is important for our research question because it highlights that billionaire wealth concentration is strongly linked to market size and overall economic performance—taxation effects must be interpreted conditional on these structural fundamentals.
-
-FDI is also positive and significant, indicating that more open and internationally connected economies tend to have more billionaires. This supports the “national competitiveness in an open economy” channel: countries that attract foreign investment and integrate into global capital flows are also those where billionaire wealth is more prevalent. In other words, openness and investment attractiveness appear complementary to the presence of ultra-wealthy individuals rather than substitutable.
-
-Finally, capital formation is not statistically significant (p = 0.40), suggesting that once GDP size and FDI are accounted for, differences in domestic investment intensity (as measured here) do not add much explanatory power for billionaire counts.
-
-Taken together, this baseline model suggests that, using tax revenue as a proxy for taxation, higher taxation is not associated with a lower billionaire presence, while economic performance (GDP) and openness/competitiveness (FDI) are strongly associated with billionaire concentration. This supports an interpretation where taxation can coexist with competitiveness in open economies, provided the broader institutional and market conditions remain favorable.
 
 ### 2.1 Multicolinearity analysis
 
@@ -495,8 +497,7 @@ kable(shapiro_test,
   kable_styling(latex_options = "hold_position")
 ```
 
-The p-value is 0.7615 :  It is well above the critical threshold of 0.05 (or 5%), which means that we do not reject the null hypothesis (H0). We conclude that the residuals of our model follow a normal distribution.
-The points (our data) follow the reference line almost perfectly, there are no major deviations, either at the extremes (no serious outliers) or in the centre. The distribution is symmetrical.
+The p-value is 0.7815 :  It is well above the critical threshold of 0.05 (or 5%), which means that we do not reject the null hypothesis (H0). We conclude that the residuals of our model follow a normal distribution.
 
 ### 2.3 Heteroscedasticity 
 
@@ -524,13 +525,13 @@ kable(bp_df[, 2:3],
                 font_size = 9)
 ```
 
-With a p-value of 0.7439, we fail to reject the null hypothesis of constant error variance, meaning there is no evidence of heteroskedasticity in the model.
+With a p-value of 0.7318, we fail to reject the null hypothesis of constant error variance, meaning there is no evidence of heteroskedasticity in the model.
 
 ### 2.4 Conclusion
 Overall, the diagnostic tests support the validity of the OLS assumptions for our first model.
 The VIF results (around 1.2–1.3) indicate no multicollinearity, so the regressors are not strongly correlated.
-The Shapiro–Wilk test (p = 0.7615) suggests the residuals are approximately normally distributed.
-The Breusch–Pagan test (p = 0.7439) shows no evidence of heteroskedasticity, meaning the error variance can be treated as constant.
+The Shapiro–Wilk test (p = 0.7815) suggests the residuals are approximately normally distributed.
+The Breusch–Pagan test (p = 0.7318) shows no evidence of heteroskedasticity, meaning the error variance can be treated as constant.
 Taken together, these checks imply that our coefficient estimates and standard inference from this model are generally reliable.
 
 
