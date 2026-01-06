@@ -730,6 +730,12 @@ plot_region / plot_distrib
 
 ## 4) Scenario testing : the impact of new taxation 
 
+In this section, we move from descriptive evidence to policy evaluation. Building on our flight-risk framework, we simulate the expected fiscal impact of introducing a new 2% billionaire wealth tax under alternative institutional settings. The goal is to quantify how different degrees of international coordination affect wealth mobility, the erosion of the tax base, and ultimately the amount of revenue that can be effectively collected.
+
+We define two reference groups of countries—G7 and G20—to represent different degrees of international coordination. This allows us to compare a unilateral wealth tax (France acting alone) with coordinated adoption among major economies, where relocation incentives should be weaker.
+
+We then implement a revenue simulation that translates our calibrated individual flight probability into fiscal outcomes under each policy setting. For every billionaire, the baseline flight probability is adjusted by a scenario-specific multiplier (higher under unilateral action, lower under coordination) and capped at 100%. Using a 2% tax rate, we compute the potential revenue in the absence of flight, the wealth that would relocate, the remaining taxable base, the revenue actually collected after flight, the associated revenue loss, and the resulting collection efficiency. Finally, we run this procedure for the France-only, G7, and G20 scenarios and summarise the results in a single table to quantify how coordination affects tax-base erosion and the effective yield of the tax.
+
 ```{r}
 #| label: Define G7 and G20 members
 #| message: false
@@ -746,6 +752,12 @@ G20 <- c(
   "South Korea", "Mexico", "Indonesia", "Turkey", "Saudi Arabia",
   "Argentina", "South Africa"
 )
+
+extra_countries <- country_risk %>%
+  filter(nb_billionaires > 10, !(COUNTRY %in% G20)) %>%
+  pull(COUNTRY)
+
+G20_plus <- unique(c(G20, extra_countries))
 ```
 
 
@@ -817,8 +829,14 @@ simulate_tax_scenario <- function(data, scenario_name, flight_multiplier) {
 sc_fr <- simulate_tax_scenario(flight_risk_index |> filter(COUNTRY == "France"), "France seule", 1.5)
 sc_g7 <- simulate_tax_scenario(flight_risk_index |> filter(COUNTRY %in% G7), "Coordination G7", 0.9)
 sc_g20 <- simulate_tax_scenario(flight_risk_index |> filter(COUNTRY %in% G20), "Coordination G20", 0.7)
+sc_g20_plus <- simulate_tax_scenario(
+  flight_risk_index |> filter(COUNTRY %in% G20_plus),
+  "Coordination renforcée (G20+)",
+  0.6
+)
 
-summary_table_all <- bind_rows(sc_fr$global, sc_g7$global, sc_g20$global) |>
+
+summary_table_all <- bind_rows(sc_fr$global, sc_g7$global, sc_g20$global, sc_g20_plus$global) |>
   transmute(
     Scenario = scenario,
     `# billionaires` = total_billionaires,
@@ -832,7 +850,7 @@ summary_table_all <- bind_rows(sc_fr$global, sc_g7$global, sc_g20$global) |>
 summary_table_all
 ```
 
-concave loss of revenue 
+As coordination expands, revenue losses fall, but at a decreasing rate: the first steps toward coordination deliver the largest reductions in tax-base flight, while additional coordination yields smaller marginal gains—consistent with a concave relationship.
 
 ```{r}
 #| label: Top 5 contributeurs à la perte
