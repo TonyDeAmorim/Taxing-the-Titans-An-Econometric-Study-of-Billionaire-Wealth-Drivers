@@ -889,7 +889,7 @@ Overall, @fig-Basic-analysis-plots suggest that mobility risk is not uniform acr
 
 In this section, we move from descriptive evidence to policy evaluation. Building on our flight-risk framework, we simulate the expected fiscal impact of introducing a new 2% billionaire wealth tax under alternative institutional settings. The goal is to quantify how different degrees of international coordination affect wealth mobility, the erosion of the tax base, and ultimately the amount of revenue that can be effectively collected.
 
-## Creating a scenario-testing function
+## Creating a scenario-testing function {#sec-creation}
 
 We define a set of nested country coalitions to represent progressively broader degrees of international coordination. We start with the G7 and the G20, which capture coordination among major advanced economies and among the largest global economies, respectively. To extend the analysis beyond these institutional groups, we also build a broader “G20 + North” coalition by adding all countries classified as part of the Global North in our dataset, reflecting a wider agreement among high-income jurisdictions that host a large share of the taxable base. Finally, we consider a “global” benchmark that includes all countries in our sample, which serves as an upper bound on coordination. This tiered structure allows us to assess how expanding participation changes expected mobility incentives and the effective fiscal yield of the tax.
 
@@ -920,7 +920,7 @@ G20_North <- unique(c(G20, NORTH)) #Coalition 4 = G20 + North countries
 GLOBAL <- unique(flight_risk_index$COUNTRY) #All countries in our sample
 ```
 
-We then implement a revenue simulation that converts our calibrated individual flight probability into fiscal outcomes under each policy setting. For each billionaire, the baseline flight probability $P_{prob}$ is scaled by a scenario-specific multiplier $\eta$ higher under unilateral action and lower under broader coordination—and capped at 1 to avoid probabilities above 100%, following @eq-Effective_prob :
+We then implement a revenue simulation that converts our calibrated individual flight probability into fiscal outcomes under each policy setting. For each billionaire, the baseline flight probability $P_{prob}$ is scaled by a scenario-specific multiplier $\eta$ higher under unilateral action and lower under broader coordination—and capped at 1 to avoid probabilities above 100%, following @eq-Effective_prob, to give the effective flight probability $\mathcal{E}_p$ and its average $\mu_{\mathcal{E}}$:
  
 $$\mathcal{E}_p = min\{ \frac{\eta}{1+e^{-(\alpha + \beta S)}} \ ; 1\}$$ {#eq-Effective_prob}
 
@@ -937,7 +937,7 @@ $$ {#eq-simulation}
 
 The difference between potential and actual revenue computed in @eq-simulation gives the revenue loss attributable to flight $\mathcal{L}$ of @eq-loss, and their ratio provides a collection-efficiency measure $CE$ of @eq-CE. More explicitly, it is defined as the share of the theoretical tax yield that is effectively collected once flight is taken into account. It serves as a summary indicator of tax-base erosion: higher values imply limited leakage and stronger enforcability of the policy, whereas lower values indicate substantial revenue losses due to mobility.
 
-$$\mathcal{L} = \mathcal{P} - A$$ {#eq-los}
+$$\mathcal{L} = \mathcal{P} - A$$ {#eq-loss}
 
 $$CE = \sum_{i=1}^{n}(\frac{A_i}{\mathcal{P}_i})\cdot 100$$ {#eq-CE}
 
@@ -997,11 +997,11 @@ simulate_tax_scenario <- function(data, scenario_name, flight_multiplier) {
 
 ## Application on different scenarios
 
-Finally, we compare a unilateral implementation (France alone) to increasingly broad coalitions (G7, G20, G20+North, and a quasi-global benchmark). Each scenario is characterized by a specific flight multiplier that captures how coordination constrains relocation opportunities: the multiplier is highest under unilateral action and progressively lower as the coalition expands. 
+Finally, we compare a unilateral implementation (France alone) to increasingly broad coalitions (G7, G20, G20+North, and a quasi-global benchmark). As explained in @sec-creation, each scenario is characterized by a specific flight multiplier $\eta$ that captures how coordination constrains relocation opportunities: the multiplier is highest under unilateral action and progressively lower as the coalition expands. 
 
-We choose the flight multipliers to capture how the outside option for relocating wealth shrinks as coordination becomes broader. The baseline individual probability (flight_prob) already reflects heterogeneity across billionaires; the multiplier simply scales the overall intensity of flight under each institutional setting. In the unilateral case (France alone), we set the multiplier to 1.5 to reflect stronger incentives to relocate when alternative jurisdictions remain fully available (a 50% increase relative to baseline). For G7 coordination, we use 0.9, assuming a modest reduction in flight because major advanced economies move together but many destinations remain outside the agreement. For the broader G20 coalition, we set 0.7 to represent a stronger constraint on exit options as most large markets participate. We then reduce the multiplier further to 0.55 for “G20 + North,” reflecting coordination extended to a wider set of high-income jurisdictions that are plausible relocation destinations. Finally, the quasi-global benchmark uses 0.40, capturing near-universal adoption where remaining outside options are limited, implying the lowest effective mobility response.
+We choose the flight multipliers to capture how the outside option for relocating wealth shrinks as coordination becomes broader. The baseline individual probability $P_{prob}$ already reflects heterogeneity across billionaires; the multiplier simply scales the overall intensity of flight under each institutional setting. In the unilateral case (France alone), we set the multiplier to $\eta = 1.5$ to reflect stronger incentives to relocate when alternative jurisdictions remain fully available (a 50% increase relative to baseline). For G7 coordination, we use $\eta = 0.9$, assuming a modest reduction in flight because major advanced economies move together but many destinations remain outside the agreement. For the broader G20 coalition, we set $\eta = 0.7$ to represent a stronger constraint on exit options as most large markets participate. We then reduce the multiplier further to $\eta =0.55$ for “G20 + North,” reflecting coordination extended to a wider set of high-income jurisdictions that are plausible relocation destinations. Finally, the quasi-global benchmark uses $\eta =0.40$, capturing near-universal adoption where remaining outside options are limited, implying the lowest effective mobility response.
 
-As a robustness check, the same simulations could be rerun using alternative flight multipliers to assess how sensitive our results are to the assumed strength of behavioural responses. In practice, we can define “low-mobility” and “high-mobility” variants around the baseline ladder (slightly higher or lower multipliers in each scenario) and verify whether the qualitative ranking of scenarios and the main conclusions on revenue losses and collection efficiency remain unchanged.
+As a robustness check, the same simulations could be rerun using alternative flight multipliers to assess how sensitive our results are to the assumed strength of behavioral responses. In practice, we can define “low-mobility” and “high-mobility” variants around the baseline ladder (slightly higher or lower $\eta$ in each scenario) and verify whether the qualitative ranking of scenarios and the main conclusions on revenue losses and collection efficiency remain unchanged.
 
 ```{r}
 #| label: tbl-scenarios
@@ -1010,45 +1010,33 @@ As a robustness check, the same simulations could be rerun using alternative fli
 #| message: false
 #| warning: false
 
-sc_fr <- simulate_tax_scenario(flight_risk_index |> filter(COUNTRY == "France"), "France seule", 1.5)
-sc_g7 <- simulate_tax_scenario(flight_risk_index |> filter(COUNTRY %in% G7), "Coordination G7", 0.9)
-sc_g20 <- simulate_tax_scenario(flight_risk_index |> filter(COUNTRY %in% G20), "Coordination G20", 0.7)
+sc_fr <- simulate_tax_scenario(flight_risk_index |> filter(COUNTRY == "France"), "France alone", 1.5)
+sc_g7 <- simulate_tax_scenario(flight_risk_index |> filter(COUNTRY %in% G7), "G7 Coordination", 0.9)
+sc_g20 <- simulate_tax_scenario(flight_risk_index |> filter(COUNTRY %in% G20), "G20 Coordination", 0.7)
 sc_g20_north <- simulate_tax_scenario(
   flight_risk_index |> filter(COUNTRY %in% G20_North),
-  "Coordination élargie (G20 + North)",
+  "Expanded coordination (G20 + North)",
   0.55
 )
 
 sc_global <- simulate_tax_scenario(
   flight_risk_index |> filter(COUNTRY %in% GLOBAL),
-  "Coordination quasi-globale",
+  "Near-global coordination",
   0.40
 )
-
 
 summary_table_all <- bind_rows(sc_fr$global, sc_g7$global, sc_g20$global, sc_g20_north$global, sc_global$global) |>
   transmute(
     Scenario = scenario,
-    `# billionaires` = total_billionaires,
-    `Expected flight rate (%)` = round(avg_flight_prob, 1),
-    `Potential revenue ($bn)` = round(potential_revenue_billion, 3),
-    `Actual revenue ($bn)` = round(actual_revenue_billion, 3),
-    `Lost revenue ($bn)` = round(lost_revenue_billion, 3),
-    `Collection efficiency (%)` = round(collection_efficiency, 1)
+    "n" = total_billionaires,
+    "$\\mu_{\\mathcal{E}}$ (%)" = round(avg_flight_prob, 1),
+    "$\\mathcal{P}$ ($bn)" = round(potential_revenue_billion, 3),
+    "A ($bn)" = round(actual_revenue_billion, 3),
+    "$\\mathcal{L}$ ($bn)" = round(lost_revenue_billion, 3),
+    "CE (%)" = round(collection_efficiency, 1)
   )
 
-summary_table_all_2 <- bind_rows(sc_fr$global, sc_g7$global, sc_g20$global, sc_g20_north$global, sc_global$global) |>
-  transmute(
-    Scenario = scenario,
-    `bn` = total_billionaires,
-    `EFR (%)` = round(avg_flight_prob, 1),
-    `PR($bn)` = round(potential_revenue_billion, 3),
-    `AR ($bn)` = round(actual_revenue_billion, 3),
-    `LR ($bn)` = round(lost_revenue_billion, 3),
-    `CE (%)` = round(collection_efficiency, 1)
-  )
-
-kable(summary_table_all_2, 
+kable(summary_table_all, 
              booktabs = TRUE, 
              digits = 2) |> 
   kable_styling(latex_options = "hold_position", position = "center")
