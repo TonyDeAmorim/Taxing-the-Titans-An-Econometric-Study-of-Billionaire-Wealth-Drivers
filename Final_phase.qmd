@@ -1102,11 +1102,6 @@ i.e. 78.4\%, and therefore an associated loss rate of $1-0.784=0.216$, i.e. 21.6
 
 This proximity is substantive because it is obtained under structurally different assumptions. In Zucman's paper, the 20\% loss is introduced in a top-down manner as a uniform haircut applied to potential revenues. In our framework, flight is endogenous at the micro level : it results from a distribution of individual flight probabilities derived from a composite score that explicitly incorporates heterogeneity (wealth origin, sectoral mobility, proximity to low-tax jurisdictions, and fiscal pressure), and then calibrated through a logistic transformation. The fact that we obtain almost the same collection efficiency as Zucman despite this heterogeneity is informative: it suggests that the aggregate assumption of "about 20\% losses" can emerge naturally from a bottom-up model in which mobility is concentrated in a high-risk minority (and, in our data, in which wealth is more concentrated among these profiles), rather than being imposed uniformly.
 
-@tbl-scenarios highlights a clear policy trade-off between the size of the tax base and the degree of international coordination. Moving from a unilateral French tax to broader coalitions (G7, G20, G20+North, quasi-global) mechanically increases the number of covered billionaires and the potential revenue, because more individuals and more wealth fall under the tax. At the same time, stronger coordination reduces the expected flight response: the implied average flight rate falls monotonically from 18.7% (France only) to 4.0% (quasi-global). This captures the key mechanism of coordination: by reducing the set of attractive “outside options,” coordination lowers the elasticity of the tax base to the policy.
-
-In levels, potential revenue rises from \$3.66bn (France) to \$104.25bn (near-global). However, revenue losses due to flight do not increase monotonically with the coalition size. Losses peak around the intermediate coalitions (G7/G20) and then decline as coordination becomes broader (G20+North and quasi-global). Economically, this is intuitive: when the coalition expands a lot and coordination is stronger, the reduction in flight probabilities dominates the larger tax base, so less wealth is expected to escape. This is also reflected in collection efficiency, which improves steadily from 78.4% under unilateral action to 95.9% under quasi-global coordination. The key message is that coordination increases the effective yield of the wealth tax by compressing tax-base erosion, especially once participation becomes sufficiently broad.
-
-
 
 ```{r}
 #| message: false
@@ -1132,12 +1127,10 @@ ggplot(loss_plot_df, aes(x = Scenario, y = `Loss rate (%)`, group = 1)) +
   labs(
     x = NULL,
     y = "Lost revenue as % of potential revenue"
-  ) +
-  theme(axis.text.x = element_text(angle = 20, hjust = 1))
+  ) 
 ```
 
-As international coordination expands in our framework, collection efficiency increases monotonically—86.4\% (G7), 90.4\% (G20), 93.3\% (G20+North), and 95.9\% (quasi-global)—reflecting the progressive removal of outside options. This pattern aligns with Zucman’s core coordination mechanism: by limiting the feasibility of relocating to low-tax jurisdictions (e.g., through a ``tax collector of last resort'' design; see Zucman (2024)), coordination sharply reduces the elasticity of the taxable base and raises effective collection rates.
-
+@fig-coordination, consistent with @tbl-scenarios, highlights the decisive value of international coordination in making a tax on billionaires truly effective. As one moves from a unilateral implementation (France alone) to broader coalitions (G7, G20, G20+North, quasi-global), tax-base erosion decreases in a clear and monotonic way: the relative loss rate falls from 18.7\% to 4.0\%. This trajectory directly captures the central economic mechanism of coordination in an open economy: the broader the agreement, the more it reduces the set of credible fallback jurisdictions ("outside options") and thus the elasticity of the tax base to the reform. This result is precisely in line with the argument of Zucman[^Zucman_paper], according to which a minimum tax on billionaires becomes fully applicable only if the exit option is neutralized through international coordination. In our simulations, this progressive compression of outside options translates mechanically into a continuous increase in collection efficiency (from 78.4\% to 95.9\%): a growing share of the theoretical yield becomes effectively collectible. In other words, even if the expansion of the coalition also increases the taxable base and potential revenues, the key message is behavioral and institutional: coordination reduces flight and transforms a fragile tax into a robust fiscal instrument, once participation becomes sufficiently broad.
 
 
 ```{r}
