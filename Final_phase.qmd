@@ -711,7 +711,7 @@ Tax havens are assigned a default score of 0, and for the sake of clarity, categ
 flight_risk_index <-
   flight_risk_index |>
   mutate(
-    wealth_bil = networthusbillion / 10, # Conversion of tenths of billions into billions
+    wealth_bil = networthusbillion,
     flight_risk_score = (tax_normalized * 0.45 +
       mobile_sector * 0.30 +
       is_selfmade * 0.15 +
@@ -1058,15 +1058,22 @@ kable(
   col.names = c(
     "Scenario",
     "n",
-    "$\\mu_{\\mathcal{E}}$",
+    "$\\mu_{\\mathcal{E}}$ (\\%)",
     "$\\mathcal{P}$",
-    "A",
+    "A" ,
     "$\\mathcal{L}$",
-    "CE"
+    "CE (\\%)"
   )
 ) |>
-kable_styling(latex_options = "hold_position", position = "center")
-
+kable_styling(latex_options = "hold_position", position = "center", full_width = FALSE)|>
+  footnote(
+  general = "n : number of billionaires ; $\\\\mu_{\\\\mathcal{E}}$ : average flight probability ; $\\\\mathcal{P}$ : potential revenue ; A : actual revenue ; $\\\\mathcal{L}$ : lost revenue ; CE : collection efficiency ; values in bn USD",
+  general_title = "Note: ",
+  footnote_as_chunk = TRUE,
+  threeparttable = TRUE,
+  escape = FALSE,
+  fixed_small_size = TRUE
+)
 ```
 
 @tbl-scenarios highlights a clear policy trade-off between the size of the tax base and the degree of international coordination. Moving from a unilateral French tax to broader coalitions (G7, G20, G20+North, quasi-global) mechanically increases the number of covered billionaires and the potential revenue, because more individuals and more wealth fall under the tax. At the same time, stronger coordination reduces the expected flight response: the implied average flight rate falls monotonically from 18.7% (France only) to 4.0% (quasi-global). This captures the key mechanism of coordination: by reducing the set of attractive “outside options,” coordination lowers the elasticity of the tax base to the policy.
@@ -1075,9 +1082,8 @@ In levels, potential revenue rises from \$3.66bn (France) to \$104.25bn (near-gl
 
 Our simulation outcomes can be benchmarked against the enforcement bounds discussed by Zucman (2024)[^Zucman_paper]. In his baseline estimates for a global 2\%-of-wealth minimum tax on billionaires, Zucman reports \$242bn under perfect enforcement and \$193bn under a low-enforcement assumption in which 20\% of revenues are lost to avoidance/evasion, implying an effective collection ratio of about 80\% ($193/242 \approx 0.80$). In our unilateral-France scenario, the collection efficiency is 78.4\%, i.e.\ of the same order of magnitude as Zucman’s low-enforcement benchmark. This proximity is economically intuitive: both settings correspond to weak coordination, where taxpayers retain many low or zero-tax outside options, increasing the elasticity of the tax base.
 
-The comparison is transparent in terms of implied leakage rates. Zucman’s 80\% collection ratio corresponds to a 20\% loss rate ($1-0.80=0.20$). Our unilateral scenario yields a loss rate of 21.6\% ($1-0.784=0.216$), a difference of only 1.6 percentage points. This small gap is interpretable: our framework derives aggregate losses from heterogeneous, individual-level flight probabilities (which average 15.1\% under the unilateral multiplier of 1.5), whereas \citet{Zucman2024} applies a uniform 20\% haircut to potential revenues. The near-equivalence indicates that our bottom-up calibration produces aggregate predictions consistent with Zucman’s top-down enforcement assumption.
+The comparison is transparent in terms of implied leakage rates. Zucman’s 80\% collection ratio corresponds to a 20\% loss rate ($1-0.80=0.20$). Our unilateral scenario yields a loss rate of 21.6\% ($1-0.784=0.216$), a difference of only 1.6 percentage points. This small gap is interpretable: our framework derives aggregate losses from heterogeneous, individual-level flight probabilities (which average 15.1\% under the unilateral multiplier of 1.5), whereas Zucman (2024) applies a uniform 20\% haircut to potential revenues. The near-equivalence indicates that our bottom-up calibration produces aggregate predictions consistent with Zucman’s top-down enforcement assumption.
 
-As international coordination expands in our framework, collection efficiency increases monotonically—86.4\% (G7), 90.4\% (G20), 93.3\% (G20+North), and 95.9\% (quasi-global)—reflecting the progressive removal of outside options. This pattern aligns with Zucman’s core coordination mechanism: by limiting the feasibility of relocating to low-tax jurisdictions (e.g., through a ``tax collector of last resort'' design; see \citet[Section~4.3]{Zucman2024}), coordination sharply reduces the elasticity of the taxable base and raises effective collection rates.
 
 
 ```{r}
@@ -1108,6 +1114,7 @@ ggplot(loss_plot_df, aes(x = Scenario, y = `Loss rate (%)`, group = 1)) +
   theme(axis.text.x = element_text(angle = 20, hjust = 1))
 ```
 
+As international coordination expands in our framework, collection efficiency increases monotonically—86.4\% (G7), 90.4\% (G20), 93.3\% (G20+North), and 95.9\% (quasi-global)—reflecting the progressive removal of outside options. This pattern aligns with Zucman’s core coordination mechanism: by limiting the feasibility of relocating to low-tax jurisdictions (e.g., through a ``tax collector of last resort'' design; see Zucman (2024)), coordination sharply reduces the elasticity of the taxable base and raises effective collection rates.
 
 
 
