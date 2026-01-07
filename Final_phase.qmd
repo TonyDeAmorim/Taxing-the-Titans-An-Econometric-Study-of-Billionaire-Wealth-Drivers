@@ -524,7 +524,6 @@ modelsummary(
 ```
 
 
-
 ## Multicolinearity analysis
 
 We here test for multicollinearity among the explanatory variables using the Variance Inflation Factor (VIF)[^multico].
