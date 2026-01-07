@@ -613,7 +613,7 @@ Taken together, these checks imply that our coefficient estimates and standard i
 
 
 # Understanding and anticipating the behaviour of the wealthiest individuals
-## Creation of a flight-risk score
+## Creation of a flight-risk score {#sec-ponderation}
 
 The aim of this part is to establish, for each billionaire the risk of flight from their current national territory if a tax is introduced. We will therefore create in this section a flight risk score, based on four distinct component :
 
@@ -725,7 +725,7 @@ flight_risk_index <-
 ```
 
 
-## Conversion of the flight-score into a probability using a logistic transformation
+## Conversion of the flight-score into a probability using a logistic transformation {#sec-logis}
 
 *For this phase, we wanted to convert our scores into probabilities so that we could interpret them effectively. We based our work on Niculescu-Mizil and Caruana[^Niculescu] (2005) and found various online sources[^Sources] explaining the main principles of probability calculation using logistic regression. Finally, the use of AI enabled us to confirm our method and refine our code.*
 
@@ -1129,6 +1129,21 @@ ggplot(loss_plot_df, aes(x = Scenario, y = `Loss rate (%)`, group = 1)) +
 
 @fig-coordination, consistent with @tbl-scenarios, highlights the decisive value of international coordination in making a tax on billionaires truly effective. As one moves from a unilateral implementation (France alone) to broader coalitions (G7, G20, G20+North, quasi-global), tax-base erosion decreases in a clear and monotonic way: the relative loss rate falls from 18.7\% to 4.0\%. This trajectory directly captures the central economic mechanism of coordination in an open economy: the broader the agreement, the more it reduces the set of credible fallback jurisdictions ("outside options") and thus the elasticity of the tax base to the reform. This result is precisely in line with the argument of Zucman[^Zucman_paper], according to which a minimum tax on billionaires becomes fully applicable only if the exit option is neutralized through international coordination. In our simulations, this progressive compression of outside options translates mechanically into a continuous increase in collection efficiency (from 78.4\% to 95.9\%): a growing share of the theoretical yield becomes effectively collectible. In other words, even if the expansion of the coalition also increases the taxable base and potential revenues, the key message is behavioral and institutional: coordination reduces flight and transforms a fragile tax into a robust fiscal instrument, once participation becomes sufficiently broad.
 
+
+# Limitations
+
+Several limitations should be noted with regard to this study. 
+
+The first concerns the data used. The dataset on which our analysis is based stops at 2014, omitting potential changes in government debt dynamics and the wealth of billionaires over the last decade. The COVID crisis, for example, introduced an unprecedented dynamic with an explosion in the wealth of the top 0.01% while the global economy stagnated[^stagnated]. Updating the database would therefore enable more accurate results and analyses, reflecting the latest global economic trends. Likewise, since data on taxation by country is particularly tedious to collect and standardize, we chose to use the share of tax revenues in GDP as a proxy. Developing a better indicator by obtaining the rates applied at source would be a way to further improve the accuracy of our study.
+
+From an econometric standpoint, while our first model accounts for GDP, FDI, and capital formation, it does not explicitly control for political stability, judicial independence, or the quality of life index. These omitted variables are likely correlated with both high tax revenues and billionaire presence, potentially leading to an overestimation of the positive relationship between taxation and wealth concentration. The diagnostic tests were performed on a sample of 52 observations, primarily representing countries with a significant billionaire presence. This small sample size may limit the generalization of the results to smaller or developing economies where the trade-off between taxation and competitiveness might follow a different trajectory.
+
+Regarding the creation of our risk index, our mobility score is binary (1 or 0). This may oversimplify reality: a billionaire in the tech industry may be very locally rooted due to their ecosystem of engineers, while a billionaire in real estate may own highly liquid international assets. A more refined calculation of this score would improve the accuracy of our results.
+
+Throughout our study, we repeatedly made calibration choices. In @sec-ponderation, we justified our weighting choices for calculating the leakage risk score based on economic intuition. In a future extension of the study, it would be relevant to test other scenarios in order to evaluate the resulting outcomes. In addition, we calibrated in @sec-logis our parameters by extending and adapting approaches developed in other research articles. It would be worthwhile to test other calibrations to confirm the robustness of our model and explore other economic scenarios. 
+
+Finally, our model treats the billionaire population as static; it does not account for the dynamic impact of a 2% annual tax on capital accumulation over time, which could reduce the long-term growth rate of the tax base itself, even in the absence of physical flight.
+
 \newpage
 
 # Annex
@@ -1157,31 +1172,6 @@ kable(top_loss_fr,
   kable_styling(latex_options = "hold_position")
 ```
 
-```{r}
-#| label: tbl-share-lost-top10
-#| tbl-cap: "Share lost explained by the top 10"
-#| echo: false
-#| message: false
-#| warning: false
-
-fr_detail <- flight_risk_index |>
-  filter(COUNTRY == "France") |>
-  mutate(
-    eff = pmin(flight_prob * 1.5, 1),
-    lost = wealth_bil * 0.02 * eff
-  ) |>
-  arrange(desc(wealth_bil)) |>
-  mutate(
-    cum_lost_share = cumsum(lost) / sum(lost),
-    rank = row_number(),
-    pct = rank / n()
-  )
-
-# Part des pertes expliquée par le top 10% (les plus riches)
-fr_detail |>
-  summarise(share_lost_top10 = max(cum_lost_share[pct <= 0.10]))
-```
-
 
 \newpage
 
@@ -1208,3 +1198,5 @@ fr_detail |>
 [^Advani]: See *Taxation and migration by the super-rich*, @Advani2025 
 
 [^Jakobsen]: See *Taxing top wealth: Migration responses and their aggregate economic implications*, @Jakobsen2024
+
+[^stagnated]: From *World Inequality Report 2022*, @WIR2022
