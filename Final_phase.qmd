@@ -18,6 +18,8 @@ format:
     papersize: a4
     toc: true
     number-sections: true
+bibliography: references.bib
+csl: apa.csl
 ---
 
 
@@ -268,7 +270,7 @@ The study concludes that international tax cooperation is a prerequisite for tra
 
 ## Data sets description
 
-- The Peterson Institute for International Economics (2016)[^Peterson]: A dataset of global billionaires featuring 23 variables-such as citizenship, net worth, and origin of wealth-used to track the demographic and financial characteristics of the world's wealthiest individuals.
+- *The origins of the superrich: The billionaire characteristics database* [@Peterson2016] : A dataset of global billionaires featuring 23 variables-such as citizenship, net worth, and origin of wealth-used to track the demographic and financial characteristics of the world's wealthiest individuals.
 - National Fiscal Data (Tax Proxy): A dataset focusing on government tax revenue as a percentage of total revenue, utilized as a proxy for a country's fiscal pressure and level of taxation in response to the limited availability of direct tax rates in billionaire-heavy jurisdictions.
 - The World Bank (Macroeconomic Indicators): A collection of global economic metrics-including Foreign Direct Investment (FDI), Gross Capital Formation (% of GDP), Total Population, and GDP in PPP—used to control for market scale, investment climate, and national productivity.
 
@@ -1075,7 +1077,7 @@ kable_styling(latex_options = "hold_position", position = "center", full_width =
 ```
 
 
-In Zucman (2024)[^Zucman_paper], the notion of "collection efficiency" (effective collection rate) can be read as the ratio between revenues actually collected and potential revenues under perfect enforcement of the statutory rate. Zucman indicates that a 2\% minimum tax on billionaire wealth would generate $242bn under perfect enforcement, and $193bn when assuming that 20\% of potential revenues are lost to avoidance/evasion. This immediately implies an implicit collection efficiency:
+In Zucman (2024)[^Zucman_paper], the notion of "collection efficiency" (effective collection rate) can be read as the ratio between revenues actually collected and potential revenues under perfect enforcement of the statutory rate. Zucman indicates that a 2\% minimum tax on billionaire wealth would generate \$242bn under perfect enforcement, and \$193bn when assuming that 20\% of potential revenues are lost to avoidance/evasion. This immediately implies an implicit collection efficiency:
 
 $$
 CE^{Zucman}=\frac{193}{242}\approx 0.80,
@@ -1083,11 +1085,11 @@ $$
 
 i.e.an aggregate loss of $1-0.80=0.20$, namely 20\%.
 
-Our `"France alone" scenario (@tbl-scenarios) computes exactly the same quantity, defined as:
+Our `"France alone" scenario (@tbl-scenarios) computes exactly the same quantity, derived from @eq-CE as:
 
 $$
 CE=\frac{\text{Actual revenue}}{\text{Potential revenue}}.
-$$
+$$ {#eq-derived}
 
 The table reports potential revenue $P=3.66$ (in \$bn) and realized revenue $A=28.7$, which implies:
 
@@ -1096,7 +1098,7 @@ CE^{FR}=\frac{28,7}{36,6}\approx 0.784,
 $$
 i.e. 78.4\%, and therefore an associated loss rate of $1-0.784=0.216$, i.e. 21.6\%. In other words, our unilateral simulation produces a collection efficiency very close to the "low-enforcement" bound illustrated by Zucman[^Zucman_paper] (a difference of 1.6 percentage points).
 
-This proximity is substantive because it is obtained under structurally different assumptions. In Zucman's paper[^Zucman_paper], the 20\% loss is introduced in a top-down manner as a uniform haircut applied to potential revenues. In our framework, flight is endogenous at the micro level : it results from a distribution of individual flight probabilities derived from a composite score that explicitly incorporates heterogeneity (wealth origin, sectoral mobility, proximity to low-tax jurisdictions, and fiscal pressure), and then calibrated through a logistic transformation. The fact that we obtain almost the same collection efficiency as Zucman despite this heterogeneity is informative: it suggests that the aggregate assumption of "about 20\% losses" can emerge naturally from a bottom-up model in which mobility is concentrated in a high-risk minority (and, in our data, in which wealth is more concentrated among these profiles), rather than being imposed uniformly.
+This proximity is substantive because it is obtained under structurally different assumptions. In Zucman's paper, the 20\% loss is introduced in a top-down manner as a uniform haircut applied to potential revenues. In our framework, flight is endogenous at the micro level : it results from a distribution of individual flight probabilities derived from a composite score that explicitly incorporates heterogeneity (wealth origin, sectoral mobility, proximity to low-tax jurisdictions, and fiscal pressure), and then calibrated through a logistic transformation. The fact that we obtain almost the same collection efficiency as Zucman despite this heterogeneity is informative: it suggests that the aggregate assumption of "about 20\% losses" can emerge naturally from a bottom-up model in which mobility is concentrated in a high-risk minority (and, in our data, in which wealth is more concentrated among these profiles), rather than being imposed uniformly.
 
 
 ```{r}
@@ -1180,28 +1182,26 @@ fr_detail |>
 
 
 
-# Bibli
+# Bibliographie
 
-[^Zucman_paper]: Zucman, G. (2024). [A blueprint for a coordinated minimum effective taxation standard for ultra-high-net-worth individuals](https://gabriel-zucman.eu/files/report-g20.pdf). EU Tax Observatory. 
+[^Zucman_paper]: See *A blueprint for a coordinated minimum effective taxation standard for ultra-high-net-worth individuals*, @Zucman2024 
 
-[^Peterson]: Freund, C., & Oliver, S. (2016). [The origins of the superrich: The billionaire characteristics database](https://www.piie.com/publications/working-papers/origins-superrich-billionaire-characteristics-database) (Working Paper No. 16-1). Peterson Institute for International Economics. 
+[^World_inequality]: From @WorldInequality2026
 
-[^World_inequality]: World Inequality Database. (2025, 10th of december). World Inequality Report 2026 – [“Inequality persists at a very extreme level”](https://wid.world/news-article/world-inequality-report-2026-inequality-persist-at-a-very-extreme-level/). 
+[^French_debt]: See *5 minutes pour comprendre la dette publique*, @FrenchDebt  
 
-[^French_debt]: Ministère de l'Économie, des Finances et de la Souveraineté industrielle et numérique. (s. d.). [5 minutes pour comprendre la dette publique](https://www.economie.gouv.fr/decryptage-5-minutes-pour-comprendre-la-dette-publique). 
+[^map_tuto]: Helpful resources found at *How to create a map using ggplot2: The best reference*, @map_tuto
 
-[^map_tuto]: Kassambara, A. (s. d.).[ How to create a map using ggplot2: The best reference](https://www.datanovia.com/en/blog/how-to-create-a-map-using-ggplot2/). Datanovia.
+[^shapiro]: Based on *Normality test in R*, @shapiro 
 
-[^shapiro]: Kassambara, A. (s. d.).[ Normality test in R](http://www.sthda.com/english/wiki/normality-test-in-r#normality-test). STHDA. 
+[^multico]: Based on *Multicollinearity essentials and VIF in R*, @multico 
 
-[^multico]: Kassambara, A. (s. d.).[ Multicollinearity essentials and VIF in R](https://www.sthda.com/english/articles/39-regression-model-diagnostics/160-multicollinearity-essentials-and-vif-in-r/). STHDA. 
+[^Breusch]: Based on *How to perform a Breusch-Pagan test in R*, @Breusch 
 
-[^Breusch]: Bobbitt, Z. (2020, 31th of december). [How to perform a Breusch-Pagan test in R](https://www.statology.org/breusch-pagan-test-r/). Statology. 
+[^Niculescu]: See *Predicting good probabilities with supervised learning*, @Niculescu2005
 
-[^Niculescu]: Niculescu-Mizil, A., & Caruana, R. (2005). [Predicting good probabilities with supervised learning](https://www.cs.cornell.edu/~alexn/papers/calibration.icml05.crc.rev3.pdf). Proceedings of the 22nd International Conference on Machine Learning (ICML 2005).
+[^Sources]: From [Probability Calculation Using Logistic Regression](https://docs.tibco.com/pub/sfire-dsc/6.5.0/doc/html/TIB_sfire-dsc_user-guide/GUID-C4D05ED0-3392-4407-B62A-7D29B26DC566.html) and [Logistic Regression – Explained](https://towardsdatascience.com/logistic-regression-explained-593e9ddb7c6c/)
 
-[^Sources]: See [Probability Calculation Using Logistic Regression](https://docs.tibco.com/pub/sfire-dsc/6.5.0/doc/html/TIB_sfire-dsc_user-guide/GUID-C4D05ED0-3392-4407-B62A-7D29B26DC566.html) and [Logistic Regression – Explained](https://towardsdatascience.com/logistic-regression-explained-593e9ddb7c6c/)
+[^Advani]: See *Taxation and migration by the super-rich*, @Advani2025 
 
-[^Advani]: Advani, A., Burgherr, D., & Summers, A. (2025). [Taxation and migration by the super-rich](https://arunadvani.com/papers/AdvaniBurgherrSummers2025_TaxationAndMigrationByTheSuperRich.pdf) [Papier de recherche]. 
-
-[^Jakobsen]: Jakobsen, K., Kleven, H., Kolsrud, J., Landais, C., & Muñoz, M. (2024). [Taxing top wealth: Migration responses and their aggregate economic implications](https://doi.org/10.3386/w32153) (Working Paper No. 32153). National Bureau of Economic Research. 
+[^Jakobsen]: See *Taxing top wealth: Migration responses and their aggregate economic implications*, @Jakobsen2024
