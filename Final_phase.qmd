@@ -332,8 +332,6 @@ ggplot(Source, aes(y = factor(year), x = n, fill = selfmade)) +
 As @fig-wealth-source-evolution indicates a surge in the number of billionaires occurred from 1996 to 2014, which increased from approximately 400 to over 1,600. While the billionaire population was much smaller and more evenly divided between inherited and self-made origins in 1996, the landscape shifted significantly by 2014. The expansion of this demographic over the eighteen-year period has been overwhelmingly driven by self-made entrepreneurs, who now constitute the vast majority of the total, indicating a global shift toward new wealth creation rather than the simple maintenance of inherited estates.
 
 
-
-
 ## State of the world of billionaires in 2014
 
 @fig-Mapping-graph-of-billionaires shows a strong concentration of billionaires in a small number of large, high-income economies. The United States clearly stands out as the main hub, while Western Europe and parts of East Asia form a second cluster. Russia and India also appear as major centers, highlighting the role of large domestic markets and resource wealth. In contrast, most of Sub-Saharan Africa and many smaller or lower-income countries show few or none, underlining how billionaire wealth tends to align with economic scale, financial development, and the presence of major business hubs. This visualization thus confirmed our intuition to econometrically link billionaires and national macroeconomic characteristics.
