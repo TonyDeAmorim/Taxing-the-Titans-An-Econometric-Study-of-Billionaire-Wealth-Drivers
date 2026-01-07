@@ -462,7 +462,7 @@ Geographically, this wealth remains concentrated in high-income hubs (the United
 # First model : understdanding the spacial distribution of billionaires
 ## Initial study and early results
 
-Our baseline regression, see @tbl-first-model, follows the following equation : 
+Our baseline regression, see @tbl-first-model, follows @eq-first_model : 
 
 $$log(Nb) = \beta_0 + \beta_1 \cdot tax + \beta_2 \cdot log(GDP) + \beta_3 \cdot FDI + \beta_4 \cdot Capital$$ {#eq-first_model} 
 
@@ -759,8 +759,8 @@ These scores are then assigned two flight probabilities $p_{low}$ and $p_{high}$
 
 $$
 \begin{cases} 
-\beta = \frac{\text{logit}(p_{high}) - \text{logit}(p_{low})}{s_{high} - s_{low}} \\ 
-\alpha = \text{logit}(p_{low}) - \beta \cdot s_{low} 
+\beta = \frac{\text{logit}(p_{90}) - \text{logit}(p_{10})}{s_{high} - s_{low}} \\ 
+\alpha = \text{logit}(p_{10}) - \beta \cdot s_{low} 
 \end{cases}
 $$ {#eq-system}
 
@@ -1025,7 +1025,19 @@ sc_global <- simulate_tax_scenario(
   0.40
 )
 
+
 summary_table_all <- bind_rows(sc_fr$global, sc_g7$global, sc_g20$global, sc_g20_north$global, sc_global$global) |>
+  transmute(
+    Scenario = scenario,
+    `# billionaires` = total_billionaires,
+    `Expected flight rate (%)` = round(avg_flight_prob, 1),
+    `Potential revenue ($bn)` = round(potential_revenue_billion, 3),
+    `Actual revenue ($bn)` = round(actual_revenue_billion, 3),
+    `Lost revenue ($bn)` = round(lost_revenue_billion, 3),
+    `Collection efficiency (%)` = round(collection_efficiency, 1)
+  )
+
+summary_table_all_display <- bind_rows(sc_fr$global, sc_g7$global, sc_g20$global, sc_g20_north$global, sc_global$global) |>
   transmute(
     Scenario = scenario,
     "n" = total_billionaires,
@@ -1036,7 +1048,7 @@ summary_table_all <- bind_rows(sc_fr$global, sc_g7$global, sc_g20$global, sc_g20
     "CE (%)" = round(collection_efficiency, 1)
   )
 
-kable(summary_table_all, 
+kable(summary_table_all_display, 
              booktabs = TRUE, 
              digits = 2) |> 
   kable_styling(latex_options = "hold_position", position = "center")
@@ -1045,7 +1057,7 @@ kable(summary_table_all,
 
 @tbl-scenarios highlights a clear policy trade-off between the size of the tax base and the degree of international coordination. Moving from a unilateral French tax to broader coalitions (G7, G20, G20+North, quasi-global) mechanically increases the number of covered billionaires and the potential revenue, because more individuals and more wealth fall under the tax. At the same time, stronger coordination reduces the expected flight response: the implied average flight rate falls monotonically from 18.7% (France only) to 4.0% (quasi-global). This captures the key mechanism of coordination: by reducing the set of attractive “outside options,” coordination lowers the elasticity of the tax base to the policy.
 
-In levels, potential revenue rises from $3.66bn (France) to $104.25bn (quasi-global). However, revenue losses due to flight do not increase monotonically with the coalition size. Losses peak around the intermediate coalitions (G7/G20) and then decline as coordination becomes broader (G20+North and quasi-global). Economically, this is intuitive: when the coalition expands a lot and coordination is stronger, the reduction in flight probabilities dominates the larger tax base, so less wealth is expected to escape. This is also reflected in collection efficiency, which improves steadily from 78.4% under unilateral action to 95.9% under quasi-global coordination. The key message is that coordination increases the effective yield of the wealth tax by compressing tax-base erosion, especially once participation becomes sufficiently broad.
+In levels, potential revenue rises from 3.66bn (France) to 104.25bn (near-global). However, revenue losses due to flight do not increase monotonically with the coalition size. Losses peak around the intermediate coalitions (G7/G20) and then decline as coordination becomes broader (G20+North and quasi-global). Economically, this is intuitive: when the coalition expands a lot and coordination is stronger, the reduction in flight probabilities dominates the larger tax base, so less wealth is expected to escape. This is also reflected in collection efficiency, which improves steadily from 78.4% under unilateral action to 95.9% under quasi-global coordination. The key message is that coordination increases the effective yield of the wealth tax by compressing tax-base erosion, especially once participation becomes sufficiently broad.
 
 Our scenario results can be benchmarked against Zucman (2024)’s enforcement bounds. Zucman reports that a 2%-of-wealth minimum tax on billionaires would raise $242bn under perfect enforcement and $193bn when assuming that 20% of revenues are lost to avoidance/evasion, implying a collection ratio of about 80% (193/242). In our unilateral-France simulation, the collection efficiency is 78.4%, which is of the same order of magnitude as Zucman’s low-end enforcement scenario. As international coordination expands in our framework, collection efficiency rises to 95.9% in the quasi-global benchmark, consistent with the notion that reducing outside options (through coordination mechanisms) compresses tax-base erosion.
 
@@ -1060,8 +1072,8 @@ loss_plot_df <- summary_table_all |>
   mutate(
     Scenario = factor(
       Scenario,
-      levels = c("France seule", "Coordination G7", "Coordination G20",
-                 "Coordination élargie (G20 + North)", "Coordination quasi-globale")
+      levels = c("France alone", "G7 Coordination", "G20 Coordination",
+                 "Expanded coordination (G20 + North)", "Near-global coordination")
     ),
     # useful derived metric to interpret shape independent of scale
     `Loss rate (%)` = 100 * (`Lost revenue ($bn)` / `Potential revenue ($bn)`)
