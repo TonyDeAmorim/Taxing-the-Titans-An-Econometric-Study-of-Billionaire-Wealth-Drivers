@@ -1125,12 +1125,10 @@ ggplot(loss_plot_df, aes(x = Scenario, y = `Loss rate (%)`, group = 1)) +
   labs(
     x = NULL,
     y = "Lost revenue as % of potential revenue"
-  ) +
-  theme(axis.text.x = element_text(angle = 20, hjust = 1))
+  ) 
 ```
 
-As international coordination expands in our framework, collection efficiency increases monotonically—86.4\% (G7), 90.4\% (G20), 93.3\% (G20+North), and 95.9\% (quasi-global)—reflecting the progressive removal of outside options. This pattern aligns with Zucman’s core coordination mechanism: by limiting the feasibility of relocating to low-tax jurisdictions (e.g., through a ``tax collector of last resort'' design; see Zucman (2024)), coordination sharply reduces the elasticity of the taxable base and raises effective collection rates.
-
+@fig-coordination, consistent with @tbl-scenarios, highlights the decisive value of international coordination in making a tax on billionaires truly effective. As one moves from a unilateral implementation (France alone) to broader coalitions (G7, G20, G20+North, quasi-global), tax-base erosion decreases in a clear and monotonic way: the relative loss rate falls from 18.7\% to 4.0\%. This trajectory directly captures the central economic mechanism of coordination in an open economy: the broader the agreement, the more it reduces the set of credible fallback jurisdictions ("outside options") and thus the elasticity of the tax base to the reform. This result is precisely in line with the argument of Zucman[^Zucman_paper], according to which a minimum tax on billionaires becomes fully applicable only if the exit option is neutralized through international coordination. In our simulations, this progressive compression of outside options translates mechanically into a continuous increase in collection efficiency (from 78.4\% to 95.9\%): a growing share of the theoretical yield becomes effectively collectible. In other words, even if the expansion of the coalition also increases the taxable base and potential revenues, the key message is behavioral and institutional: coordination reduces flight and transforms a fragile tax into a robust fiscal instrument, once participation becomes sufficiently broad.
 
 
 ```{r}
