@@ -1025,6 +1025,16 @@ sc_global <- simulate_tax_scenario(
   0.40
 )
 
+summary_table_all_display <- bind_rows(sc_fr$global, sc_g7$global, sc_g20$global, sc_g20_north$global, sc_global$global) |>
+  transmute(
+    Scenario = scenario,
+    "n" = total_billionaires,
+    "$\\mu_{\\mathcal{E}}$ (%)" = round(avg_flight_prob, 1),
+    "$\\mathcal{P}$ ($bn)" = round(potential_revenue_billion, 3),
+    "A ($bn)" = round(actual_revenue_billion, 3),
+    "$\\mathcal{L}$ ($bn)" = round(lost_revenue_billion, 3),
+    "CE (%)" = round(collection_efficiency, 1)
+  )
 
 summary_table_all <- bind_rows(sc_fr$global, sc_g7$global, sc_g20$global, sc_g20_north$global, sc_global$global) |>
   transmute(
@@ -1037,21 +1047,23 @@ summary_table_all <- bind_rows(sc_fr$global, sc_g7$global, sc_g20$global, sc_g20
     `Collection efficiency (%)` = round(collection_efficiency, 1)
   )
 
-summary_table_all_display <- bind_rows(sc_fr$global, sc_g7$global, sc_g20$global, sc_g20_north$global, sc_global$global) |>
-  transmute(
-    Scenario = scenario,
-    "n" = total_billionaires,
-    "$\\mu_{\\mathcal{E}}$ (%)" = round(avg_flight_prob, 1),
-    "$\\mathcal{P}$ ($bn)" = round(potential_revenue_billion, 3),
-    "A ($bn)" = round(actual_revenue_billion, 3),
-    "$\\mathcal{L}$ ($bn)" = round(lost_revenue_billion, 3),
-    "CE (%)" = round(collection_efficiency, 1)
+kable(
+  summary_table_all,
+  format = "latex", 
+  booktabs = TRUE,
+  digits = 2,
+  escape = FALSE,
+  col.names = c(
+    "Scenario",
+    "n",
+    "$\\mu_{\\mathcal{E}}$",
+    "$\\mathcal{P}$",
+    "A",
+    "$\\mathcal{L}$",
+    "CE"
   )
-
-kable(summary_table_all_display, 
-             booktabs = TRUE, 
-             digits = 2) |> 
-  kable_styling(latex_options = "hold_position", position = "center")
+) |>
+kable_styling(latex_options = "hold_position", position = "center")
 
 ```
 
