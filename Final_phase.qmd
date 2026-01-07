@@ -1143,6 +1143,22 @@ Throughout our study, we repeatedly made calibration choices. In @sec-ponderatio
 
 Finally, our model treats the billionaire population as static; it does not account for the dynamic impact of a 2% annual tax on capital accumulation over time, which could reduce the long-term growth rate of the tax base itself, even in the absence of physical flight.
 
+# Conclusion
+
+  This study examines the potential impact of a tax on billionaire fortunes on the spatial distribution of wealth and on mobility behaviors, using data covering 1,652 billionaires across 52 countries in 2014. We articulate two complementary components: on the one hand, a cross-sectional analysis of the macroeconomic determinants of the concentration of billionaires (aggregate tax pressure, market size, openness); on the other hand, a micro-founded approach aimed at anticipating tax flight, based on the construction of an individual risk score (sectoral mobility, origin of wealth, proximity to low-tax jurisdictions, tax pressure) and its conversion into relocation probabilities via a logistic transformation calibrated on empirical orders of magnitude from the literature on ultra-rich migration.
+
+Our results reveal three main lessons. First, aggregate tax pressure (approximated by tax revenues as a percentage of GDP) does not exert a significant deterrent effect on the presence of billionaires: jurisdictions with high fiscal capacity offset this apparent cost through attractive non-tax factors (amenities, public goods and services, agglomeration effects), which dominate international comparisons and can mask the effect of taxes on location choices (Kleven et al., 2020). Second, economic size and international openness largely dominate the equation: a doubling of GDP is associated with an 89.5\% increase in the number of billionaires. The overall pattern is consistent with market scale effects highlighted by Neumayer (2004). Third, heterogeneity in mobility profiles is pronounced: our calibrated logistic model predicts an average probability of flight of 10.06\% over a fifteen-year horizon. This average nevertheless masks a strong concentration of risk among “self-made” entrepreneurs operating in dematerialized sectors (technology, finance), whose probability reaches 25% at the 90th percentile (versus only 2\% at the 10th percentile for heirs anchored in real estate or traditional industry).
+
+Beyond these descriptive findings, this paper contributes to the literature on the tax elasticity of the ultra-rich by proposing a methodology for ex ante quantification of flight risk. This approach explicitly incorporates sectoral and wealth heterogeneity among the ultra-rich, whereas most studies focus on average aggregated elasticities.
+
+Our scenario simulations show that a 2\% tax applied unilaterally by France would lead to a revenue loss of 18.7\% due to relocations, whereas international coordination (G20 or quasi-global) would bring this flight rate down to 4.1\%, raising collection effectiveness to 95.9\%.
+
+The strong concentration of flight risk among a mobile minority indicates that the exit channel remains active and asymmetric: the most elastic profiles (those whose wealth is least territorially anchored) exert a disproportionate leverage effect on potential fiscal losses.
+
+The final simulation confirms that multilateral coordination radically transforms the equation by mechanically reducing exit options, validating the theoretical hypothesis that taxing the ultra-rich requires collective action to be fiscally sustainable (Zucman, 2024).
+
+In sum, our results suggest that the budgetary feasibility of a tax on billionaires depends less on the nominal level of the rate than on the institutional architecture of its implementation: without international coordination, the risk of a fiscal “race to the bottom” remains high for jurisdictions acting alone.
+
 \newpage
 
 # Annex
