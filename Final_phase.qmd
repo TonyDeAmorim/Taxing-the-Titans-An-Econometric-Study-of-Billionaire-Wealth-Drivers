@@ -19,7 +19,7 @@ format:
     toc: true
     number-sections: true
 bibliography: Ressources/references.bib
-csl: Ressourcesapa.csl
+csl: Ressources/apa.csl
 ---
 
 
@@ -524,93 +524,15 @@ modelsummary(
 ```
 
 
-## Multicolinearity analysis
-
-We here test for multicollinearity among the explanatory variables using the Variance Inflation Factor (VIF)[^multico].
-
-```{r}
-#| label: tbl-vif
-#| tbl-cap: "Multicolinearity analysis (VIF)"
-#| message: false
-#| warning: false
-#| echo: false
-
-library(car)
-
-vif_df <- data.frame(
-  Variable = names(vif(modele)),
-  VIF = as.numeric(vif(modele))
-)
-
-kable(vif_df,
-      col.names = c("Independent Variable", "VIF"),
-      digits = 3,
-      booktabs = TRUE) |> 
-  kable_styling(latex_options = c("striped", "hold_position"),
-                full_width = FALSE)
-```
-
-The VIF values (≈1.19–1.34) are close to 1, indicating no meaningful multicollinearity among the regressors, so coefficient significance is unlikely to be driven by correlated explanatory variables.
-
-
-## Normality test for residuals
-
-Here, we test whether our data are distributed according to a normal distribution. To do this, we calculate the Shapiro-Wilk normality test statistics[^shapiro]. We obtain the following results :
-
-```{r}
-#| label: tbl-shapiro
-#| tbl-cap: "Shapiro-Wilk"
-#| message: false
-#| warning: false
-#| echo: false
-
-shapiro_test <- tidy(shapiro.test(residuals(modele)))
-
-kable(shapiro_test,
-      col.names = c("W", "p-value", "Méthode"),
-      digits = 4,
-      booktabs = TRUE) |> 
-  kable_styling(latex_options = "hold_position")
-```
-
-The p-value is 0.7815 :  It is well above the critical threshold of 0.05 (or 5%), which means that we do not reject the null hypothesis (H0). We conclude that the residuals of our model follow a normal distribution.
-
-## Heteroscedasticity 
-
-We here test for heteroscedasticity using the Breusch–Pagan test[^Breusch] to check whether the error variance is constant. 
-
-```{r}
-#| label: tbl-breusch-pagan
-#| tbl-cap: "Breusch-Pagan"
-#| message: false
-#| warning: false
-#| echo: false
-
-bp <- bptest(modele)
-
-bp_df <- data.frame(
-  Test = "Studentized Breusch-Pagan",
-  Test_statistic = as.numeric(bp$statistic),
-  p_value = as.numeric(bp$p.value)
-)
-
-kable(bp_df[, 2:3], 
-      digits = 4, 
-      booktabs = TRUE) |> 
-  kable_styling(latex_options = "hold_position", 
-                font_size = 9)
-```
-
-With a p-value of 0.7318, we fail to reject the null hypothesis of constant error variance, meaning there is no evidence of heteroskedasticity in the model.
-
-## Conclusion
+## Robustness check
 
 Overall, the diagnostic tests support the validity of the OLS assumptions for our first model.
-The VIF results (around 1.2–1.3) indicate no multicollinearity, so the regressors are not strongly correlated.
-The Shapiro–Wilk test (p = 0.7815) suggests the residuals are approximately normally distributed.
-The Breusch–Pagan test (p = 0.7318) shows no evidence of heteroskedasticity, meaning the error variance can be treated as constant.
+The VIF results[^multico] (around 1.2–1.3) indicate no multicollinearity, so the regressors are not strongly correlated.
+The Shapiro–Wilk test[^shapiro] (p = 0.7815) suggests the residuals are approximately normally distributed.
+The Breusch–Pagan test[^Breusch] (p = 0.7318) shows no evidence of heteroskedasticity, meaning the error variance can be treated as constant.
 Taken together, these checks imply that our coefficient estimates and standard inference from this model are generally reliable.
 
+The output tables for the different tests are presented in [Annex 1](#sec-one)
 
 # Understanding and anticipating the behaviour of the wealthiest individuals
 ## Creation of a flight-risk score {#sec-ponderation}
@@ -886,6 +808,8 @@ The bottom density plot summarizes the overall distribution of flight probabilit
 Overall, @fig-Basic-analysis-plots suggest that mobility risk is not uniform across billionaires. Most individuals cluster at low predicted flight probabilities, especially among inherited fortunes, but there is a clear right tail driven largely by self-made profiles. In other words, the potential response to a wealth tax is concentrated in a smaller, more mobile subset rather than spread evenly across the entire billionaire population.
 
 
+
+
 # Scenario testing : the impact of new taxation 
 
 In this section, we move from descriptive evidence to policy evaluation. Building on our flight-risk framework, we simulate the expected fiscal impact of introducing a new 2% billionaire wealth tax under alternative institutional settings. The goal is to quantify how different degrees of international coordination affect wealth mobility, the erosion of the tax base, and ultimately the amount of revenue that can be effectively collected.
@@ -1132,6 +1056,7 @@ ggplot(loss_plot_df, aes(x = Scenario, y = `Loss rate (%)`, group = 1)) +
 @fig-coordination, consistent with @tbl-scenarios, highlights the decisive value of international coordination in making a tax on billionaires truly effective. As one moves from a unilateral implementation (France alone) to broader coalitions (G7, G20, G20+North, quasi-global), tax-base erosion decreases in a clear and monotonic way: the relative loss rate falls from 18.7\% to 4.0\%. This trajectory directly captures the central economic mechanism of coordination in an open economy: the broader the agreement, the more it reduces the set of credible fallback jurisdictions ("outside options") and thus the elasticity of the tax base to the reform. This result is precisely in line with the argument of Zucman[^Zucman_paper], according to which a minimum tax on billionaires becomes fully applicable only if the exit option is neutralized through international coordination. In our simulations, this progressive compression of outside options translates mechanically into a continuous increase in collection efficiency (from 78.4\% to 95.9\%): a growing share of the theoretical yield becomes effectively collectible. In other words, even if the expansion of the coalition also increases the taxable base and potential revenues, the key message is behavioral and institutional: coordination reduces flight and transforms a fragile tax into a robust fiscal instrument, once participation becomes sufficiently broad.
 
 
+
 # Limitations
 
 Several limitations should be noted with regard to this study. 
@@ -1144,7 +1069,7 @@ Regarding the creation of our risk index, our mobility score is binary (1 or 0).
 
 Throughout our study, we repeatedly made calibration choices. In @sec-ponderation, we justified our weighting choices for calculating the leakage risk score based on economic intuition. In a future extension of the study, it would be relevant to test other scenarios in order to evaluate the resulting outcomes. In addition, we calibrated in @sec-logis our parameters by extending and adapting approaches developed in other research articles. It would be worthwhile to test other calibrations to confirm the robustness of our model and explore other economic scenarios. 
 
-Following on from this article, a more detailed and individual analysis of billionaires' behavior could be conducted. When we attempted to calculate the probability of French billionaires leaving the country in scenario 1, see @sec-top, certain insights emerged that should be explored further in future work.  
+Following on from this article, a more detailed and individual analysis of billionaires' behavior could be conducted. When we attempted to calculate the probability of French billionaires leaving the country in scenario 1, see [Annex 2](#sec-two), certain insights emerged that should be explored further in future work.  
 
 Finally, our model treats the billionaire population as static; it does not account for the dynamic impact of a 2% annual tax on capital accumulation over time, which could reduce the long-term growth rate of the tax base itself, even in the absence of physical flight.
 
@@ -1167,7 +1092,74 @@ In sum, our results suggest that the budgetary feasibility of a tax on billionai
 \newpage
 
 # Annex 
-## Top contributors to revenue loss among french billionaires {#sec-top}
+## Robustness check tests {#sec-one}
+
+```{r}
+#| label: tbl-vif
+#| tbl-cap: "Multicolinearity analysis (VIF)"
+#| message: false
+#| warning: false
+#| echo: false
+
+library(car)
+
+vif_df <- data.frame(
+  Variable = names(vif(modele)),
+  VIF = as.numeric(vif(modele))
+)
+
+kable(vif_df,
+      col.names = c("Independent Variable", "VIF"),
+      digits = 3,
+      booktabs = TRUE) |> 
+  kable_styling(latex_options = c("striped", "hold_position"),
+                full_width = FALSE)
+```
+
+
+```{r}
+#| label: tbl-shapiro
+#| tbl-cap: "Shapiro-Wilk"
+#| message: false
+#| warning: false
+#| echo: false
+
+shapiro_test <- tidy(shapiro.test(residuals(modele)))
+
+kable(shapiro_test,
+      col.names = c("W", "p-value", "Méthode"),
+      digits = 4,
+      booktabs = TRUE) |> 
+  kable_styling(latex_options = "hold_position")
+```
+
+
+```{r}
+#| label: tbl-breusch-pagan
+#| tbl-cap: "Breusch-Pagan"
+#| message: false
+#| warning: false
+#| echo: false
+
+
+bp <- bptest(modele)
+
+bp_df <- data.frame(
+  Test = "Studentized Breusch-Pagan",
+  Test_statistic = as.numeric(bp$statistic),
+  p_value = as.numeric(bp$p.value)
+)
+
+kable(bp_df[, 2:3], 
+      digits = 4, 
+      booktabs = TRUE) |> 
+  kable_styling(latex_options = "hold_position", 
+                font_size = 9)
+
+```
+
+
+## Top contributors to revenue loss among french billionaires {#sec-two}
 
 ```{r}
 #| label: tbl-Top-5-contributors-loss
