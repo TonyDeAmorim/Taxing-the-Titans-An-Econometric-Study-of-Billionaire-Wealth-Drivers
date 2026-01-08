@@ -1,23 +1,22 @@
 # Taxing the Titans An Econometric Study of Billionaire Wealth Drivers
 
+## Project Overview
+
+This study investigates the relationship between national macroeconomic indicators—such as GDP, Foreign Direct Investment (FDI), and Tax Revenue—and the concentration of ultra-high-net-worth individuals. It further models "flight risk" probabilities to evaluate the effectiveness of the Zucman 2% tax proposal under different international coordination scenarios.
 
 ## Project presentation
-# Taxing the Titans: Billionaire Wealth Drivers
 
 This repository contains an econometric analysis of billionaire wealth distribution and the potential impacts of global taxation.
 
-## Project Overview
-This study investigates the relationship between national macroeconomic indicators—such as GDP, Foreign Direct Investment (FDI), and Tax Revenue—and the concentration of ultra-high-net-worth individuals. It further models "flight risk" probabilities to evaluate the effectiveness of the Zucman 2% tax proposal under different international coordination scenarios.
-
-## Key Econometric Insights
+### Key Econometric Insights
 * **Market Scale:** GDP is the strongest determinant; a doubling of GDP is associated with an 89.5% increase in the number of billionaires.
 * **Taxation Paradox:** Higher aggregate tax pressure does not significantly deter billionaires, likely because high-tax jurisdictions offer better institutional quality and public services.
 * **Openness:** Increased FDI and international connectivity are positively correlated with billionaire presence.
 
-## Flight Risk & Simulation Results
+### Flight Risk & Simulation Results
 The project utilizes a logistic transformation to convert individual risk scores (based on sector mobility, wealth origin, and geography) into relocation probabilities.
 
-### Revenue Collection Efficiency
+#### Revenue Collection Efficiency
 | Scenario | Average Flight Prob (μϵ) | Collection Efficiency |
 | :--- | :---: | :---: |
 | **France Alone** | 18.7% | 78.4% |
@@ -25,7 +24,7 @@ The project utilizes a logistic transformation to convert individual risk scores
 | **G20 Coordination** | 7.1% | 92.8% |
 | **Near-Global** | 4.0% | 95.9% |
 
-## Methodology Summary
+### Methodology Summary
 The analysis was performed using **R** with the following diagnostic rigor:
 * **Multicollinearity:** Tested via Variance Inflation Factor (VIF), showing no meaningful correlation between regressors.
 * **Normality:** Shapiro-Wilk test confirmed normally distributed residuals (p = 0.78).

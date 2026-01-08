@@ -7,7 +7,7 @@ author:
 date: today
 date-format: "MMMM D, YYYY"
 abstract: |
-  This project was carried out as part of the data management course taught during the first year of the Quantitative Economics master's programme and International Affairs and Development master's programme. The use of AI is indicated each time it is used and was only employed to correct the code, confirm intuitions and expand on our initial ideas. 
+  This project was carried out as part of the data management course taught during the first year of the Quantitative Economics master's programme and International Affairs and Development master's programme. AI is indicated each time it was used and was only employed to correct the code, confirm intuitions and expand on our initial ideas. 
 format:
   pdf:
     geometry:
@@ -19,7 +19,7 @@ format:
     toc: true
     number-sections: true
 bibliography: Ressources/references.bib
-csl: Ressources/apa.csl
+csl: Ressourcesapa.csl
 ---
 
 
