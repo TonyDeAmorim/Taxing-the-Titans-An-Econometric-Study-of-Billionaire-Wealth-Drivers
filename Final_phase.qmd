@@ -604,6 +604,7 @@ kable(bp_df[, 2:3],
 With a p-value of 0.7318, we fail to reject the null hypothesis of constant error variance, meaning there is no evidence of heteroskedasticity in the model.
 
 ## Conclusion
+
 Overall, the diagnostic tests support the validity of the OLS assumptions for our first model.
 The VIF results (around 1.2–1.3) indicate no multicollinearity, so the regressors are not strongly correlated.
 The Shapiro–Wilk test (p = 0.7815) suggests the residuals are approximately normally distributed.
@@ -1141,6 +1142,8 @@ Regarding the creation of our risk index, our mobility score is binary (1 or 0).
 
 Throughout our study, we repeatedly made calibration choices. In @sec-ponderation, we justified our weighting choices for calculating the leakage risk score based on economic intuition. In a future extension of the study, it would be relevant to test other scenarios in order to evaluate the resulting outcomes. In addition, we calibrated in @sec-logis our parameters by extending and adapting approaches developed in other research articles. It would be worthwhile to test other calibrations to confirm the robustness of our model and explore other economic scenarios. 
 
+Following on from this article, a more detailed and individual analysis of billionaires' behavior could be conducted. When we attempted to calculate the probability of French billionaires leaving the country in scenario 1, see @sec-top, certain insights emerged that should be explored further in future work.  
+
 Finally, our model treats the billionaire population as static; it does not account for the dynamic impact of a 2% annual tax on capital accumulation over time, which could reduce the long-term growth rate of the tax base itself, even in the absence of physical flight.
 
 # Conclusion
@@ -1161,11 +1164,12 @@ In sum, our results suggest that the budgetary feasibility of a tax on billionai
 
 \newpage
 
-# Annex
+# Annex 
+## Top contributors to revenue loss among french billionaires {#sec-top}
 
 ```{r}
 #| label: tbl-Top-5-contributors-loss
-#| tbl-cap: "Top 5 contributors to loss"
+#| tbl-cap: "Top 5 contributors to revenue loss"
 #| message: false
 #| warning: false
 #| echo: false
