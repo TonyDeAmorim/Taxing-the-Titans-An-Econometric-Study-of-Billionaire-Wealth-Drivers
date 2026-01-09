@@ -932,7 +932,7 @@ As a robustness check, the same simulations could be rerun using alternative fli
 
 ```{r}
 #| label: tbl-scenarios
-#| tbl-cap: "Tax scenarios resume"
+#| tbl-cap: "Tax scenarios summary"
 #| echo: false
 #| message: false
 #| warning: false
