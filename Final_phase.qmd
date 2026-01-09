@@ -1179,8 +1179,7 @@ plot(density(df$flight_prob, from = 0, to = 1, na.rm = TRUE),
 par(mfrow = c(1,1))
 ```
 
-
-Advani, Burgherr \& Summers (2025)[^Advani] estimate a semi-elasticity of emigration of about $-0.339$: a 1\% decrease in the net-of-average-tax rate increases the annual emigration rate by roughly 0.3 percentage points (temporarily). Applying this order of magnitude linearly to a 2\% shock (calibration approximation) yields an average annual increment $\mu \approx 0.66\%$ (i.e., $0.0066$). If all individuals responded identically (no heterogeneity), the implied 15-year cumulative probability would be
+We set the expected relocation probability to \(p_{10}=2\%\) for low-risk profiles (10th percentile of the score) and to \(p_{90}=25\%\) for high-risk profiles (90th percentile), over a \(T=15\)-year horizon. This choice yields an average implied flight probability of about 10.06\% in our sample.These magnitudes are consistent with empirical estimates of migration responses among high-income individuals. Advani, Burgherr \& Summers (2025)[^Advani] estimate a semi-elasticity of emigration of about $-0.339$: a 1\% decrease in the net-of-average-tax rate increases the annual emigration rate by roughly 0.3 percentage points (temporarily). Applying this order of magnitude linearly to a 2\% shock (calibration approximation) yields an average annual increment $\mu \approx 0.66\%$ (i.e., $0.0066$). If all individuals responded identically (no heterogeneity), the implied 15-year cumulative probability would be
 
 $$
 p_{15} \;=\; 1 - (1-0.0066)^{15} \;\approx\; 9.4\%,
@@ -1188,17 +1187,6 @@ $$
 
 which is very close to our calibrated mean (about 10.06\%)-hence our levels are consistent with empirically observed average responses. The remaining gap (10.06\% $>$ 9.4\%) is mechanically explained by the fact that our model introduces heterogeneity: we impose a right tail with highly mobile profiles (25\% at the 90th percentile) and strongly anchored profiles (2\% at the 10th percentile). This asymmetry pulls the mean upward and is consistent with documented stylized facts: Advani, Burgherr \& Summers also show that responsiveness is concentrated among individuals with weaker local economic ties (e.g., limited domestic-source income), who exhibit substantially higher migration elasticities than the average. 
 Jakobsen et al.[^Jakobsen] similarly report an average semi-elasticity of out-migration of about $-0.17$, while noting that some subgroups (e.g., entrepreneurs) can display larger responses albeit less precisely estimated. 
-
-
-
-We set the expected relocation probability to \(p_{10}=2\%\) for low-risk profiles (10th percentile of the score) and to \(p_{90}=25\%\) for high-risk profiles (90th percentile), over a \(T=15\)-year horizon. This choice yields an average implied flight probability of about 10.06\% in our sample.
-
-**Empirical justification.** These magnitudes are consistent with empirical estimates of migration responses among high-income individuals. Advani, Burgherr \& Summers (2025)[^Advani] estimate a semi-elasticity of emigration of about \(-0.339\): a 1\% decrease in the net-of-average-tax rate increases the annual emigration rate by roughly 0.3 percentage points (temporarily). Applying this order of magnitude linearly to a 2\% shock yields an average annual increment \(\mu \approx 0.66\%\) (i.e., \(0.0066\)), which implies a homogeneous 15-year cumulative probability of
-\[
-p_{15}=1-(1-0.0066)^{15}\approx 9.4\%.
-\]
-This benchmark is close to our calibrated mean (about 10.06\%). The remaining difference is mechanically explained by heterogeneity: our calibration imposes a right tail of highly mobile profiles (25\% at the 90th percentile) and strongly anchored profiles (2\% at the 10th percentile), which increases the mean. This is in line with evidence that responsiveness is concentrated in specific subgroups. Advani, Burgherr \& Summers (2025)[^Advani] document higher responsiveness among individuals with weaker local economic ties, and Jakobsen et al.[^Jakobsen] report an average semi-elasticity of out-migration around \(-0.17\), while noting that some subgroups (e.g., entrepreneurs) can exhibit larger responses albeit less precisely estimated.
-
 
 # Appendix C : Top contributors to revenue loss among French billionaires {#sec-three}
 
