@@ -31,9 +31,6 @@ The analysis was performed using **R** with the following diagnostic rigor:
 * **Heteroscedasticity:** Breusch-Pagan test indicated constant error variance (p = 0.73).
 
 ---
-**Authors:** Philipine Poirier & Tony De Amorim  
-**Date:** January 8, 2026
-
 ## Accesing the sources
 
 -   The project's repository is available [here](https://github.com/TonyDeAmorim/Taxing-the-Titans-An-Econometric-Study-of-Billionaire-Wealth-Drivers).
