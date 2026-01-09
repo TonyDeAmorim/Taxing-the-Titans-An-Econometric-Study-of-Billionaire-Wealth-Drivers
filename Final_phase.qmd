@@ -232,7 +232,7 @@ Population_reduced <-
 
 # Setting the color theme for our graphs
 
-theme_set(theme_clean(base_size = 8)) 
+theme_set(theme_clean(base_size = 8))
 options(
   ggplot2.continuous.colour = "viridis",
   ggplot2.continuous.fill   = "viridis",
@@ -240,13 +240,12 @@ options(
   ggplot2.discrete.fill     = scales::viridis_pal(option = "D")(8)
 )
 
-couleur_viridis <- scales::viridis_pal(option = "D")(8)[1] 
+couleur_viridis <- scales::viridis_pal(option = "D")(8)[1]
 
-update_geom_defaults("col",   list(fill = couleur_viridis, colour = "white"))
-update_geom_defaults("bar",   list(fill = couleur_viridis, colour = "white"))
+update_geom_defaults("col", list(fill = couleur_viridis, colour = "white"))
+update_geom_defaults("bar", list(fill = couleur_viridis, colour = "white"))
 update_geom_defaults("point", list(colour = couleur_viridis))
-update_geom_defaults("line",  list(colour = couleur_viridis))
-
+update_geom_defaults("line", list(colour = couleur_viridis))
 ```
 
 \newpage
@@ -296,14 +295,13 @@ In this section, we step back from the policy question to situate billionaire we
 #| warning: false
 
 Total_wealth <-
-  Billionaires |> 
-  summarise(total_wealth = sum(networthusbillion), .by = year) |> 
+  Billionaires |>
+  summarise(total_wealth = sum(networthusbillion), .by = year) |>
   mutate(year = factor(year))
 
-ggplot(Total_wealth, aes(x = year, y =total_wealth))+
-  geom_col()+
+ggplot(Total_wealth, aes(x = year, y = total_wealth)) +
+  geom_col() +
   labs(x = "Year", y = "Total net worth in USD billions")
-
 ```
 
 @fig-wealth-evolution shows the evolution of the aggregate wealth of the largest fortunes between 1996, 2001 and 2014. There has been a steady increase, but particularly rapid since the beginning of the 21st century: +261% between 2001 and 2014 compared to +70% between 1996 and 2001. This difference can be explained by the emergence of information and communication technologies at the beginning of the century, the creation of large-scale oligopolies through the proliferation of M&A transactions, and the ongoing process of globalization. These phenomena, combined with very high returns on capital during this period, even despite the crises, explain the results shown in this figure. 
@@ -453,8 +451,6 @@ ggplot(Sectors, aes(x = reorder(sector, nombre_milliardaires), y = count, fill =
     y = "Total number of billionaires",
     fill = "Type of wealth"
   )
-
-
 ```
 
 An analysis of billionaires' wealth between 1996 and 2014 reveals a profound structural change. Beyond the exponential growth in their net worth (notably a 261% increase since 2001), the most significant change lies in the source of their wealth: “self-made” entrepreneurs have now largely overtaken heirs.
@@ -509,14 +505,14 @@ reg_data <- Billionaires_2014 |>
 modele <- lm(log_bill ~ tax + log_gdp + fdi + capital, data = reg_data)
 
 modelsummary(
-  modele, 
+  modele,
   output = "kableExtra",
   fmt = 3,
-  shape = term + statistic ~ model, 
+  shape = term + statistic ~ model,
   stars = TRUE,
-  gof_map = c("r.squared", "adj.r.squared", "nobs")) |> 
+  gof_map = c("r.squared", "adj.r.squared", "nobs")
+) |>
   kable_styling(latex_options = c("striped", "scale_down", "hold_position"))
-
 ```
 
 
@@ -710,12 +706,11 @@ alpha <- logit(p_low) - beta * s_low
 
 # Compute the implied flight probability for each billionaire:
 
-flight_risk_index <- 
+flight_risk_index <-
   flight_risk_index |>
   mutate(
-    flight_prob = ifelse(flight_risk_score!=0, 1/(1+exp(-(alpha + beta*flight_risk_score))), 0)
+    flight_prob = ifelse(flight_risk_score != 0, 1 / (1 + exp(-(alpha + beta * flight_risk_score))), 0)
   )
-
 ```
 
 
@@ -749,14 +744,15 @@ top_country_risk <-
   filter(nb_billionaires > 10) |>
   slice_max(order_by = avg_flight_prob, n = 10)
 
-top_country_risk |> 
-  select(1, 2, 5) |> 
-  kable(format = "latex",
-        booktabs = TRUE,
-        longtable = TRUE,
-        digits = 2) |> 
+top_country_risk |>
+  select(1, 2, 5) |>
+  kable(
+    format = "latex",
+    booktabs = TRUE,
+    longtable = TRUE,
+    digits = 2
+  ) |>
   kable_styling(latex_options = "hold_position", position = "center")
-
 ```
 
 @tbl-country-risk aggregates the flight-risk indicators at the country level for countries with more than ten billionaires. It reports the average flight-risk score (our composite index) and the average implied flight probability (from the calibrated logistic mapping). 
@@ -773,23 +769,22 @@ France sits in an intermediate position: its average flight probability is meani
 #| message: false
 #| warning: false
 
-plot_distrib <- ggplot(flight_risk_index, aes(x = flight_prob))+
-  geom_density()+
+plot_distrib <- ggplot(flight_risk_index, aes(x = flight_prob)) +
+  geom_density() +
   labs(
     title = "Distribution of the flight probability",
     x = "Probability"
   )
 
-plot_region <- ggplot(flight_risk_index, aes(x = flight_prob))+
-  geom_histogram()+
-  facet_wrap(~selfmade)+
+plot_region <- ggplot(flight_risk_index, aes(x = flight_prob)) +
+  geom_histogram() +
+  facet_wrap(~selfmade) +
   labs(
     title = "Distribution of the flight probability by source of wealth",
     x = "Probability"
   )
 
 plot_region / plot_distrib
-
 ```
 
 In the top panel, self-made billionaires display higher predicted mobility than inherited ones. Inherited wealth is concentrated at very low flight probabilities, consistent with fortunes that are more anchored in domestic assets and long-established family structures, which make relocation costlier. By contrast, the self-made distribution has a thicker right tail, indicating more individuals with medium-to-high flight probabilities. This fits an economic interpretation where self-made wealth is more often tied to internationally scalable businesses and financial assets that are easier to reorganize across borders.
@@ -831,9 +826,9 @@ NORTH <- flight_risk_index |>
   distinct(COUNTRY) |>
   pull(COUNTRY)
 
-G20_North <- unique(c(G20, NORTH)) #Coalition 4 = G20 + North countries 
+G20_North <- unique(c(G20, NORTH)) # Coalition 4 = G20 + North countries
 
-GLOBAL <- unique(flight_risk_index$COUNTRY) #All countries in our sample
+GLOBAL <- unique(flight_risk_index$COUNTRY) # All countries in our sample
 ```
 
 We then implement a revenue simulation that converts our calibrated individual flight probability into fiscal outcomes under each policy setting. For each billionaire, the baseline flight probability $P_{prob}$ is scaled by a scenario-specific multiplier $\eta$ higher under unilateral action and lower under broader coordination-and capped at 1 to avoid probabilities above 100%, following @eq-Effective_prob, to give the effective flight probability $\mathcal{E}_p$ and its average $\mu_{\mathcal{E}}$:
@@ -867,17 +862,16 @@ $$CE = \sum_{i=1}^{n}(\frac{A_i}{\mathcal{P}_i})\cdot 100$$ {#eq-CE}
 
 
 simulate_tax_scenario <- function(data, scenario_name, flight_multiplier) {
-
   results <- data |>
     mutate(
-      effective_flight_prob = flight_prob * flight_multiplier, 
-      effective_flight_prob = pmin(effective_flight_prob, 1), 
+      effective_flight_prob = flight_prob * flight_multiplier,
+      effective_flight_prob = pmin(effective_flight_prob, 1),
       initial_wealth = wealth_bil,
-      fled_wealth = initial_wealth * effective_flight_prob, 
-      taxable_wealth = initial_wealth - fled_wealth, 
-      potential_revenue = initial_wealth * 0.02, 
-      actual_revenue = taxable_wealth * 0.02, 
-      lost_revenue = potential_revenue - actual_revenue, 
+      fled_wealth = initial_wealth * effective_flight_prob,
+      taxable_wealth = initial_wealth - fled_wealth,
+      potential_revenue = initial_wealth * 0.02,
+      actual_revenue = taxable_wealth * 0.02,
+      lost_revenue = potential_revenue - actual_revenue,
     )
 
 
@@ -967,7 +961,7 @@ summary_table_all <- bind_rows(sc_fr$global, sc_g7$global, sc_g20$global, sc_g20
 
 kable(
   summary_table_all,
-  format = "latex", 
+  format = "latex",
   booktabs = TRUE,
   digits = 2,
   escape = FALSE,
@@ -976,20 +970,20 @@ kable(
     "n",
     "$\\mu_{\\mathcal{E}}$ (\\%)",
     "$\\mathcal{P}$",
-    "A" ,
+    "A",
     "$\\mathcal{L}$",
     "CE (\\%)"
   )
 ) |>
-kable_styling(latex_options = "hold_position", position = "center", full_width = FALSE)|>
+  kable_styling(latex_options = "hold_position", position = "center", full_width = FALSE) |>
   footnote(
-  general = "n : number of billionaires ; $\\\\mu_{\\\\mathcal{E}}$ : average flight probability ; $\\\\mathcal{P}$ : potential revenue ; A : actual revenue ; $\\\\mathcal{L}$ : lost revenue ; CE : collection efficiency ; values in bn USD",
-  general_title = "Note: ",
-  footnote_as_chunk = TRUE,
-  threeparttable = TRUE,
-  escape = FALSE,
-  fixed_small_size = TRUE
-)
+    general = "n : number of billionaires ; $\\\\mu_{\\\\mathcal{E}}$ : average flight probability ; $\\\\mathcal{P}$ : potential revenue ; A : actual revenue ; $\\\\mathcal{L}$ : lost revenue ; CE : collection efficiency ; values in bn USD",
+    general_title = "Note: ",
+    footnote_as_chunk = TRUE,
+    threeparttable = TRUE,
+    escape = FALSE,
+    fixed_small_size = TRUE
+  )
 ```
 
 
@@ -1028,8 +1022,10 @@ loss_plot_df <- summary_table_all |>
   mutate(
     Scenario = factor(
       Scenario,
-      levels = c("France alone", "G7 Coordination", "G20 Coordination",
-                 "Expanded coordination (G20 + North)", "Near-global coordination")
+      levels = c(
+        "France alone", "G7 Coordination", "G20 Coordination",
+        "Expanded coordination (G20 + North)", "Near-global coordination"
+      )
     ),
     # useful derived metric to interpret shape independent of scale
     `Loss rate (%)` = 100 * (`Lost revenue ($bn)` / `Potential revenue ($bn)`)
@@ -1041,7 +1037,7 @@ ggplot(loss_plot_df, aes(x = Scenario, y = `Loss rate (%)`, group = 1)) +
   labs(
     x = NULL,
     y = "Lost revenue as % of potential revenue"
-  ) 
+  )
 ```
 
 @fig-coordination, consistent with @tbl-scenarios, highlights the decisive value of international coordination in making a tax on billionaires truly effective. As one moves from a unilateral implementation (France alone) to broader coalitions (G7, G20, G20+North, quasi-global), tax-base erosion decreases in a clear and monotonic way: the relative loss rate falls from 18.7\% to 4.0\%. This trajectory directly captures the central economic mechanism of coordination in an open economy: the broader the agreement, the more it reduces the set of credible fallback jurisdictions ("outside options") and thus the elasticity of the tax base to the reform. This result is precisely in line with the argument of Zucman[^Zucman_paper], according to which a minimum tax on billionaires becomes fully applicable only if the exit option is neutralized through international coordination. In our simulations, this progressive compression of outside options translates mechanically into a continuous increase in collection efficiency (from 78.4\% to 95.9\%): a growing share of the theoretical yield becomes effectively collectible. In other words, even if the expansion of the coalition also increases the taxable base and potential revenues, the key message is behavioral and institutional: coordination reduces flight and transforms a fragile tax into a robust fiscal instrument, once participation becomes sufficiently broad.
@@ -1101,11 +1097,14 @@ vif_df <- data.frame(
 )
 
 kable(vif_df,
-      col.names = c("Independent Variable", "VIF"),
-      digits = 3,
-      booktabs = TRUE) |> 
-  kable_styling(latex_options = c("striped", "hold_position"),
-                full_width = FALSE)
+  col.names = c("Independent Variable", "VIF"),
+  digits = 3,
+  booktabs = TRUE
+) |>
+  kable_styling(
+    latex_options = c("striped", "hold_position"),
+    full_width = FALSE
+  )
 ```
 
 
@@ -1119,9 +1118,10 @@ kable(vif_df,
 shapiro_test <- tidy(shapiro.test(residuals(modele)))
 
 kable(shapiro_test,
-      col.names = c("W", "p-value", "Méthode"),
-      digits = 4,
-      booktabs = TRUE) |> 
+  col.names = c("W", "p-value", "Méthode"),
+  digits = 4,
+  booktabs = TRUE
+) |>
   kable_styling(latex_options = "hold_position")
 ```
 
@@ -1142,12 +1142,14 @@ bp_df <- data.frame(
   p_value = as.numeric(bp$p.value)
 )
 
-kable(bp_df[, 2:3], 
-      digits = 4, 
-      booktabs = TRUE) |> 
-  kable_styling(latex_options = "hold_position", 
-                font_size = 9)
-
+kable(bp_df[, 2:3],
+  digits = 4,
+  booktabs = TRUE
+) |>
+  kable_styling(
+    latex_options = "hold_position",
+    font_size = 9
+  )
 ```
 
 # Appendix B : Calibrating the Logistic Transformation {#sec-two}
@@ -1208,9 +1210,10 @@ top_loss_fr <- flight_risk_index |>
   select(name, wealth_bil, p_france, lost_rev, industry, selfmade) |>
   head(10)
 
-kable(top_loss_fr, 
-             booktabs = TRUE, 
-             digits = 2) |> 
+kable(top_loss_fr,
+  booktabs = TRUE,
+  digits = 2
+) |>
   kable_styling(latex_options = "hold_position")
 ```
 
