@@ -284,6 +284,9 @@ All the World Bank's datasets used are listed here :
 
 
 # History and overview of the world's wealthiest individuals
+
+In this section, we step back from the policy question to situate billionaire wealth in its broader context. The aim is to provide a brief descriptive overview of billionaire wealth over time and its cross-sectional profile in 2014, focusing on trends in aggregate net worth, the rise of self-made fortunes, and their geographic and sectoral concentration.
+
 ## The evolution of billionaires wealth over the years 
 
 ```{r}
