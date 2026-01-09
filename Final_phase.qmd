@@ -270,8 +270,10 @@ The study concludes that international tax cooperation is a prerequisite for tra
 
 ## Database description
 
+A more detailed presentation of the data used in this project can be find on the [github repository](https://github.com/TonyDeAmorim/Taxing-the-Titans-An-Econometric-Study-of-Billionaire-Wealth-Drivers) of the project.
+
 - *The origins of the superrich: The billionaire characteristics database* [@Peterson2016] : A dataset of global billionaires featuring 23 variables-such as citizenship, net worth, and origin of wealth-used to track the demographic and financial characteristics of the world's wealthiest individuals.
-- National Fiscal Data (Tax Proxy): A dataset focusing on government tax revenue as a percentage of total revenue, utilized as a proxy for a country's fiscal pressure and level of taxation in response to the limited availability of direct tax rates in billionaire-heavy jurisdictions.
+- GDP in PPP from the IMF data explorer[^IMF]: This variable captures the overall economic performance and living standards of each country, adjusted for price level differences. Since wealth creation and the emergence of billionaires are closely linked to the size, productivity and income level of national economies, PPP-adjusted GDP is a natural control variable to account for cross-country differences in economic capacity.
 - The World Bank (Macroeconomic Indicators): A collection of global economic metrics-including Foreign Direct Investment (FDI), Gross Capital Formation (% of GDP), Total Population, and Tax revenue as a % of GDP, used to control for market scale, investment climate, and to approximate wealth tax.
 
 All the World Bank's datasets used are listed here :
@@ -281,7 +283,7 @@ All the World Bank's datasets used are listed here :
 -   The [Foreign direct investment, net inflows (% of GDP)](https://data.worldbank.org/indicator/BX.KLT.DINV.WD.GD.ZS) dataset
 -   The [Tax revenue (% of GDP)](https://data.worldbank.org/indicator/GC.TAX.TOTL.GD.ZS) dataset
 
-A more detailed presentation of the data used in this project can be find on the [github repository](https://github.com/TonyDeAmorim/Taxing-the-Titans-An-Econometric-Study-of-Billionaire-Wealth-Drivers) of the project.
+
 
 # History and overview of the world's wealthiest individuals
 ## The evolution of billionaires wealth over the years 
@@ -1213,3 +1215,5 @@ kable(top_loss_fr,
 [^Jakobsen]: See *Taxing top wealth: Migration responses and their aggregate economic implications*, @Jakobsen2024
 
 [^stagnated]: From *World Inequality Report 2022*, @WIR2022
+
+[^IMF]: Data from [@IMFDataExplorer]
