@@ -1093,7 +1093,10 @@ In sum, our results suggest that the budgetary feasibility of a tax on billionai
 
 \newpage
 
-# Annex 
+# Annex
+
+Given the word limit, we were unable to explore all results in greater depth. The figures presented in the appendix are provided for complementary purposes and left to the reader’s judgment, who may draw their own conclusions from them.
+
 ## Robustness check tests {#sec-one}
 
 ```{r}
