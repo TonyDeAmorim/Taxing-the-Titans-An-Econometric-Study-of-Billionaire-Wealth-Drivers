@@ -1099,7 +1099,7 @@ Given the word limit, we were unable to explore all results in greater depth. Th
 
 ```{r}
 #| label: tbl-vif
-#| tbl-cap: "Multicolinearity analysis (VIF)"
+#| tbl-cap: "Multicollinearity analysis (VIF)"
 #| message: false
 #| warning: false
 #| echo: false
