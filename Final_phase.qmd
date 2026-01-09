@@ -1161,6 +1161,31 @@ kable(bp_df[, 2:3],
 ```
 
 
+
+```{r}
+#| label: fig-logistic-curve
+#| fig-cap: "Logistic mapping from flight-risk score to relocation probability"
+#| echo: false
+#| warning: false
+#| message: false
+
+# suppose: reg_data_score$score exists, and alpha/beta are defined
+s <- seq(min(score, na.rm=TRUE), max(score, na.rm=TRUE), length.out = 200)
+p <- 1/(1+exp(-(alpha + beta*s)))
+
+plot(s, p, type = "l", xlab = "Flight-risk score (S)", ylab = "Relocation probability p(S)")
+```
+
+
+
+
+
+
+
+
+
+
+
 ## Top contributors to revenue loss among French billionaires {#sec-two}
 
 ```{r}
