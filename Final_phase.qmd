@@ -452,7 +452,7 @@ ggplot(Sectors, aes(x = reorder(sector, nombre_milliardaires), y = count, fill =
   labs(
     x = "Sector",
     y = "Total number of billionaires",
-    fill = "Type of welath"
+    fill = "Type of wealth"
   )
 
 
