@@ -528,7 +528,7 @@ The Shapiro–Wilk test[^shapiro] (p = 0.7815) suggests the residuals are approx
 The Breusch–Pagan test[^Breusch] (p = 0.7318) shows no evidence of heteroskedasticity, meaning the error variance can be treated as constant.
 Taken together, these checks imply that our coefficient estimates and standard inference from this model are generally reliable.
 
-The output tables for the different tests are presented in [Annex 1](#sec-one)
+The output tables for the different tests are presented in [Appendix A](#sec-one)
 
 # Understanding and anticipating the behaviour of the wealthiest individuals
 
@@ -667,7 +667,7 @@ Where $\beta$ represents the sensitivity of the leakage risk relative to the sco
 
 Because we do not observe actual relocation decisions in our data, we calibrate (rather than estimate with the Maximum Likelihood Method) the logistic parameters $(\alpha)$ and $(\beta)$ transparently using two anchor points from the score distribution : The score corresponding to the 10th percentile of billionaires $s_{low}$ (low-risk profiles) and the score corresponding to the 90th percentile $s_{high}$ (high-risk profiles). This "moderate mobility" calibration pins down $(\alpha)$ and $(\beta)$ uniquely and yields an average implied flight probability of about 10.06\% (as we draw it from @tbl-country-risk) in the sample. 
 
-To justify our orders of magnitude (anchors $p_{10}=2\%$ and $p_{90}=25\%$ at horizon $T=15$ years), we start from a homogeneous benchmark directly grounded in empirical estimates of annual migration flows in the literature (See Appendix B for calibration details.). Our ``2\%--25\%'' calibration embeds heterogeneity that increases the weight of highly mobile profiles in the mean, while remaining anchored in empirically plausible magnitudes for migration flows and in the observed concentration of responses within a more sensitive minority.
+To justify our orders of magnitude (anchors $p_{10}=2\%$ and $p_{90}=25\%$ at horizon $T=15$ years), we start from a homogeneous benchmark directly grounded in empirical estimates of annual migration flows in the literature (See [Appendix B](#sec-two) for calibration details.). Our ``2\%--25\%'' calibration embeds heterogeneity that increases the weight of highly mobile profiles in the mean, while remaining anchored in empirically plausible magnitudes for migration flows and in the observed concentration of responses within a more sensitive minority.
 
 These scores are then assigned two flight probabilities $p_{low}$ and $p_{high}$ in order to find the parameters after solving a system of two equations :
 
@@ -1150,7 +1150,7 @@ kable(bp_df[, 2:3],
 
 ```
 
-# Appendix B : Calibrating the Logistic Transformation
+# Appendix B : Calibrating the Logistic Transformation {#sec-two}
 
 ```{r}
 #| label: fig-score-vs-prob-panels
@@ -1179,6 +1179,7 @@ plot(density(df$flight_prob, from = 0, to = 1, na.rm = TRUE),
 par(mfrow = c(1,1))
 ```
 
+
 Advani, Burgherr \& Summers (2025)[^Advani] estimate a semi-elasticity of emigration of about $-0.339$: a 1\% decrease in the net-of-average-tax rate increases the annual emigration rate by roughly 0.3 percentage points (temporarily). Applying this order of magnitude linearly to a 2\% shock (calibration approximation) yields an average annual increment $\mu \approx 0.66\%$ (i.e., $0.0066$). If all individuals responded identically (no heterogeneity), the implied 15-year cumulative probability would be
 
 $$
@@ -1189,14 +1190,7 @@ which is very close to our calibrated mean (about 10.06\%)-hence our levels are 
 Jakobsen et al.[^Jakobsen] similarly report an average semi-elasticity of out-migration of about $-0.17$, while noting that some subgroups (e.g., entrepreneurs) can display larger responses albeit less precisely estimated. 
 
 
-
-
-
-
-
-
-
-## Top contributors to revenue loss among French billionaires {#sec-two}
+# Appendix C : Top contributors to revenue loss among French billionaires {#sec-three}
 
 ```{r}
 #| label: tbl-Top-5-contributors-loss
