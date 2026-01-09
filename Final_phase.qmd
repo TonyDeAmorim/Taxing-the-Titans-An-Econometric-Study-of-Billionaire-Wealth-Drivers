@@ -1056,7 +1056,7 @@ Regarding the creation of our risk index, our mobility score is binary (1 or 0).
 
 Throughout our study, we repeatedly made calibration choices. In @sec-ponderation, we justified our weighting choices for calculating the leakage risk score based on economic intuition. In a future extension of the study, it would be relevant to test other scenarios in order to evaluate the resulting outcomes. In addition, we calibrated in @sec-logis our parameters by extending and adapting approaches developed in other research articles. It would be worthwhile to test other calibrations to confirm the robustness of our model and explore other economic scenarios. 
 
-Following on from this article, a more detailed and individual analysis of billionaires' behavior could be conducted. When we attempted to calculate the probability of French billionaires leaving the country in scenario 1, see [Annex 2](#sec-two), certain insights emerged that should be explored further in future work.  
+Following on from this article, a more detailed and individual analysis of billionaires' behavior could be conducted. When we attempted to calculate the probability of French billionaires leaving the country in scenario 1, see [Appendix C](#sec-three), certain insights emerged that should be explored further in future work.  
 
 Finally, our model treats the billionaire population as static; it does not account for the dynamic impact of a 2% annual tax on capital accumulation over time, which could reduce the long-term growth rate of the tax base itself, even in the absence of physical flight.
 
