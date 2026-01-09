@@ -537,7 +537,7 @@ The previous baseline results describe where billionaires are most likely to be 
  
 ## Creation of a flight-risk score {#sec-ponderation}
 
-The aim of this part is to establish, for each billionaire the risk of flight from their current national territory if a tax is introduced. We will therefore create in this section a flight risk score, based on four distinct component :
+We will therefore create in this section a flight risk score, based on four distinct component :
 
 A tax burden score between 0 and 1 calculated according to the following standardization :
 
