@@ -282,7 +282,6 @@ All the World Bank's datasets used are listed here :
 -   The [Tax revenue (% of GDP)](https://data.worldbank.org/indicator/GC.TAX.TOTL.GD.ZS) dataset
 
 
-
 # History and overview of the world's wealthiest individuals
 
 In this section, we step back from the policy question to situate billionaire wealth in its broader context. The aim is to provide a brief descriptive overview of billionaire wealth over time and its cross-sectional profile in 2014, focusing on trends in aggregate net worth, the rise of self-made fortunes, and their geographic and sectoral concentration.
@@ -500,7 +499,7 @@ reg_data <- Billionaires_2014 |>
   left_join(Capital_formation_reduced |>
     select(COUNTRY, capital = `2014`), by = "COUNTRY") |>
   mutate(
-    log_bill = log(nb_bill + 1),
+    log_bill = log(nb_bill + 1), #add 1 to avoid problems if nb_bill = 0
     log_gdp = log(gdp)
   ) |>
   filter(!is.na(tax) & !is.na(gdp) & !is.na(fdi) & !is.na(capital))
