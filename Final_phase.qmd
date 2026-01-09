@@ -812,7 +812,7 @@ Overall, @fig-Basic-analysis-plots suggest that mobility risk is not uniform acr
 
 # Scenario testing : the impact of new taxation 
 
-In this section, we move from descriptive evidence to policy evaluation. Building on our flight-risk framework, we simulate the expected fiscal impact of introducing a new 2% billionaire wealth tax under alternative institutional settings. The goal is to quantify how different degrees of international coordination affect wealth mobility, the erosion of the tax base, and ultimately the amount of revenue that can be effectively collected.
+In this section, we move from descriptive analysis to policy evaluation. Building on our flight-risk framework, we simulate the expected fiscal impact of introducing a new 2% billionaire wealth tax under alternative institutional settings. The goal is to quantify how different degrees of international coordination affect wealth mobility, the erosion of the tax base, and ultimately the amount of revenue that can be effectively collected.
 
 ## Creating a scenario-testing function {#sec-creation}
 
