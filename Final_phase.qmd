@@ -462,7 +462,7 @@ An analysis of billionaires' wealth between 1996 and 2014 reveals a profound str
 
 Geographically, this wealth remains concentrated in high-income hubs (the United States, Western Europe, and East Asia), anchored in traditional sectors such as real estate, while increasingly driven by technology and finance. The emergence of this self-made and highly mobile elite suggests that their location depends less on tradition than on the economic environment. This brings us to our econometric analysis, in which we will examine how market size, openness, and taxation influence the spatial distribution of these global “titans.”
 
-# First model : understdanding the spacial distribution of billionaires
+# First model : understdanding the spatial distribution of billionaires
 ## Initial study and early results
 
 Our baseline regression, see @tbl-first-model, follows @eq-first_model : 
