@@ -1162,7 +1162,7 @@ kable(bp_df[, 2:3],
 ```
 
 
-## Top contributors to revenue loss among french billionaires {#sec-two}
+## Top contributors to revenue loss among French billionaires {#sec-two}
 
 ```{r}
 #| label: tbl-Top-5-contributors-loss
