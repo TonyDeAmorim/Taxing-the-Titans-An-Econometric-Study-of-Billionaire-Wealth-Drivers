@@ -730,7 +730,7 @@ flight_risk_index <-
 
 ## Analysis of the results
 
-Now that we have converted the flight-risk score into a calibrated flight probability (flight_prob), we aggregate the results at the country level. This allows us to compare countries in terms of (i) billionaire concentration, (ii) total billionaire wealth, and (iii) both the average risk index and the average implied mobility (probability), focusing on countries with a sufficiently large billionaire sample ($>10$).
+Now that we have converted the flight-risk score into a calibrated flight probability (flight_prob), we aggregate the results at the country level. This allows us to compare countries in terms of billionaire concentration and the average implied mobility (probability), focusing on countries with a sufficiently large billionaire sample ($>10$).
 
 ```{r}
 #| label: tbl-country-risk
