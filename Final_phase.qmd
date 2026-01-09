@@ -667,14 +667,8 @@ Where $\beta$ represents the sensitivity of the leakage risk relative to the sco
 
 Because we do not observe actual relocation decisions in our data, we calibrate (rather than estimate with the Maximum Likelihood Method) the logistic parameters $(\alpha)$ and $(\beta)$ transparently using two anchor points from the score distribution : The score corresponding to the 10th percentile of billionaires $s_{low}$ (low-risk profiles) and the score corresponding to the 90th percentile $s_{high}$ (high-risk profiles). This "moderate mobility" calibration pins down $(\alpha)$ and $(\beta)$ uniquely and yields an average implied flight probability of about 10.06\% (as we draw it from @tbl-country-risk) in the sample. 
 
-To justify our orders of magnitude (anchors $p_{10}=2\%$ and $p_{90}=25\%$ at horizon $T=15$ years), we start from a homogeneous benchmark directly grounded in empirical estimates of annual migration flows in the literature. Advani, Burgherr \& Summers (2025)[^Advani] estimate a semi-elasticity of emigration of about $-0.339$: a 1\% decrease in the net-of-average-tax rate increases the annual emigration rate by roughly 0.3 percentage points (temporarily). Applying this order of magnitude linearly to a 2\% shock (calibration approximation) yields an average annual increment $\mu \approx 0.66\%$ (i.e., $0.0066$). If all individuals responded identically (no heterogeneity), the implied 15-year cumulative probability would be
+To justify our orders of magnitude (anchors $p_{10}=2\%$ and $p_{90}=25\%$ at horizon $T=15$ years), we start from a homogeneous benchmark directly grounded in empirical estimates of annual migration flows in the literature. 
 
-$$
-p_{15} \;=\; 1 - (1-0.0066)^{15} \;\approx\; 9.4\%,
-$$
-
-which is very close to our calibrated mean (about 10.06\%)-hence our levels are consistent with empirically observed average responses. The remaining gap (10.06\% $>$ 9.4\%) is mechanically explained by the fact that our model introduces heterogeneity: we impose a right tail with highly mobile profiles (25\% at the 90th percentile) and strongly anchored profiles (2\% at the 10th percentile). This asymmetry pulls the mean upward and is consistent with documented stylized facts: Advani, Burgherr \& Summers also show that responsiveness is concentrated among individuals with weaker local economic ties (e.g., limited domestic-source income), who exhibit substantially higher migration elasticities than the average. 
-Jakobsen et al.[^Jakobsen] similarly report an average semi-elasticity of out-migration of about $-0.17$, while noting that some subgroups (e.g., entrepreneurs) can display larger responses albeit less precisely estimated. 
 In sum, our ``2\%--25\%'' calibration embeds heterogeneity that increases the weight of highly mobile profiles in the mean, while remaining anchored in empirically plausible magnitudes for migration flows and in the observed concentration of responses within a more sensitive minority.
 
 These scores are then assigned two flight probabilities $p_{low}$ and $p_{high}$ in order to find the parameters after solving a system of two equations :
@@ -1163,17 +1157,30 @@ kable(bp_df[, 2:3],
 
 
 ```{r}
-#| label: fig-logistic-curve
-#| fig-cap: "Logistic mapping from flight-risk score to relocation probability"
+#| label: fig-score-vs-prob-panels
+#| fig-cap: "Linear score vs. nonlinear probability (two-panel view)"
 #| echo: false
 #| warning: false
 #| message: false
 
-# suppose: reg_data_score$score exists, and alpha/beta are defined
-s <- seq(min(score, na.rm=TRUE), max(score, na.rm=TRUE), length.out = 200)
-p <- 1/(1+exp(-(alpha + beta*s)))
+df <- flight_risk_index |>
+  dplyr::filter(!is.na(flight_risk_score), !is.na(flight_prob))
 
-plot(s, p, type = "l", xlab = "Flight-risk score (S)", ylab = "Relocation probability p(S)")
+par(mfrow = c(2,1), mar = c(4,4,1,1))
+
+plot(density(df$flight_risk_score, from = 0, to = 1, na.rm = TRUE),
+     main = "",
+     xlab = "Flight-risk score (linear index)",
+     ylab = "Density",
+     lwd = 2)
+
+plot(density(df$flight_prob, from = 0, to = 1, na.rm = TRUE),
+     main = "",
+     xlab = "Flight probability (logistic mapping)",
+     ylab = "Density",
+     lwd = 2)
+
+par(mfrow = c(1,1))
 ```
 
 
