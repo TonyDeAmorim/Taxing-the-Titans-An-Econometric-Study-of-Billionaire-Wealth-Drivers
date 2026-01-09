@@ -255,9 +255,7 @@ update_geom_defaults("line", list(colour = couleur_viridis))
 
 Billionaire taxation has emerged as one of the most polarizing economic questions of our decade in an era of unprecedented wealth concentration. Indeed, the top 0.001% owns today three times more wealth than the entire bottom half of humanity combined[^World_inequality].In June 2024, French economist Gabriel Zucman presented to the G20 a proposal[^Zucman_paper] for a minimum 2% tax on fortunes exceeding one billion dollars, potentially generating $200-250 billion annually worldwide. Yet the debate divides deeply: while supporters see it as essential for fiscal equity and financing public services, opponents fear massive capital flight toward more lenient jurisdictions. France perfectly illustrates this tension-with public debt exceeding 115% of GDP[^French_debt] and approximately 40 billionaires whose combined wealth exceeds €500 billion. A 2% tax could theoretically yield €10 billion annually, but the country's experience with its abolished wealth tax (ISF) fuels concerns about fiscal exodus. The Zucman tax thus presents not merely a fiscal tool but a test of our ability to balance fiscal justice imperatives with economic competitiveness in regulating 21st century capitalism.
 
-Our study therefore aims to gain a better understanding of the key characteristics of the wealthiest individuals and to improve our ability to predict their tax behavior.
-
-To anticipate evasion behavior, we develop a flight risk score based on sector mobility, the origin of wealth (self-made vs. inherited), and proximity to tax havens. Logistic modeling reveals that the risk of mobility is highly concentrated among self-made billionaires operating in dematerialized sectors such as tech or finance.
+Our study therefore aims to gain a better understanding of the key characteristics of the wealthiest individuals and to improve our ability to predict their tax behavior After documenting key patterns in billionaire characteristics, we construct an individual flight-risk index based on sector portability, the origin of wealth (self-made versus inherited), and proximity to low-tax jurisdictions. Rather than imposing an exogenous “flight rate,” we model it as an outcome of observed determinants and translate the index into relocation probabilities using a calibrated logistic specification. This logistic modeling reveals that the risk of mobility is highly concentrated among self-made billionaires operating in dematerialized sectors such as tech or finance.
 
 Finally, our revenue simulations for a 2% tax demonstrate a critical trade-off:
 
@@ -283,8 +281,10 @@ All the World Bank's datasets used are listed here :
 -   The [Tax revenue (% of GDP)](https://data.worldbank.org/indicator/GC.TAX.TOTL.GD.ZS) dataset
 
 
-
 # History and overview of the world's wealthiest individuals
+
+In this section, we step back from the policy question to situate billionaire wealth in its broader context. The aim is to provide a brief descriptive overview of billionaire wealth over time and its cross-sectional profile in 2014, focusing on trends in aggregate net worth, the rise of self-made fortunes, and their geographic and sectoral concentration.
+
 ## The evolution of billionaires wealth over the years 
 
 ```{r}
@@ -449,7 +449,7 @@ ggplot(Sectors, aes(x = reorder(sector, nombre_milliardaires), y = count, fill =
   labs(
     x = "Sector",
     y = "Total number of billionaires",
-    fill = "Type of welath"
+    fill = "Type of wealth"
   )
 ```
 
@@ -457,7 +457,7 @@ An analysis of billionaires' wealth between 1996 and 2014 reveals a profound str
 
 Geographically, this wealth remains concentrated in high-income hubs (the United States, Western Europe, and East Asia), anchored in traditional sectors such as real estate, while increasingly driven by technology and finance. The emergence of this self-made and highly mobile elite suggests that their location depends less on tradition than on the economic environment. This brings us to our econometric analysis, in which we will examine how market size, openness, and taxation influence the spatial distribution of these global “titans.”
 
-# First model : understdanding the spacial distribution of billionaires
+# First model : understanding the spatial distribution of billionaires
 ## Initial study and early results
 
 Our baseline regression, see @tbl-first-model, follows @eq-first_model : 
@@ -468,17 +468,11 @@ It links the (log) number of billionaires ($Nb$) in a country to our taxation pr
 
 Overall, the model fits the data well (Adjusted $R^2= 0.770$; F-test p-value $< 10^{-14}$), suggesting these macroeconomic factors explain a large share of cross-country variation in billionaire presence.
 
-The coefficient on tax revenue is positive ($\beta_1 = 0.022$) and marginally significant at the 10% level (p = 0.097). Interpreting tax revenue as a proxy for the overall level of taxation/fiscal pressure, this result suggests that countries with stronger tax capacity tend to host more, not fewer, billionaires. This apparent paradox can be explained by the underlying implication of high taxation. Indeed, countries with heavy taxation are often more developed, due to the significant difficulties and costs involved in implementing an effective tax system. As a result, these nations more often offer less extractive institutional systems that are conducive to business activity and development. Added to this is the quality of education, health, and the environment, all of which are characteristics that promote the development of profitable businesses. Thus, our model would indicate that these indirect positive effects of taxation would outweigh the direct negative effects of higher taxation.
+Tax revenue enters positively ($\beta_1 = 0.022$) and is only marginally significant at the 10% level (p = 0.097). Interpreted as a proxy for overall fiscal pressure, this suggests that stronger tax capacity is associated with more, not fewer, billionaires. A plausible interpretation is that high-tax countries also tend to be more institutionally developed and able to provide high-quality public goods (education, health, infrastructure, regulatory stability) that support profitable business activity, so these indirect advantages may offset the direct cost of taxation. Accordingly, taxation does not automatically weaken a country’s ability to host top wealth holders, “competitiveness” can also rest on stability and market opportunities rather than low taxes alone.
 
-Therefore, taxation does not automatically translate into a weaker ability to attract or maintain top wealth holders. In the context of an open economy, this weak but positive association also suggests that “competitiveness” is not solely driven by low taxation: some high-tax jurisdictions can remain attractive because they compensate with stability and market opportunities.
+Economic scale is the dominant factor: log GDP is large and highly significant, consistent with the idea that bigger markets generate more high-value firms, deeper capital markets, and more opportunities for large fortunes. FDI is also positive and significant, indicating that more open and internationally connected economies tend to host more billionaires. By contrast, capital formation is not statistically significant (p = 0.40), suggesting limited additional explanatory power once GDP and FDI are controlled for.
 
-The strongest determinant is economic scale: log GDP is highly significant and large. This implies that larger economies systematically host more billionaires, which aligns with the idea that big markets generate more high-value firms, deeper capital markets, and more opportunities for large fortunes. This is important for our research question because it highlights that billionaire wealth concentration is strongly linked to market size and overall economic performance-taxation effects must be interpreted conditional on these structural fundamentals.
-
-FDI is also positive and significant, indicating that more open and internationally connected economies tend to have more billionaires. This supports the “national competitiveness in an open economy” channel: countries that attract foreign investment and integrate into global capital flows are also those where billionaire wealth is more prevalent. In other words, openness and investment attractiveness appear complementary to the presence of ultra-wealthy individuals rather than substitutable.
-
-Finally, capital formation is not statistically significant (p = 0.40), suggesting that once GDP size and FDI are accounted for, differences in domestic investment intensity (as measured here) do not add much explanatory power for billionaire counts.
-
-Taken together, this baseline model suggests that, using tax revenue as a proxy for taxation, higher taxation is not associated with a lower billionaire presence, while economic performance (GDP) and openness/competitiveness (FDI) are strongly associated with billionaire concentration. This supports an interpretation where taxation can coexist with competitiveness in open economies, provided the broader institutional and market conditions remain favorable.
+Overall, the baseline results indicate that higher tax revenue is not negatively associated with billionaire presence, while market size (GDP) and openness (FDI) are strongly associated with billionaire concentration.
 
 ```{r}
 #| label: tbl-first-model
@@ -501,7 +495,7 @@ reg_data <- Billionaires_2014 |>
   left_join(Capital_formation_reduced |>
     select(COUNTRY, capital = `2014`), by = "COUNTRY") |>
   mutate(
-    log_bill = log(nb_bill + 1),
+    log_bill = log(nb_bill + 1), #add 1 to avoid problems if nb_bill = 0
     log_gdp = log(gdp)
   ) |>
   filter(!is.na(tax) & !is.na(gdp) & !is.na(fdi) & !is.na(capital))
@@ -533,9 +527,12 @@ Taken together, these checks imply that our coefficient estimates and standard i
 The output tables for the different tests are presented in [Annex 1](#sec-one)
 
 # Understanding and anticipating the behaviour of the wealthiest individuals
+
+The previous baseline results describe where billionaires are most likely to be located at the country level, but they remain silent on how the individuals behind these fortunes may respond to policy changes. The next section therefore shifts from macro determinants of billionaire concentration to the micro-level question at the core of our study: understanding who is most likely to adjust their location and how we can anticipate mobility and tax-flight behaviour among the wealthiest individuals.
+ 
 ## Creation of a flight-risk score {#sec-ponderation}
 
-The aim of this part is to establish, for each billionaire the risk of flight from their current national territory if a tax is introduced. We will therefore create in this section a flight risk score, based on four distinct component :
+We will therefore create in this section a flight risk score, based on four distinct component :
 
 A tax burden score between 0 and 1 calculated according to the following standardization :
 
@@ -666,14 +663,8 @@ Where $\beta$ represents the sensitivity of the leakage risk relative to the sco
 
 Because we do not observe actual relocation decisions in our data, we calibrate (rather than estimate with the Maximum Likelihood Method) the logistic parameters $(\alpha)$ and $(\beta)$ transparently using two anchor points from the score distribution : The score corresponding to the 10th percentile of billionaires $s_{low}$ (low-risk profiles) and the score corresponding to the 90th percentile $s_{high}$ (high-risk profiles). This "moderate mobility" calibration pins down $(\alpha)$ and $(\beta)$ uniquely and yields an average implied flight probability of about 10.06\% (as we draw it from @tbl-country-risk) in the sample. 
 
-To justify our orders of magnitude (anchors $p_{10}=2\%$ and $p_{90}=25\%$ at horizon $T=15$ years), we start from a homogeneous benchmark directly grounded in empirical estimates of annual migration flows in the literature. Advani, Burgherr \& Summers (2025)[^Advani] estimate a semi-elasticity of emigration of about $-0.339$: a 1\% decrease in the net-of-average-tax rate increases the annual emigration rate by roughly 0.3 percentage points (temporarily). Applying this order of magnitude linearly to a 2\% shock (calibration approximation) yields an average annual increment $\mu \approx 0.66\%$ (i.e., $0.0066$). If all individuals responded identically (no heterogeneity), the implied 15-year cumulative probability would be
+To justify our orders of magnitude (anchors $p_{10}=2\%$ and $p_{90}=25\%$ at horizon $T=15$ years), we start from a homogeneous benchmark directly grounded in empirical estimates of annual migration flows in the literature. 
 
-$$
-p_{15} \;=\; 1 - (1-0.0066)^{15} \;\approx\; 9.4\%,
-$$
-
-which is very close to our calibrated mean (about 10.06\%)-hence our levels are consistent with empirically observed average responses. The remaining gap (10.06\% $>$ 9.4\%) is mechanically explained by the fact that our model introduces heterogeneity: we impose a right tail with highly mobile profiles (25\% at the 90th percentile) and strongly anchored profiles (2\% at the 10th percentile). This asymmetry pulls the mean upward and is consistent with documented stylized facts: Advani, Burgherr \& Summers also show that responsiveness is concentrated among individuals with weaker local economic ties (e.g., limited domestic-source income), who exhibit substantially higher migration elasticities than the average. 
-Jakobsen et al.[^Jakobsen] similarly report an average semi-elasticity of out-migration of about $-0.17$, while noting that some subgroups (e.g., entrepreneurs) can display larger responses albeit less precisely estimated. 
 In sum, our ``2\%--25\%'' calibration embeds heterogeneity that increases the weight of highly mobile profiles in the mean, while remaining anchored in empirically plausible magnitudes for migration flows and in the observed concentration of responses within a more sensitive minority.
 
 These scores are then assigned two flight probabilities $p_{low}$ and $p_{high}$ in order to find the parameters after solving a system of two equations :
@@ -727,7 +718,7 @@ flight_risk_index <-
 
 ## Analysis of the results
 
-Now that we have converted the flight-risk score into a calibrated flight probability (flight_prob), we aggregate the results at the country level. This allows us to compare countries in terms of (i) billionaire concentration, (ii) total billionaire wealth, and (iii) both the average risk index and the average implied mobility (probability), focusing on countries with a sufficiently large billionaire sample ($>10$).
+Now that we have converted the flight-risk score into a calibrated flight probability (flight_prob), we aggregate the results at the country level. This allows us to compare countries in terms of billionaire concentration and the average implied mobility (probability), focusing on countries with a sufficiently large billionaire sample ($>10$).
 
 ```{r}
 #| label: tbl-country-risk
@@ -809,7 +800,7 @@ Overall, @fig-Basic-analysis-plots suggest that mobility risk is not uniform acr
 
 # Scenario testing : the impact of new taxation 
 
-In this section, we move from descriptive evidence to policy evaluation. Building on our flight-risk framework, we simulate the expected fiscal impact of introducing a new 2% billionaire wealth tax under alternative institutional settings. The goal is to quantify how different degrees of international coordination affect wealth mobility, the erosion of the tax base, and ultimately the amount of revenue that can be effectively collected.
+In this section, we move from descriptive analysis to policy evaluation. Building on our flight-risk framework, we simulate the expected fiscal impact of introducing a new 2% billionaire wealth tax under alternative institutional settings. The goal is to quantify how different degrees of international coordination affect wealth mobility, the erosion of the tax base, and ultimately the amount of revenue that can be effectively collected.
 
 ## Creating a scenario-testing function {#sec-creation}
 
@@ -928,7 +919,7 @@ As a robustness check, the same simulations could be rerun using alternative fli
 
 ```{r}
 #| label: tbl-scenarios
-#| tbl-cap: "Tax scenarios resume"
+#| tbl-cap: "Tax scenarios summary"
 #| echo: false
 #| message: false
 #| warning: false
@@ -1089,12 +1080,15 @@ In sum, our results suggest that the budgetary feasibility of a tax on billionai
 
 \newpage
 
-# Annex 
+# Annex
+
+Given the word limit, we were unable to explore all results in greater depth. The figures presented in the appendix are provided for complementary purposes and left to the reader’s judgment, who may draw their own conclusions from them.
+
 ## Robustness check tests {#sec-one}
 
 ```{r}
 #| label: tbl-vif
-#| tbl-cap: "Multicolinearity analysis (VIF)"
+#| tbl-cap: "Multicollinearity analysis (VIF)"
 #| message: false
 #| warning: false
 #| echo: false
@@ -1163,7 +1157,45 @@ kable(bp_df[, 2:3],
 ```
 
 
-## Top contributors to revenue loss among french billionaires {#sec-two}
+
+```{r}
+#| label: fig-score-vs-prob-panels
+#| fig-cap: "Linear score vs. nonlinear probability (two-panel view)"
+#| echo: false
+#| warning: false
+#| message: false
+
+df <- flight_risk_index |>
+  dplyr::filter(!is.na(flight_risk_score), !is.na(flight_prob))
+
+par(mfrow = c(2,1), mar = c(4,4,1,1))
+
+plot(density(df$flight_risk_score, from = 0, to = 1, na.rm = TRUE),
+     main = "",
+     xlab = "Flight-risk score (linear index)",
+     ylab = "Density",
+     lwd = 2)
+
+plot(density(df$flight_prob, from = 0, to = 1, na.rm = TRUE),
+     main = "",
+     xlab = "Flight probability (logistic mapping)",
+     ylab = "Density",
+     lwd = 2)
+
+par(mfrow = c(1,1))
+```
+
+
+
+
+
+
+
+
+
+
+
+## Top contributors to revenue loss among French billionaires {#sec-two}
 
 ```{r}
 #| label: tbl-Top-5-contributors-loss
