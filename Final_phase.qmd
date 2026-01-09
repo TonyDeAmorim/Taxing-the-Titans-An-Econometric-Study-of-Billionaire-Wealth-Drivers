@@ -532,6 +532,9 @@ Taken together, these checks imply that our coefficient estimates and standard i
 The output tables for the different tests are presented in [Annex 1](#sec-one)
 
 # Understanding and anticipating the behaviour of the wealthiest individuals
+
+The previous baseline results describe where billionaires are most likely to be located at the country level, but they remain silent on how the individuals behind these fortunes may respond to policy changes. The next section therefore shifts from macro determinants of billionaire concentration to the micro-level question at the core of our study: understanding who is most likely to adjust their location and how we can anticipate mobility and tax-flight behaviour among the wealthiest individuals.
+ 
 ## Creation of a flight-risk score {#sec-ponderation}
 
 The aim of this part is to establish, for each billionaire the risk of flight from their current national territory if a tax is introduced. We will therefore create in this section a flight risk score, based on four distinct component :
