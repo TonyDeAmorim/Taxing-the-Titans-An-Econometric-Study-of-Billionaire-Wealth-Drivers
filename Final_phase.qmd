@@ -527,7 +527,7 @@ The previous baseline results describe where billionaires are most likely to be 
  
 ## Creation of a flight-risk score {#sec-ponderation}
 
-We will therefore create in this section a flight risk score, based on four distinct component. The Tax Burden score is a normalization of country tax rates between 0 and 1, where higher scores reflect maximum taxation. Industry Mobility assigns a score of 1 to individuals in mobile sectors as these facilitate relocation. The Source of Wealth distinguishes between "self-made" (1) and "inherited" (0), based on the premise that inherited assets create stronger territorial ties. Finally, Proximity to a Tax Haven awards a score of 1 if a billionaire is located near specific havens. The detail of the four components of the score are available in [Appendix D](#sec-four)
+We will therefore create in this section a flight risk score, based on four distinct component. The Tax Burden score is a normalization of country tax rates between 0 and 1, where higher scores reflect maximum taxation. Industry Mobility assigns a score of 1 to individuals in mobile sectors as these facilitate relocation. The Source of Wealth distinguishes between "self-made" (1) and "inherited" (0), based on the premise that inherited assets create stronger territorial ties. Finally, Proximity to a Tax Haven awards a score of 1 if a billionaire is located near specific havens. The detail of the four components of the score are available in [Appendix B](#sec-two)
 
 ```{r}
 #| label: Creation of the 4 scores
@@ -629,7 +629,7 @@ flight_risk_index <-
 
 *For this phase, we wanted to convert our scores into probabilities so that we could interpret them effectively. We based our work on Niculescu-Mizil and Caruana[^Niculescu] (2005) and found various online sources[^Sources] explaining the main principles of probability calculation using logistic regression. Finally, the use of AI enabled us to confirm our method and refine our code.*
 
-We convert the flight-risk score into an expected flight probability using a logistic transformation (See [Appendix B](#sec-two) for methodology details.).
+We convert the flight-risk score into an expected flight probability using a logistic transformation (See [Appendix C](#sec-three) for methodology details).
 
 We set the expected relocation probability to $(p_{10}=2\%)$ for low-risk profiles (10th percentile of the score) and to $(p_{90}=25\%)$ for high-risk profiles (90th percentile), over a $(T=15)$-year horizon. This choice yields an average implied flight probability of about 10.06\% in our sample.These magnitudes are consistent with empirical estimates of migration responses among high-income individuals. Advani, Burgherr \& Summers (2025)[^Advani] estimate a semi-elasticity of emigration of about $-0.339$: a 1\% decrease in the net-of-average-tax rate increases the annual emigration rate by roughly 0.3 percentage points (temporarily). Applying this order of magnitude linearly to a 2\% shock (calibration approximation) yields an average annual increment $\mu \approx 0.66\%$ (i.e., $0.0066$). If all individuals responded identically (no heterogeneity), the implied 15-year cumulative probability would be
 
@@ -1019,7 +1019,7 @@ Regarding the creation of our risk index, our mobility score is binary (1 or 0).
 
 Throughout our study, we repeatedly made calibration choices. In @sec-ponderation, we justified our weighting choices for calculating the leakage risk score based on economic intuition. In a future extension of the study, it would be relevant to test other scenarios in order to evaluate the resulting outcomes. In addition, we calibrated in @sec-logis our parameters by extending and adapting approaches developed in other research articles. It would be worthwhile to test other calibrations to confirm the robustness of our model and explore other economic scenarios. 
 
-Following on from this article, a more detailed and individual analysis of billionaires' behavior could be conducted. When we attempted to calculate the probability of French billionaires leaving the country in scenario 1, see [Appendix C](#sec-three), certain insights emerged that should be explored further in future work.  
+Following on from this article, a more detailed and individual analysis of billionaires' behavior could be conducted. When we attempted to calculate the probability of French billionaires leaving the country in scenario 1, see [Appendix D](#sec-four), certain insights emerged that should be explored further in future work.  
 
 Finally, our model treats the billionaire population as static; it does not account for the dynamic impact of a 2% annual tax on capital accumulation over time, which could reduce the long-term growth rate of the tax base itself, even in the absence of physical flight.
 
