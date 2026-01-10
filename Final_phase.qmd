@@ -1080,7 +1080,7 @@ In sum, our results suggest that the budgetary feasibility of a tax on billionai
 
 *Given the word limit, we were unable to explore all results in greater depth. The figures presented in the appendix are provided for complementary purposes and left to the reader’s judgment, who may draw their own conclusions from them.*
 
-# Appendix A : Robustness check tests {#sec-one}
+# Appendix A: Robustness Checks {#sec-one -}
 
 ```{r}
 #| label: tbl-vif
@@ -1152,7 +1152,7 @@ kable(bp_df[, 2:3],
   )
 ```
 
-# Appendix B : Calibrating the Logistic Transformation {#sec-two}
+# Appendix B : Calibrating the Logistic Transformation {#sec-two -} 
 
 ```{r}
 #| label: fig-score-vs-prob-panels
@@ -1162,7 +1162,7 @@ kable(bp_df[, 2:3],
 #| message: false
 
 df <- flight_risk_index |>
-  dplyr::filter(!is.na(flight_risk_score), !is.na(flight_prob))
+  filter(!is.na(flight_risk_score), !is.na(flight_prob))
 
 par(mfrow = c(2,1), mar = c(4,4,1,1))
 
@@ -1190,7 +1190,7 @@ $$
 which is very close to our calibrated mean (about 10.06\%)-hence our levels are consistent with empirically observed average responses. The remaining gap (10.06\% $>$ 9.4\%) is mechanically explained by the fact that our model introduces heterogeneity: we impose a right tail with highly mobile profiles (25\% at the 90th percentile) and strongly anchored profiles (2\% at the 10th percentile). This asymmetry pulls the mean upward and is consistent with documented stylized facts: Advani, Burgherr \& Summers also show that responsiveness is concentrated among individuals with weaker local economic ties (e.g., limited domestic-source income), who exhibit substantially higher migration elasticities than the average. 
 Jakobsen et al.[^Jakobsen] similarly report an average semi-elasticity of out-migration of about $-0.17$, while noting that some subgroups (e.g., entrepreneurs) can display larger responses albeit less precisely estimated. 
 
-# Appendix C : Top contributors to revenue loss among French billionaires {#sec-three}
+# Appendix C : Top contributors to revenue loss among French billionaires {#sec-three -}
 
 ```{r}
 #| label: tbl-Top-5-contributors-loss
