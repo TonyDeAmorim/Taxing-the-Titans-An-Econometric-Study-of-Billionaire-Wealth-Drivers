@@ -1210,7 +1210,7 @@ kable(top_loss_fr,
   kable_styling(latex_options = "hold_position")
 ```
 
- \newpage
+
 
 # Appendix D : Detail on the creation of the flight risk score {#sec-four}
 
