@@ -7,7 +7,7 @@ author:
 date: today
 date-format: "MMMM D, YYYY"
 abstract: |
-  This project was carried out as part of the data management course taught during the first year of the Quantitative Economics master's programme and International Affairs and Development master's programme. AI is indicated each time it was used and was only employed to correct the code, confirm intuitions and expand on our initial ideas. 
+  This project was carried out as part of the data management course taught during the first year of the Quantitative Economics master's programme and International Affairs and Development master's programme. AI is indicated each time it was used and was only employed to correct the code and improve our text. 
 format:
   pdf:
     geometry:
@@ -529,23 +529,11 @@ The output tables for the different tests are presented in [Appendix A](#sec-one
 
 # Understanding and anticipating the behaviour of the wealthiest individuals
 
-The previous baseline results describe where billionaires are most likely to be located at the country level, but they remain silent on how the individuals behind these fortunes may respond to policy changes. The next section therefore shifts from macro determinants of billionaire concentration to the micro-level question at the core of our study: understanding who is most likely to adjust their location and how we can anticipate mobility and tax-flight behaviour among the wealthiest individuals.
+The previous baseline results describe where billionaires are most likely to be located at the country level, but they remain silent on how the individuals behind these fortunes may respond to policy changes. The next section therefore shifts from macro determinants of billionaire concentration to the micro-level question at the core of our study: understanding who is most likely to adjust their location and how we can anticipate mobility and tax-flight behavior among the wealthiest individuals.
  
 ## Creation of a flight-risk score {#sec-ponderation}
 
-We will therefore create in this section a flight risk score, based on four distinct component :
-
-A tax burden score between 0 and 1 calculated according to the following standardization :
-
-$$\frac{(\text{tax in country i})- (\text{min tax})}{(\text{max tax})- (\text{min tax})}$$ {#eq-standardization} 
-
-This score is thus normalized between 0 (minimum taxation) and 1 (maximum taxation). We consider that higher taxation would encourage more tax evasion.  
-
-Whether the billionaire's main activity belongs to an industry considered to be internationally mobile. Among the industries in the original dataset, we have identified the following as mobile : "Diversified financial",  "Technology-Computer", "Hedge funds", "Private equity/leverage buyout",      "Venture capital", "Media", "Money Management". Belonging to one of this industry gives a score of 1 and 0 otherwise as we believe that working in such a sector would facilitate mobility for the billionaire. 
-
-The source of the billionaire's wealth, with a score of 1 if "self-made" and 0 if "inherited". This score is used to capture the idea that inherited wealth is more likely to be accompanied by a strong attachment to the territory of origin. The idea is that inherited wealth tends to involve real estate and historically established industries, which provide incentives to stay put. 
-
-Proximity to a tax haven. Based on the official definition, we first drew up the following list of tax havens: "Switzerland", "Singapore", "Hong Kong", "Liechtenstein", "Monaco", "Luxembourg", "United Arab Emirates" and "Bermuda". We then identified the countries considered close enough to a tax haven to provide billionaires with a significant incentive to relocate. To do this, we took into account membership of the Schengen area for European countries (where mobility to the border of the tax haven is facilitated, whether for Switzerland, Luxembourg or Liechtenstein) and the sharing of a coastline with the same ocean for Asian and Caribbean tax havens. This gives us a score of 1 if close, 0 otherwise.
+We will therefore create in this section a flight risk score, based on four distinct component. The Tax Burden score is a normalization of country tax rates between 0 and 1, where higher scores reflect maximum taxation. Industry Mobility assigns a score of 1 to individuals in mobile sectors as these facilitate relocation. The Source of Wealth distinguishes between "self-made" (1) and "inherited" (0), based on the premise that inherited assets create stronger territorial ties. Finally, Proximity to a Tax Haven awards a score of 1 if a billionaire is located near specific havens. The detail of the four components of the score are available in [Appendix D](#sec-four)
 
 ```{r}
 #| label: Creation of the 4 scores
@@ -1196,7 +1184,7 @@ par(mfrow = c(1,1))
 
 \newpage
 
-# Appendix C : Top contributors to revenue loss among French billionaires {#sec-three -}
+# Appendix C : Top contributors to revenue loss among French billionaires {#sec-three}
 
 ```{r}
 #| label: tbl-Top-5-contributors-loss
@@ -1224,7 +1212,43 @@ kable(top_loss_fr,
 ```
 
 
+# Appendix D : Detail on the creation of the flight risk score {#sec-four}
+
+```{r}
+#| label: tbl-flight-score-detail
+#| tbl-cap: "Summary of Billionaire Tax Evasion Incentive Scores"
+#| message: false
+#| warning: false
+#| echo: false
+
+tax_scores_df <- data.frame(
+  Score = c("Tax Burden", "Industry Mobility", "Source of Wealth", "Proximity to Tax Haven"),
+  Logic_for_1 = c("Max Taxation", "Mobile Industry", "Self-made", "Close to Haven"),
+  Logic_for_0 = c("Min Taxation", "Non-mobile Industry", "Inherited", "Far from Haven"),
+  Details_and_Lists = c(
+    "Formula: $$\\frac{(\\text{tax}_i - \\text{min tax})}{(\\text{max tax} - \\text{min tax})}$$",
+    "Industries: Diversified financial, Technology-Computer, Hedge funds, Private equity/leverage buyout, Venture capital, Media, Money Management",
+    "Inherited wealth implies strong attachment to territory (real estate, history).",
+    "Havens: Switzerland, Singapore, Hong Kong, Liechtenstein, Monaco, Luxembourg, UAE, Bermuda. (Criteria: Schengen or shared coastline)"
+  )
+)
+
+
+kable(tax_scores_df,
+      format = "latex",
+        booktabs = TRUE,
+        digits = 2,
+        col.names = c("Score Name", "Criteria for 1", "Criteria for 0", "Details / Explicit Lists"),
+        escape = FALSE) |>
+  kable_styling(latex_options = c("striped", "hold_position"),
+                full_width = F,
+                position = "left",
+                font_size = 8) |>
+  column_spec(4, width = "30em")
+```
+
 \newpage
+
 
 # Bibliography
 
