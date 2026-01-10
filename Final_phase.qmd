@@ -1181,13 +1181,13 @@ plot(density(df$flight_prob, from = 0, to = 1, na.rm = TRUE),
 par(mfrow = c(1,1))
 ```
 
-\newpage
 
 # Appendix C : Top contributors to revenue loss among French billionaires {#sec-three}
 
 ```{r}
 #| label: tbl-Top-5-contributors-loss
 #| tbl-cap: "Top 5 contributors to revenue loss"
+#| tbl-pos: 'H'
 #| message: false
 #| warning: false
 #| echo: false
@@ -1216,6 +1216,7 @@ kable(top_loss_fr,
 ```{r}
 #| label: tbl-flight-score-detail
 #| tbl-cap: "Summary of Billionaire Tax Evasion Incentive Scores"
+#| tbl-pos: 'H'
 #| message: false
 #| warning: false
 #| echo: false
