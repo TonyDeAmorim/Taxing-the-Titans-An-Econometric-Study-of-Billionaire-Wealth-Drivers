@@ -1210,6 +1210,7 @@ kable(top_loss_fr,
   kable_styling(latex_options = "hold_position")
 ```
 
+ \newpage
 
 # Appendix D : Detail on the creation of the flight risk score {#sec-four}
 
@@ -1225,10 +1226,10 @@ tax_scores_df <- data.frame(
   Logic_for_1 = c("Max Taxation", "Mobile Industry", "Self-made", "Close to Haven"),
   Logic_for_0 = c("Min Taxation", "Non-mobile Industry", "Inherited", "Far from Haven"),
   Details_and_Lists = c(
-    "Formula: $$\\frac{(\\text{tax}_i - \\text{min tax})}{(\\text{max tax} - \\text{min tax})}$$",
+    "Formula: (tax - min tax)/(max tax - min tax)",
     "Industries: Diversified financial, Technology-Computer, Hedge funds, Private equity/leverage buyout, Venture capital, Media, Money Management",
     "Inherited wealth implies strong attachment to territory (real estate, history).",
-    "Havens: Switzerland, Singapore, Hong Kong, Liechtenstein, Monaco, Luxembourg, UAE, Bermuda. (Criteria: Schengen or shared coastline)"
+    "Havens: Switzerland, Singapore, Hong Kong, Liechtenstein, Monaco, Luxembourg, UAE, Bermuda."
   )
 )
 
@@ -1236,14 +1237,14 @@ tax_scores_df <- data.frame(
 kable(tax_scores_df,
       format = "latex",
         booktabs = TRUE,
-        digits = 2,
         col.names = c("Score Name", "Criteria for 1", "Criteria for 0", "Details / Explicit Lists"),
         escape = FALSE) |>
-  kable_styling(latex_options = c("striped", "hold_position"),
+  kable_styling(latex_options = c("striped", "HOLD"),
                 full_width = F,
                 position = "left",
                 font_size = 8) |>
   column_spec(4, width = "30em")
+
 ```
 
 \newpage
