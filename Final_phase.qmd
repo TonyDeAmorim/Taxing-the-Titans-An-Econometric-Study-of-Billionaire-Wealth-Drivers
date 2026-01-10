@@ -520,10 +520,7 @@ modelsummary(
 ## Robustness check
 
 Overall, the diagnostic tests support the validity of the OLS assumptions for our first model.
-The VIF results[^multico] (around 1.2–1.3) indicate no multicollinearity, so the regressors are not strongly correlated.
-The Shapiro–Wilk test[^shapiro] (p = 0.7815) suggests the residuals are approximately normally distributed.
-The Breusch–Pagan test[^Breusch] (p = 0.7318) shows no evidence of heteroskedasticity, meaning the error variance can be treated as constant.
-Taken together, these checks imply that our coefficient estimates and standard inference from this model are generally reliable.
+
 
 The output tables for the different tests are presented in [Appendix A](#sec-one)
 
