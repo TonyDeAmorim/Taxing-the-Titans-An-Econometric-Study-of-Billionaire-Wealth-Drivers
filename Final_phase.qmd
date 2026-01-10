@@ -1120,7 +1120,43 @@ The Shapiro–Wilk test[^shapiro] (p = 0.7815) suggests the residuals are approx
 The Breusch–Pagan test[^Breusch] (p = 0.7318) shows no evidence of heteroskedasticity, meaning the error variance can be treated as constant.
 Taken together, these checks imply that our coefficient estimates and standard inference from this model are generally reliable.
 
-# Appendix B : Calibrating the Logistic Transformation {#sec-two -} 
+# Appendix B : Detail on the creation of the flight risk score {#sec-two}
+
+```{r}
+#| label: tbl-flight-score-detail
+#| tbl-cap: "Summary of Billionaire Tax Evasion Incentive Scores"
+#| tbl-pos: 'H'
+#| message: false
+#| warning: false
+#| echo: false
+
+tax_scores_df <- data.frame(
+  Score = c("Tax Burden", "Industry Mobility", "Source of Wealth", "Proximity to Tax Haven"),
+  Logic_for_1 = c("Max Taxation", "Mobile Industry", "Self-made", "Close to Haven"),
+  Logic_for_0 = c("Min Taxation", "Non-mobile Industry", "Inherited", "Far from Haven"),
+  Details_and_Lists = c(
+    "Formula: $$\\frac{(\\text{tax}_i - \\text{min tax})}{(\\text{max tax} - \\text{min tax})}$$",
+    "Industries: Diversified financial, Technology-Computer, Hedge funds, Private equity/leverage buyout, Venture capital, Media, Money Management",
+    "Inherited wealth implies strong attachment to territory (real estate, history).",
+    "Havens: Switzerland, Singapore, Hong Kong, Liechtenstein, Monaco, Luxembourg, UAE, Bermuda. (Criteria: Schengen or shared coastline)"
+  )
+)
+
+
+kable(tax_scores_df,
+      format = "latex",
+        booktabs = TRUE,
+        digits = 2,
+        col.names = c("Score Name", "Criteria for 1", "Criteria for 0", "Details / Explicit Lists"),
+        escape = FALSE) |>
+  kable_styling(latex_options = c("striped", "hold_position"),
+                full_width = F,
+                position = "left",
+                font_size = 8) |>
+  column_spec(4, width = "30em")
+```
+
+# Appendix C : Calibrating the Logistic Transformation {#sec-three -} 
 
 To calibrate the conversion of the flight-risk score into an implied flight probability, we rely on a logistic function. 
 
@@ -1182,7 +1218,7 @@ par(mfrow = c(1,1))
 ```
 
 
-# Appendix C : Top contributors to revenue loss among French billionaires {#sec-three}
+# Appendix D : Top contributors to revenue loss among French billionaires {#sec-four -}
 
 ```{r}
 #| label: tbl-Top-5-contributors-loss
@@ -1210,42 +1246,6 @@ kable(top_loss_fr,
   kable_styling(latex_options = "hold_position")
 ```
 
-
-# Appendix D : Detail on the creation of the flight risk score {#sec-four}
-
-```{r}
-#| label: tbl-flight-score-detail
-#| tbl-cap: "Summary of Billionaire Tax Evasion Incentive Scores"
-#| tbl-pos: 'H'
-#| message: false
-#| warning: false
-#| echo: false
-
-tax_scores_df <- data.frame(
-  Score = c("Tax Burden", "Industry Mobility", "Source of Wealth", "Proximity to Tax Haven"),
-  Logic_for_1 = c("Max Taxation", "Mobile Industry", "Self-made", "Close to Haven"),
-  Logic_for_0 = c("Min Taxation", "Non-mobile Industry", "Inherited", "Far from Haven"),
-  Details_and_Lists = c(
-    "Formula: $$\\frac{(\\text{tax}_i - \\text{min tax})}{(\\text{max tax} - \\text{min tax})}$$",
-    "Industries: Diversified financial, Technology-Computer, Hedge funds, Private equity/leverage buyout, Venture capital, Media, Money Management",
-    "Inherited wealth implies strong attachment to territory (real estate, history).",
-    "Havens: Switzerland, Singapore, Hong Kong, Liechtenstein, Monaco, Luxembourg, UAE, Bermuda. (Criteria: Schengen or shared coastline)"
-  )
-)
-
-
-kable(tax_scores_df,
-      format = "latex",
-        booktabs = TRUE,
-        digits = 2,
-        col.names = c("Score Name", "Criteria for 1", "Criteria for 0", "Details / Explicit Lists"),
-        escape = FALSE) |>
-  kable_styling(latex_options = c("striped", "hold_position"),
-                full_width = F,
-                position = "left",
-                font_size = 8) |>
-  column_spec(4, width = "30em")
-```
 
 \newpage
 
