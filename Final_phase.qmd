@@ -1192,7 +1192,7 @@ plot(density(df$flight_prob, from = 0, to = 1, na.rm = TRUE),
 par(mfrow = c(1,1))
 ```
 
-
+\newpage
 
 # Appendix C : Top contributors to revenue loss among French billionaires {#sec-three -}
 
