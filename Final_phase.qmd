@@ -18,6 +18,7 @@ format:
     papersize: a4
     toc: true
     number-sections: true
+    fig-pos: 'H'
 bibliography: Ressources/references.bib
 csl: Ressources/apa.csl
 ---
@@ -694,6 +695,7 @@ flight_risk_index <-
   )
 ```
 
+\newpage
 
 ## Analysis of the results
 
