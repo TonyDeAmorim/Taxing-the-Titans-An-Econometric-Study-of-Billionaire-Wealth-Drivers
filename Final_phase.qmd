@@ -646,35 +646,16 @@ flight_risk_index <-
 
 *For this phase, we wanted to convert our scores into probabilities so that we could interpret them effectively. We based our work on Niculescu-Mizil and Caruana[^Niculescu] (2005) and found various online sources[^Sources] explaining the main principles of probability calculation using logistic regression. Finally, the use of AI enabled us to confirm our method and refine our code.*
 
-We convert the flight-risk score into an expected flight probability using a logistic transformation. The score is a 0–1 index that ranks individuals by exposure to mobility incentives, but it cannot be read directly as a probability (or as the share of wealth that would relocate). The logistic function, or sigmoid function, converts a probability into a real score. Its initial form is as follows:
+We convert the flight-risk score into an expected flight probability using a logistic transformation (See [Appendix B](#sec-two) for methodology details.).
 
-
-$$f(z) = \frac{1}{1+e^{-z}}$$ {#eq-logistic}
-
-We therefore use its inverse, the logit function:
-
-$$logit(p) = log(\frac{1}{1-p})$$ {#eq-logit}
-
-This function can then be used to convert a probability into a score:
-
-$$P_{prob} = \frac{1}{1+e^{-(\alpha + \beta S)}}$$ {#eq-prob_to_score}
-
-Where $\beta$ represents the sensitivity of the leakage risk relative to the score and $\alpha$ is the adjustment constant (the intercept).
-
-Because we do not observe actual relocation decisions in our data, we calibrate (rather than estimate with the Maximum Likelihood Method) the logistic parameters $(\alpha)$ and $(\beta)$ transparently using two anchor points from the score distribution : The score corresponding to the 10th percentile of billionaires $s_{low}$ (low-risk profiles) and the score corresponding to the 90th percentile $s_{high}$ (high-risk profiles). This "moderate mobility" calibration pins down $(\alpha)$ and $(\beta)$ uniquely and yields an average implied flight probability of about 10.06\% (as we draw it from @tbl-country-risk) in the sample. 
-
-To justify our orders of magnitude (anchors $p_{10}=2\%$ and $p_{90}=25\%$ at horizon $T=15$ years), we start from a homogeneous benchmark directly grounded in empirical estimates of annual migration flows in the literature (See [Appendix B](#sec-two) for calibration details.). Our ``2\%--25\%'' calibration embeds heterogeneity that increases the weight of highly mobile profiles in the mean, while remaining anchored in empirically plausible magnitudes for migration flows and in the observed concentration of responses within a more sensitive minority.
-
-These scores are then assigned two flight probabilities $p_{low}$ and $p_{high}$ in order to find the parameters after solving a system of two equations :
+We set the expected relocation probability to $(p_{10}=2\%)$ for low-risk profiles (10th percentile of the score) and to $(p_{90}=25\%)$ for high-risk profiles (90th percentile), over a $(T=15)$-year horizon. This choice yields an average implied flight probability of about 10.06\% in our sample.These magnitudes are consistent with empirical estimates of migration responses among high-income individuals. Advani, Burgherr \& Summers (2025)[^Advani] estimate a semi-elasticity of emigration of about $-0.339$: a 1\% decrease in the net-of-average-tax rate increases the annual emigration rate by roughly 0.3 percentage points (temporarily). Applying this order of magnitude linearly to a 2\% shock (calibration approximation) yields an average annual increment $\mu \approx 0.66\%$ (i.e., $0.0066$). If all individuals responded identically (no heterogeneity), the implied 15-year cumulative probability would be
 
 $$
-\begin{cases} 
-\beta = \frac{\text{logit}(p_{90}) - \text{logit}(p_{10})}{s_{high} - s_{low}} \\ 
-\alpha = \text{logit}(p_{10}) - \beta \cdot s_{low} 
-\end{cases}
-$$ {#eq-system}
+p_{15} \;=\; 1 - (1-0.0066)^{15} \;\approx\; 9.4\%,
+$$
 
-We can now use @eq-prob_to_score and convert our score into a probability $P_{prob}$.
+which is very close to our calibrated mean (about 10.06\%)-hence our levels are consistent with empirically observed average responses. The remaining gap (10.06\% $>$ 9.4\%) is mechanically explained by the fact that our model introduces heterogeneity: we impose a right tail with highly mobile profiles (25\% at the 90th percentile) and strongly anchored profiles (2\% at the 10th percentile). This asymmetry pulls the mean upward and is consistent with documented stylized facts: Advani, Burgherr \& Summers also show that responsiveness is concentrated among individuals with weaker local economic ties (e.g., limited domestic-source income), who exhibit substantially higher migration elasticities than the average. 
+Jakobsen et al.[^Jakobsen] similarly report an average semi-elasticity of out-migration of about $-0.17$, while noting that some subgroups (e.g., entrepreneurs) can display larger responses albeit less precisely estimated. 
 
 
 ```{r}
@@ -792,8 +773,6 @@ In the top panel, self-made billionaires display higher predicted mobility than 
 The bottom density plot summarizes the overall distribution of flight probabilities in the sample. It is strongly right-skewed: most individuals cluster at low probabilities, while a smaller group forms a long tail toward higher values. This matters because it implies heterogeneity in behavioral responses. Indeed, the flight risk is not evenly spread across billionaires. The density also appears multi-peaked, which is consistent with the index being built from discrete components (mobile sector, proximity, self-made status) combined with a continuous tax term: different “profiles” of billionaires naturally bunch at different probability ranges.
 
 Overall, @fig-Basic-analysis-plots suggest that mobility risk is not uniform across billionaires. Most individuals cluster at low predicted flight probabilities, especially among inherited fortunes, but there is a clear right tail driven largely by self-made profiles. In other words, the potential response to a wealth tax is concentrated in a smaller, more mobile subset rather than spread evenly across the entire billionaire population.
-
-
 
 
 # Scenario testing : the impact of new taxation 
@@ -1154,6 +1133,8 @@ kable(bp_df[, 2:3],
 
 # Appendix B : Calibrating the Logistic Transformation {#sec-two -} 
 
+To calibrate the conversion of the flight-risk score into an implied flight probability, we rely on a logistic function. 
+
 ```{r}
 #| label: fig-score-vs-prob-panels
 #| fig-cap: "Linear score vs. nonlinear probability (two-panel view)"
@@ -1181,14 +1162,7 @@ plot(density(df$flight_prob, from = 0, to = 1, na.rm = TRUE),
 par(mfrow = c(1,1))
 ```
 
-We set the expected relocation probability to $(p_{10}=2\%)$ for low-risk profiles (10th percentile of the score) and to $(p_{90}=25\%)$ for high-risk profiles (90th percentile), over a $(T=15)$-year horizon. This choice yields an average implied flight probability of about 10.06\% in our sample.These magnitudes are consistent with empirical estimates of migration responses among high-income individuals. Advani, Burgherr \& Summers (2025)[^Advani] estimate a semi-elasticity of emigration of about $-0.339$: a 1\% decrease in the net-of-average-tax rate increases the annual emigration rate by roughly 0.3 percentage points (temporarily). Applying this order of magnitude linearly to a 2\% shock (calibration approximation) yields an average annual increment $\mu \approx 0.66\%$ (i.e., $0.0066$). If all individuals responded identically (no heterogeneity), the implied 15-year cumulative probability would be
 
-$$
-p_{15} \;=\; 1 - (1-0.0066)^{15} \;\approx\; 9.4\%,
-$$
-
-which is very close to our calibrated mean (about 10.06\%)-hence our levels are consistent with empirically observed average responses. The remaining gap (10.06\% $>$ 9.4\%) is mechanically explained by the fact that our model introduces heterogeneity: we impose a right tail with highly mobile profiles (25\% at the 90th percentile) and strongly anchored profiles (2\% at the 10th percentile). This asymmetry pulls the mean upward and is consistent with documented stylized facts: Advani, Burgherr \& Summers also show that responsiveness is concentrated among individuals with weaker local economic ties (e.g., limited domestic-source income), who exhibit substantially higher migration elasticities than the average. 
-Jakobsen et al.[^Jakobsen] similarly report an average semi-elasticity of out-migration of about $-0.17$, while noting that some subgroups (e.g., entrepreneurs) can display larger responses albeit less precisely estimated. 
 
 # Appendix C : Top contributors to revenue loss among French billionaires {#sec-three -}
 
