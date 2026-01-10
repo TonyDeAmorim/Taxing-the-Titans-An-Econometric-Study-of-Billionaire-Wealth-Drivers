@@ -1137,7 +1137,6 @@ To calibrate the conversion of the flight-risk score into an implied flight prob
 
 Indeed, the score is a 0–1 index that ranks individuals by exposure to mobility incentives, but it cannot be read directly as a probability (or as the share of wealth that would relocate). The logistic function, or sigmoid function, converts a probability into a real score. Its initial form is as follows:
 
-
 $$f(z) = \frac{1}{1+e^{-z}}$$ {#eq-logistic}
 
 We therefore use its inverse, the logit function:
@@ -1152,7 +1151,7 @@ Where $\beta$ represents the sensitivity of the leakage risk relative to the sco
 
 Because we do not observe actual relocation decisions in our data, we calibrate (rather than estimate with the Maximum Likelihood Method) the logistic parameters $(\alpha)$ and $(\beta)$ transparently using two anchor points from the score distribution : The score corresponding to the 10th percentile of billionaires $s_{low}$ (low-risk profiles) and the score corresponding to the 90th percentile $s_{high}$ (high-risk profiles). This "moderate mobility" calibration pins down $(\alpha)$ and $(\beta)$ uniquely and yields an average implied flight probability of about 10.06\% (as we draw it from @tbl-country-risk) in the sample. 
 
-To justify our orders of magnitude (anchors $p_{10}=2\%$ and $p_{90}=25\%$ at horizon $T=15$ years), we start from a homogeneous benchmark directly grounded in empirical estimates of annual migration flows in the literature (See [Appendix B](#sec-two) for calibration details.). Our ``2\%--25\%'' calibration embeds heterogeneity that increases the weight of highly mobile profiles in the mean, while remaining anchored in empirically plausible magnitudes for migration flows and in the observed concentration of responses within a more sensitive minority.
+To justify our orders of magnitude (anchors $p_{10}=2\%$ and $p_{90}=25\%$ at horizon $T=15$ years), we start from a homogeneous benchmark directly grounded in empirical estimates of annual migration flows in the literature.
 
 These scores are then assigned two flight probabilities $p_{low}$ and $p_{high}$ in order to find the parameters after solving a system of two equations :
 
