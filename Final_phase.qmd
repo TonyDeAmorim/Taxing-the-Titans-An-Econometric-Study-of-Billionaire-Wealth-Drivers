@@ -1120,7 +1120,7 @@ The Shapiro–Wilk test[^shapiro] (p = 0.7815) suggests the residuals are approx
 The Breusch–Pagan test[^Breusch] (p = 0.7318) shows no evidence of heteroskedasticity, meaning the error variance can be treated as constant.
 Taken together, these checks imply that our coefficient estimates and standard inference from this model are generally reliable.
 
-# Appendix B : Detail on the creation of the flight risk score {#sec-two}
+# Appendix B : Detail on the creation of the flight risk score {#sec-two -}
 
 ```{r}
 #| label: tbl-flight-score-detail
