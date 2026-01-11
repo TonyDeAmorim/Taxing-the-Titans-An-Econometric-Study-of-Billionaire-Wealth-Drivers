@@ -7,7 +7,7 @@ author:
 date: today
 date-format: "MMMM D, YYYY"
 abstract: |
-  This project was carried out as part of the data management course taught during the first year of the Quantitative Economics master's programme and International Affairs and Development master's programme. AI is indicated each time it was used and was only employed to correct the code and improve our text. 
+  This project was carried out as part of the data management course taught during the first year of the Quantitative Economics master's programme and International Affairs and Development master's programme. AI is indicated each time it was used and was only employed to correct the code and improve our text. Excluding the appendix, bibliography, and tables of results, the paper is approximately 4,900 words long. 
 format:
   pdf:
     geometry:
