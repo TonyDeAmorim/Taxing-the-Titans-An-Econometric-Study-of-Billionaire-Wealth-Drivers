@@ -7,7 +7,7 @@ author:
 date: today
 date-format: "MMMM D, YYYY"
 abstract: |
-  This project was carried out as part of the data management course taught during the first year of the Quantitative Economics master's programme and International Affairs and Development master's programme. AI is indicated each time it was used and was only employed to correct the code, confirm intuitions and expand on our initial ideas. 
+  This project was carried out as part of the data management course taught during the first year of the Quantitative Economics master's programme and International Affairs and Development master's programme. AI is indicated each time it was used and was only employed to correct the code and improve our text. Excluding the appendix, bibliography, and tables of results, the paper is approximately 4,900 words long. 
 format:
   pdf:
     geometry:
@@ -1152,7 +1152,84 @@ kable(bp_df[, 2:3],
   )
 ```
 
+<<<<<<< HEAD
 # Appendix B : Calibrating the Logistic Transformation {#sec-two}
+=======
+The VIF results[^multico] (around 1.2–1.3) indicate no multicollinearity, so the regressors are not strongly correlated.
+The Shapiro–Wilk test[^shapiro] (p = 0.7815) suggests the residuals are approximately normally distributed.
+The Breusch–Pagan test[^Breusch] (p = 0.7318) shows no evidence of heteroskedasticity, meaning the error variance can be treated as constant.
+Taken together, these checks imply that our coefficient estimates and standard inference from this model are generally reliable.
+
+# Appendix B : Detail on the creation of the flight risk score {#sec-two -}
+
+```{r}
+#| label: tbl-flight-score-detail
+#| tbl-cap: "Summary of Billionaire Tax Evasion Incentive Scores"
+#| tbl-pos: 'H'
+#| message: false
+#| warning: false
+#| echo: false
+
+tax_scores_df <- data.frame(
+  Score = c("Tax Burden", "Industry Mobility", "Source of Wealth", "Proximity to Tax Haven"),
+  Logic_for_1 = c("Max Taxation", "Mobile Industry", "Self-made", "Close to Haven"),
+  Logic_for_0 = c("Min Taxation", "Non-mobile Industry", "Inherited", "Far from Haven"),
+  Details_and_Lists = c(
+    "Formula: $$\\frac{(\\text{tax}_i - \\text{min tax})}{(\\text{max tax} - \\text{min tax})}$$",
+    "Industries: Diversified financial, Technology-Computer, Hedge funds, Private equity/leverage buyout, Venture capital, Media, Money Management",
+    "Inherited wealth implies strong attachment to territory (real estate, history).",
+    "Havens: Switzerland, Singapore, Hong Kong, Liechtenstein, Monaco, Luxembourg, UAE, Bermuda. (Criteria: Schengen or shared coastline)"
+  )
+)
+
+
+kable(tax_scores_df,
+      format = "latex",
+        booktabs = TRUE,
+        digits = 2,
+        col.names = c("Score Name", "Criteria for 1", "Criteria for 0", "Details / Explicit Lists"),
+        escape = FALSE) |>
+  kable_styling(latex_options = c("striped", "hold_position"),
+                full_width = F,
+                position = "left",
+                font_size = 8) |>
+  column_spec(4, width = "30em")
+```
+
+# Appendix C : Calibrating the Logistic Transformation {#sec-three -} 
+
+To calibrate the conversion of the flight-risk score into an implied flight probability, we rely on a logistic function. 
+
+Indeed, the score is a 0–1 index that ranks individuals by exposure to mobility incentives, but it cannot be read directly as a probability (or as the share of wealth that would relocate). The logistic function, or sigmoid function, converts a probability into a real score. Its initial form is as follows:
+
+$$f(z) = \frac{1}{1+e^{-z}}$$ {#eq-logistic}
+
+We therefore use its inverse, the logit function:
+
+$$logit(p) = log(\frac{1}{1-p})$$ {#eq-logit}
+
+This function can then be used to convert a probability into a score:
+
+$$P_{prob} = \frac{1}{1+e^{-(\alpha + \beta S)}}$$ {#eq-prob_to_score}
+
+Where $\beta$ represents the sensitivity of the leakage risk relative to the score and $\alpha$ is the adjustment constant (the intercept).
+
+Because we do not observe actual relocation decisions in our data, we calibrate (rather than estimate with the Maximum Likelihood Method) the logistic parameters $(\alpha)$ and $(\beta)$ transparently using two anchor points from the score distribution : The score corresponding to the 10th percentile of billionaires $s_{low}$ (low-risk profiles) and the score corresponding to the 90th percentile $s_{high}$ (high-risk profiles). This "moderate mobility" calibration pins down $(\alpha)$ and $(\beta)$ uniquely and yields an average implied flight probability of about 10.06\% (as we draw it from @tbl-country-risk) in the sample. 
+
+To justify our orders of magnitude (anchors $p_{10}=2\%$ and $p_{90}=25\%$ at horizon $T=15$ years), we start from a homogeneous benchmark directly grounded in empirical estimates of annual migration flows in the literature.
+
+These scores are then assigned two flight probabilities $p_{low}$ and $p_{high}$ in order to find the parameters after solving a system of two equations :
+
+$$
+\begin{cases} 
+\beta = \frac{\text{logit}(p_{90}) - \text{logit}(p_{10})}{s_{high} - s_{low}} \\ 
+\alpha = \text{logit}(p_{10}) - \beta \cdot s_{low} 
+\end{cases}
+$$ {#eq-system}
+
+We can now use @eq-prob_to_score and convert our score into a probability $P_{prob}$.
+
+>>>>>>> 671ace9247dee2ad262de29bbbebfcf3cf666a6d
 
 ```{r}
 #| label: fig-score-vs-prob-panels
